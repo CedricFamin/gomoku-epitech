@@ -71,41 +71,14 @@ void Referrer::addPrePlayRule(IRule & rule)
 	this->_prePlayRules.push_back(&rule);
 }
 
-void Referrer::subPrePlayRule(std::string const & name)
-{
-	std::remove_if(this->_prePlayRules.begin(), this->_prePlayRules.end(),
-		[name](IRule * rule)
-	{
-		return rule->name() == name;
-	});
-}
-
 void Referrer::addPlayRule(IRule & rule)
 {
 	this->_playRules.push_back(&rule);
 }
 
-void Referrer::subPlayRule(std::string const & name)
-{
-	std::remove_if(this->_playRules.begin(), this->_playRules.end(),
-		[name](IRule * rule)
-	{
-		return rule->name() == name;
-	});
-}
-
 void Referrer::addPostPlayRule(IRule & rule)
 {
 	this->_postPlayRules.push_back(&rule);
-}
-
-void Referrer::subPostPlayRule(std::string const & name)
-{
-	std::remove_if(this->_postPlayRules.begin(), this->_postPlayRules.end(),
-		[name](IRule * rule)
-	{
-		return rule->name() == name;
-	});
 }
 
 Goban & Referrer::getGoban() const

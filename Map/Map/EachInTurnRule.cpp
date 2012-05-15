@@ -25,11 +25,6 @@ bool EachInTurnRule::isEnable() const
 	return this->_enable;
 }
 
-std::string const & EachInTurnRule::name() const
-{
-	return "EachInTurn";
-}
-
 bool EachInTurnRule::execute(Referrer & r, Goban::PION_TYPE pion, unsigned int x, unsigned int y)
 {
 	return r.GetListOfTurn().size() == 0 || r.GetListOfTurn().back().pion != pion;

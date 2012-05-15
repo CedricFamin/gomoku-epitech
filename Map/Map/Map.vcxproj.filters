@@ -39,9 +39,6 @@
     <ClCompile Include="TakingRules.cpp">
       <Filter>Source Files\Rules</Filter>
     </ClCompile>
-    <ClCompile Include="VictoryCapturesRule.cpp">
-      <Filter>Source Files\Rules</Filter>
-    </ClCompile>
     <ClCompile Include="VictoryAlignment.cpp">
       <Filter>Source Files\Rules</Filter>
     </ClCompile>
@@ -49,6 +46,12 @@
       <Filter>Source Files\Rules</Filter>
     </ClCompile>
     <ClCompile Include="LastTaking.cpp">
+      <Filter>Source Files\Rules</Filter>
+    </ClCompile>
+    <ClCompile Include="GobanIterator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="VictoryCapturesRule.cpp">
       <Filter>Source Files\Rules</Filter>
     </ClCompile>
   </ItemGroup>
@@ -82,6 +85,9 @@
     </ClInclude>
     <ClInclude Include="LastTaking.h">
       <Filter>Header Files\Rules</Filter>
+    </ClInclude>
+    <ClInclude Include="GobanIterator.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

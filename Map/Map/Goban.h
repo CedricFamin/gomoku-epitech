@@ -1,72 +1,30 @@
 #ifndef _GOBAN_H_
 # define _GOBAN_H_
 
+#include <stdint.h>
+#include <stdio.h>
+
 #include <functional>
-
-#define TURN_AROUND(map, x, y, maxX, maxY)											\
-	int TURN_AROUND_DECAL[8][2] =													\
-	{																				\
-		{ 0,-1}, { 1, 0}, { 0, 1}, { 0, 1},											\
-		{-1, 0}, {-1, 0}, { 0,-1}, { 0,-1}											\
-	};																				\
-	unsigned int TURN_X = x + TURN_AROUND_DECAL[0][0];								\
-	unsigned int TURN_Y = y + TURN_AROUND_DECAL[0][1];								\
-	auto currentElem = (TURN_X < maxX && TURN_Y < maxY) ? &map[TURN_Y][TURN_X]:0;	\
-	for (int TURN_INDEX = 0; TURN_INDEX < 8;										\
-		TURN_INDEX++,																\
-		TURN_X += TURN_AROUND_DECAL[TURN_INDEX][0],									\
-		TURN_Y += TURN_AROUND_DECAL[TURN_INDEX][1],									\
-		currentElem = ((TURN_X < maxX && TURN_Y < maxY) ? &map[TURN_Y][TURN_X]:0))
-
-#define GETPIONTYPE(x) ((Goban::PION_TYPE)(x.color))
-#define EXTRACTBIT(x, b) (x & 1 << b)
-/* PATTERNS
-** pair safe	 . o o .	| o o .		| x o o x | o o o .
-** pair non safe x o o .
-** trois		 o o o		| o o . o
-** trois libre	 . o o o .	| . o o . o .
-** quatre		 o o o o
-*/
 
 class Goban
 {
 public:
-	static const char TOP		= 0x1;
-	static const char TOPRIGHT	= 0x2;
-	static const char RIGHT		= 0x3;
-	static const char BOTRIGHT	= 0x4;
-	static const char BOT		= 0x5;
-	static const char BOTLEFT	= 0x6;
-	static const char LEFT		= 0x7;
-	static const char TOPLEFT	= 0x8;
+	typedef long long int Case;
+	static const unsigned long long int PIONMASK = 0x3;
+	static const unsigned long long int PATTERNMASK = 0x7F;
+	static const unsigned int HEADERSIZE = 8;
+	static const unsigned int PATTERNSIZE = 7;
+	static const unsigned int COLORSIZE = 2;
+	static const unsigned int SAFESIZE = 1;
+	static const unsigned int CONTENTSIZE = 4;
+	static const unsigned long long int SUITED1 = 0x1;
+	static const unsigned long long int SUITED2 = 0x3;
+	static const unsigned long long int SUITED3 = 0x7;
+	static const unsigned long long int SUITED4 = 0xF;
+	static const unsigned long long int PA11000 = (0x1 | (Goban::SUITED1 << Goban::SAFESIZE) << Goban::COLORSIZE);
+	static const unsigned long long int PA10110 = (0x1 | (Goban::SUITED2 << (Goban::SAFESIZE + 1) ) << Goban::COLORSIZE);
+	static const unsigned long long int PA11100 = (0x1 | (Goban::SUITED2 << Goban::SAFESIZE) << Goban::COLORSIZE);
 
-	union CharDirBitField
-	{
-		struct
-		{
-			unsigned char top:1;
-			unsigned char topRight:1;
-			unsigned char right:1;
-			unsigned char botRight:1;
-			unsigned char bot:1;
-			unsigned char botLeft:1;
-			unsigned char left:1;
-			unsigned char topLeft:1;
-		};
-		unsigned char rawData;
-	};
-	union Case
-	{
-		struct 
-		{
-			CharDirBitField pair;
-			CharDirBitField pair_safe;
-			unsigned char color:2;
-			unsigned char padding:6;
-			CharDirBitField free_case;
-		};
-		unsigned int rawData;
-	};
 	enum PION_TYPE
 	{
 		EMPTY,
@@ -90,13 +48,28 @@ protected:
 
 private:
 	Case **_map;
-	static void alloc_map(char **&map, unsigned int, unsigned int);
-	void _update_pair(Case &, unsigned int, unsigned int);
-	void _update_safe(Case &, unsigned int, unsigned int);
-	void _update_free(Case &, unsigned int, unsigned int);
-
+	int update_serie(unsigned int i, unsigned int j, int decal_x, int decal_y, int dir, int depth);
+	void update_pattern(unsigned int, unsigned int, int);
 	unsigned int _width;
 	unsigned int _height;
+};
+
+template<int nbBits>
+struct PatternMask
+{
+	static const unsigned long long int value = (1 << (nbBits - 1)) | PatternMask<nbBits - 1>::value;
+};
+template<>
+struct PatternMask<0>
+{
+	static const unsigned long long int value = 0;
+};
+
+template<bool safe, int size, unsigned long long int content>
+struct Pattern
+{
+	static const unsigned long long int value = (safe | (content << 1)) << Goban::COLORSIZE;
+	static const unsigned long long int mask = PatternMask<size + safe + Goban::COLORSIZE>::value;
 };
 
 #endif

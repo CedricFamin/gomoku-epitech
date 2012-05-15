@@ -29,36 +29,36 @@ bool TakingRules::isEnable() const
 	return this->_enable;
 }
 
-std::string const & TakingRules::name() const
-{
-	return "NotEmpty";
-}
-
 int const * TakingRules::getCaptures() const
 {
 	return this->_capture;
 }
 
+#include <iostream>
+void print_case(unsigned long long int);
 bool TakingRules::execute(Referrer & r, Goban::PION_TYPE pion, unsigned int x, unsigned int y)
 {
-	int origin[8][2] = {
-		{ 0,-1}, { 1,-1}, { 1, 0}, { 1, 1},
-		{ 0, 1}, {-1, 1}, {-1, 0}, {-1,-1},
+	const int direction[8][2] = {
+		{ 0,-1}, { 1, -1}, { 1, 0}, { 1, 1},
+		{0, 1}, {-1, 1}, { -1,0}, { -1,-1}
 	};
 
-	TURN_AROUND(r.getGoban().GetMap(), x, y, r.getGoban().getWidth(), r.getGoban().getHeight())
+	Goban::Case cCase = r.getGoban().GetMap()[y][x] >> Goban::HEADERSIZE;
+	unsigned long long int capture, mask = Goban::PIONMASK | Pattern<0,3, 0x3>::mask;
+	
+	capture = ((pion==Goban::RED) ? Goban::BLACK : Goban::RED) | Pattern<0,3, 0x3>::value;
+
+	
+	for (int i = 0; i < 8; ++i)
 	{
-		if (currentElem == 0)
-			continue;
-		if (currentElem->color && currentElem->pair.rawData && currentElem->color != pion)
+		if ((cCase & mask) == capture)
 		{
-			if (EXTRACTBIT((currentElem->pair.rawData ^ currentElem->pair_safe.rawData), TURN_INDEX))
-			{
-				r.getGoban().subIn(TURN_X, TURN_Y);
-				r.getGoban().subIn(TURN_X + (origin[TURN_INDEX][0]), TURN_Y + (origin[TURN_INDEX][1]));
-				this->_capture[pion >> 1] += 2;
-			}
+			r.getGoban().subIn(x + direction[i][0], y + direction[i][1]);
+			r.getGoban().subIn(x + direction[i][0] * 2, y + direction[i][1] * 2);
+			this->_capture[pion >> 1] += 2;
 		}
+		cCase >>= Goban::PATTERNSIZE;
 	}
+
 	return true;
 }

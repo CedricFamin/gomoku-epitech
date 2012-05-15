@@ -25,21 +25,16 @@ bool VictoryCapturesRule::isEnable() const
 	return this->_enable;
 }
 
-std::string const & VictoryCapturesRule::name() const
-{
-	return "VictoryCaptures";
-}
-
 bool VictoryCapturesRule::execute(Referrer & r, Goban::PION_TYPE pion, unsigned int x, unsigned int y)
 {
 	if (this->_takingRule.getCaptures()[Goban::RED >> 1] >= 10 ||
 		this->_takingRule.getCaptures()[Goban::BLACK >> 1] >= 10)
 	{
 		if (this->_takingRule.getCaptures()[Goban::RED >> 1] >= 10)
-			r.setGameFinished(Goban::RED);
+			r.setWinner(Goban::RED);
 		else
-			r.setGameFinished(Goban::BLACK);
-		r.setWinner(pion);
+			r.setWinner(Goban::BLACK);
+		r.setGameFinished(true);
 		return true;
 	}
 	return false;

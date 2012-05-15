@@ -26,49 +26,50 @@ bool DoubleThree::isEnable() const
 	return this->_enable;
 }
 
-std::string const & DoubleThree::name() const
-{
-	return "EachInTurn";
-}
+#include <iostream>
+void print_case(unsigned long long int);
+
 
 bool DoubleThree::execute(Referrer & r, Goban::PION_TYPE pion, unsigned int x, unsigned int y)
 {
-	int dir[8][2] = {
-		{0,-2}, {2,-2}, {2,0}, {2,2},
-		{0,2}, {-2,2}, {-2,0}, {-2,-2},
-	};
-	Goban::Case ** map = r.getGoban().GetMap();
 	int doublethree = 0;
-	char doubleThreeDir = 0;
-
-	TURN_AROUND(map, x, y, r.getGoban().getWidth(), r.getGoban().getHeight())
-	{
-		unsigned int lx = x + dir[TURN_INDEX][0];
-		unsigned int ly = y + dir[TURN_INDEX][1];
-		unsigned int ldx = TURN_X + dir[TURN_INDEX][0];
-		unsigned int ldy = TURN_Y + dir[TURN_INDEX][1];
-		if (currentElem &&
-			!EXTRACTBIT(doubleThreeDir, TURN_INDEX) &&
-			EXTRACTBIT(map[y][x].free_case.rawData, (4 + TURN_INDEX) % 8) &&
-
-			(GETPIONTYPE((*currentElem)) == pion &&
-			EXTRACTBIT(currentElem->pair.rawData, TURN_INDEX) &&
-			EXTRACTBIT(currentElem->pair_safe.rawData, TURN_INDEX)) ||
-
-			(r.getGoban().InBound(lx, ly) &&
-			GETPIONTYPE(map[ly][lx]) == pion &&
-			EXTRACTBIT(map[ly][lx].pair.rawData, TURN_INDEX) &&
-			EXTRACTBIT(map[ly][lx].pair_safe.rawData, TURN_INDEX))
-			
-			/*(GETPIONTYPE((*currentElem)) == pion &&
-			EXTRACTBIT(currentElem->free_case.rawData, TURN_INDEX) &&
-			r.getGoban().InBound(ldx, ldy) &&
-			map[ldy][ldx].color == pion &&
-			EXTRACTBIT(map[ldy][ldx].free_case.rawData, TURN_INDEX)*/)
+	Goban::Case cCase = r.getGoban().GetMap()[y][x] >> Goban::HEADERSIZE;
+	unsigned long long int double3[5][2] = 
 		{
-			doubleThreeDir |= 1 << ((4 + TURN_INDEX) % 8);
-			doublethree++;
+			{
+				pion | Pattern<1,3,0x3>::value, 
+				0x3 | Pattern<1,3,0x3>::value | ((0x0 | Pattern<0,1,0x1>::value)  << (Goban::PATTERNSIZE * 4))
+			},
+			{
+				(pion | Pattern<1,3,0x3>::value) << (Goban::PATTERNSIZE * 4),
+				0x0 | Pattern<0,1,0x1>::value | ((0x3 | Pattern<1,3,0x3>::value)  << (Goban::PATTERNSIZE * 4))
+			},
+			{
+				pion | Pattern<1,1,0x1>::value | ((pion | Pattern<1,1,0x1>::value) << (Goban::PATTERNSIZE * 4)),
+				0x3 | Pattern<1,2,0x3>::value | ((0x3 | Pattern<1,2,0x3>::value) << (Goban::PATTERNSIZE * 4))
+			},
+			{
+				pion | Pattern<1,4,0x6>::value, 
+				0x3 | Pattern<1,4,0x6>::mask | (Pattern<0,1,0x1>::value << (Goban::PATTERNSIZE * 4)),
+			},
+			{
+				(pion | Pattern<1,4,0x6>::value) << (Goban::PATTERNSIZE * 4), 
+				Pattern<0,1,0x1>::value | ((0x3 | Pattern<1,4,0x6>::mask) << (Goban::PATTERNSIZE * 4)),
+			}
+	};
+	for (int i = 0; i < 5; ++i)
+	{
+		for (int j = 0; j < 5; ++j)
+		{
+			if ((cCase & double3[j][1]) == double3[j][0])
+			{
+					
+				std::cout << i << " " << j << std::endl;
+				
+			}
 		}
+		cCase >>= Goban::PATTERNSIZE;
 	}
+
 	return doublethree <= 1;
 }

@@ -3,6 +3,7 @@
 #include <string>
 #include <iostream>
 #include <windows.h>
+#include <bitset>
 
 #include "Goban.h"
 #include "Referrer.h"
@@ -13,6 +14,7 @@
 #include "VictoryAlignment.h"
 #include "DoubleThree.h"
 
+
 void play(Referrer & r, Goban::PION_TYPE p, unsigned int x, unsigned int y)
 {
 	bool canplay =  r.CanPlay(p, x, y);
@@ -21,23 +23,15 @@ void play(Referrer & r, Goban::PION_TYPE p, unsigned int x, unsigned int y)
 		return;
 	r.Play();
 	r.AfterPlay();
-	for (unsigned int y = 0; y < 19; y++)
+	
+}
+
+void print_case(unsigned long long int current)
+{
+	for (int i = 0; i <64; ++i)
 	{
-		for (unsigned int x = 0; x < 19; x++)
-		{
-			switch (r.getGoban().GetMap()[y][x].color)
-			{
-			case 0x1:
-				std::cout << "x ";
-				break;
-			case 0x3:
-				std::cout << "o ";
-				break;
-			default:
-				std::cout << ". ";
-			}
-		}
-		std::cout << std::endl;
+		std::cout << (current & 1) ? "1": "0";
+		current >>= 1;
 	}
 }
 
@@ -59,42 +53,43 @@ int main(int ac, char **av)
 	referrer.addPostPlayRule(rule5);
 	referrer.addPrePlayRule(rule6);
 
-	play(referrer, Goban::RED, 9, 2);
-	play(referrer, Goban::BLACK, 7, 8);
-	play(referrer, Goban::RED, 10, 2);
-	play(referrer, Goban::BLACK, 6, 6);
-	play(referrer, Goban::RED, 11, 3);
-	play(referrer, Goban::BLACK, 9, 5);
-	play(referrer, Goban::RED, 11, 4);
-	play(referrer, Goban::BLACK, 11, 11);
-
-	play(referrer, Goban::RED, 11, 2);
-	play(referrer, Goban::RED, 11, 14);
-	play(referrer, Goban::BLACK, 11, 1);
-	play(referrer, Goban::RED, 11, 2);
-
-	play(referrer, Goban::RED, 1, 0);
-	play(referrer, Goban::BLACK, 2, 0);
-	play(referrer, Goban::RED, 1, 1);
-	play(referrer, Goban::BLACK, 3, 0);
-	play(referrer, Goban::RED, 4, 0);
-	play(referrer, Goban::BLACK, 0, 0);
-	play(referrer, Goban::RED, 2, 2);
-	play(referrer, Goban::BLACK, 3, 3);
-	play(referrer, Goban::RED, 2, 0);
-	play(referrer, Goban::BLACK, 1, 1);
-	play(referrer, Goban::RED, 3, 0);
-	play(referrer, Goban::BLACK, 2, 2);
-
-	play(referrer, Goban::RED, 10, 10);
 	play(referrer, Goban::BLACK, 2, 1);
-	
-	
-	play(referrer, Goban::RED, 9, 9);
+	play(referrer, Goban::RED, 2, 3);
+	play(referrer, Goban::BLACK, 2, 2);
+	play(referrer, Goban::RED, 2, 0);
 	play(referrer, Goban::BLACK, 4, 4);
 	
-	std::cout << "Finished : " << referrer.GameFinished() << " winner : " << ((referrer.Winner()==Goban::BLACK) ? "noir  ": "rouge ") << std::endl;
+	goban.Putin(Goban::RED, 0, 5);
+	goban.Putin(Goban::RED, 1, 5);
+	goban.Putin(Goban::RED, 4, 5);
+	goban.Putin(Goban::RED, 3, 5);
+	play(referrer, Goban::RED, 2, 6);
+
+	//goban.Putin(Goban::RED, 0, 8);
+	goban.Putin(Goban::BLACK, 1, 11);
+	goban.Putin(Goban::BLACK, 2, 10);
+	goban.Putin(Goban::BLACK, 4, 9);
+	goban.Putin(Goban::BLACK, 4, 7);
+	play(referrer, Goban::BLACK, 4, 8);
 	
+	for (unsigned int y = 0; y < 19; y++)
+	{
+		for (unsigned int x = 0; x < 19; x++)
+		{
+			switch (goban.GetMap()[y][x] & Goban::PIONMASK)
+			{
+			case 0x1:
+				std::cout << "x ";
+				break;
+			case 0x3:
+				std::cout << "o ";
+				break;
+			default:
+				std::cout << ". ";
+			}
+		}
+		std::cout << std::endl;
+	}
 	system("pause");
 	return 0;
 }

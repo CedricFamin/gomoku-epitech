@@ -16,7 +16,6 @@ public:
 	virtual void enable() = 0;
 	virtual void disable() = 0;
 	virtual bool isEnable() const = 0;
-	virtual std::string const & name() const = 0;
 	virtual bool execute(Referrer &, Goban::PION_TYPE, unsigned int, unsigned int) = 0;
 };
 

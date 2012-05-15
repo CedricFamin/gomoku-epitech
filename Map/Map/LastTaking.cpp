@@ -25,11 +25,6 @@ bool LastTaking::isEnable() const
 	return this->_enable;
 }
 
-std::string const & LastTaking::name() const
-{
-	return "NotEmpty";
-}
-
 bool LastTaking::execute(Referrer & r, Goban::PION_TYPE pion, unsigned int x, unsigned int y)
 {
 	return false;

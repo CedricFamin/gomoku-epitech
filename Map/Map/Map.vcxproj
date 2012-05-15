@@ -77,6 +77,7 @@
     <ClCompile Include="DoubleThree.cpp" />
     <ClCompile Include="EachInTurnRule.cpp" />
     <ClCompile Include="Goban.cpp" />
+    <ClCompile Include="GobanIterator.cpp" />
     <ClCompile Include="LastTaking.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="NotEmptyRule.cpp" />
@@ -89,6 +90,7 @@
     <ClInclude Include="DoubleThree.h" />
     <ClInclude Include="EachInTurnRule.h" />
     <ClInclude Include="Goban.h" />
+    <ClInclude Include="GobanIterator.h" />
     <ClInclude Include="IRule.h" />
     <ClInclude Include="LastTaking.h" />
     <ClInclude Include="NotEmptyRule.h" />

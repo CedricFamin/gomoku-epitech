@@ -28,16 +28,14 @@ public:
 	void setWinner(Goban::PION_TYPE);
 	
 	void addPrePlayRule(IRule &);
-	void subPrePlayRule(std::string const & name);
 
 	void addPlayRule(IRule &);
-	void subPlayRule(std::string const & name);
 
 	void addPostPlayRule(IRule &);
-	void subPostPlayRule(std::string const & name);
+
+	std::list<Turn> const & GetListOfTurn() const;
 
 	Goban & getGoban() const;
-	std::list<Turn> const & GetListOfTurn() const;
 
 protected:
 
