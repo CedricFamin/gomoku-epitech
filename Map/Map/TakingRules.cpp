@@ -3,12 +3,13 @@
 
 #include "TakingRules.h"
 
+using namespace Rules;
+
 TakingRules::TakingRules(void)
 {
 	_capture[0] = 0;
 	_capture[1] = 0;
 }
-
 
 TakingRules::~TakingRules(void)
 {
@@ -34,8 +35,6 @@ int const * TakingRules::getCaptures() const
 	return this->_capture;
 }
 
-#include <iostream>
-void print_case(unsigned long long int);
 bool TakingRules::execute(Referrer & r, Goban::PION_TYPE pion, unsigned int x, unsigned int y)
 {
 	const int direction[8][2] = {

@@ -30,34 +30,35 @@ void Goban::update_pattern(unsigned int i, unsigned int j, int dir)
 		{0, 1}, {-1, 1}, { -1,0}, { -1,-1}
 	};
 	Case currentCase = 0;
+	bool beforeColor = false;
 	unsigned int color = 0, lx, ly;
 	int bitDecal = 8 + 7 * dir;
 
 	if (this->InBound(i, j) == false)
 		return ;
 	this->_map[j][i] &= ~(PATTERNMASK << bitDecal);
+	this->_map[j][i] |= (unsigned long long int)0x1 << (bitDecal + 2);
 	for (int dist = 1; dist <= 4; ++dist)
 	{
 		lx = i + moves[dir][0] * dist;
 		ly = j + moves[dir][1] * dist;
 		if (this->InBound(lx, ly))
 		{
-			if (color && color != (this->_map[ly][lx] & PIONMASK))
+			if (color && this->_map[ly][lx] & PIONMASK && color != (this->_map[ly][lx] & PIONMASK))
 			{
-				if (this->_map[ly][lx] & PIONMASK)
+				if (beforeColor)
 					this->_map[j][i] &= ~((unsigned long long int)0x1 << (bitDecal + 2));
-				else
-					this->_map[j][i] |= (unsigned long long int)0x1 << (bitDecal + 2);
 				break;
 			}
 			if ((this->_map[ly][lx] & PIONMASK))
 			{
+				beforeColor = true;
 				color = this->_map[ly][lx] & PIONMASK;
 				this->_map[j][i] |= (((this->_map[ly][lx] & PIONMASK)) << bitDecal);
 				this->_map[j][i] |= ((unsigned long long int)0x1) << (bitDecal + 2 + dist);
 			}
 			else
-				this->_map[j][i] &= ~(((unsigned long long int)0x1) << (bitDecal + 2 + dist));
+				beforeColor = false;
 		}
 		else 
 		{
@@ -75,9 +76,7 @@ void Goban::Putin(PION_TYPE type, unsigned int i, unsigned int j)
 		{ 0,-1}, { 1, -1}, { 1, 0}, { 1, 1},
 		{0, 1}, {-1, 1}, { -1,0}, { -1,-1}
 	};
-	int reverse_dir;
 	Case & cCase = this->_map[j][i];
-
 	cCase = (cCase & ~PIONMASK) | type;
 	for (int dir = 0; dir < 8; ++dir)
 	{

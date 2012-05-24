@@ -1,5 +1,6 @@
 #include "NotEmptyRule.h"
 
+using namespace Rules;
 
 NotEmptyRule::NotEmptyRule(void)
 {

@@ -1,5 +1,6 @@
 #include "LastTaking.h"
 
+using namespace Rules;
 
 LastTaking::LastTaking(void)
 {

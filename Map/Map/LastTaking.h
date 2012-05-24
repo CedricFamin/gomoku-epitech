@@ -3,20 +3,22 @@
 
 #include "IRule.h"
 
-class LastTaking :
-	public IRule
+namespace Rules
 {
-public:
-	LastTaking(void);
-	virtual ~LastTaking(void);
+	class LastTaking : public IRule
+	{
+	public:
+		LastTaking(void);
+		virtual ~LastTaking(void);
 
-	virtual void enable();
-	virtual void disable();
-	virtual bool isEnable() const;
-	virtual bool execute(Referrer &, Goban::PION_TYPE, unsigned int, unsigned int);
+		virtual void enable();
+		virtual void disable();
+		virtual bool isEnable() const;
+		virtual bool execute(Referrer &, Goban::PION_TYPE, unsigned int, unsigned int);
 
-private:
-	bool _enable;
-};
+	private:
+		bool _enable;
+	};
+}
 
 #endif

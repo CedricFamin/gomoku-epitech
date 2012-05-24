@@ -5,20 +5,23 @@
 #include "Referrer.h"
 #include "IRule.h"
 
-class NotEmptyRule :public IRule
+namespace Rules
 {
-public:
-	NotEmptyRule(void);
-	virtual ~NotEmptyRule(void);
+	class NotEmptyRule :public IRule
+	{
+	public:
+		NotEmptyRule(void);
+		virtual ~NotEmptyRule(void);
 
-	virtual void enable();
-	virtual void disable();
-	virtual bool isEnable() const;
-	virtual bool execute(Referrer &, Goban::PION_TYPE, unsigned int, unsigned int);
+		virtual void enable();
+		virtual void disable();
+		virtual bool isEnable() const;
+		virtual bool execute(Referrer &, Goban::PION_TYPE, unsigned int, unsigned int);
 
-private:
-	bool _enable;
-};
+	private:
+		bool _enable;
+	};
+}
 
 #endif
 

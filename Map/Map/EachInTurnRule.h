@@ -5,20 +5,22 @@
 #include "Goban.h"
 #include "IRule.h"
 
-class EachInTurnRule : public IRule
+namespace Rules
 {
-public:
-	EachInTurnRule(void);
-	virtual ~EachInTurnRule(void);
+	class EachInTurnRule : public IRule
+	{
+	public:
+		EachInTurnRule(void);
+		virtual ~EachInTurnRule(void);
 
-	virtual void enable();
-	virtual void disable();
-	virtual bool isEnable() const;
-	virtual bool execute(Referrer &, Goban::PION_TYPE, unsigned int, unsigned int);
+		virtual void enable();
+		virtual void disable();
+		virtual bool isEnable() const;
+		virtual bool execute(Referrer &, Goban::PION_TYPE, unsigned int, unsigned int);
 
-private:
-	bool _enable;
-	Goban::PION_TYPE _lastPion;
-};
-
+	private:
+		bool _enable;
+		Goban::PION_TYPE _lastPion;
+	};
+}
 #endif

@@ -4,19 +4,22 @@
 #include "Goban.h"
 #include "IRule.h"
 
-class DoubleThree : public IRule
+namespace Rules
 {
-public:
-	DoubleThree(void);
-	virtual ~DoubleThree(void);
+	class DoubleThree : public IRule
+	{
+	public:
+		DoubleThree(void);
+		virtual ~DoubleThree(void);
 		
-	virtual void enable();
-	virtual void disable();
-	virtual bool isEnable() const;
-	virtual bool execute(Referrer &, Goban::PION_TYPE, unsigned int, unsigned int);
+		virtual void enable();
+		virtual void disable();
+		virtual bool isEnable() const;
+		virtual bool execute(Referrer &, Goban::PION_TYPE, unsigned int, unsigned int);
 
-private:
-	bool _enable;
-};
+	private:
+		bool _enable;
+	};
+}
 
 #endif

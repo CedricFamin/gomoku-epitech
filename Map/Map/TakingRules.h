@@ -5,22 +5,25 @@
 #include "Referrer.h"
 #include "IRule.h"
 
-class TakingRules : public IRule
+namespace Rules
 {
-public:
-	TakingRules(void);
-	virtual ~TakingRules(void);
+	class TakingRules : public IRule
+	{
+	public:
+		TakingRules(void);
+		virtual ~TakingRules(void);
 
-	virtual void enable();
-	virtual void disable();
-	virtual bool isEnable() const;
-	virtual bool execute(Referrer &, Goban::PION_TYPE, unsigned int, unsigned int);
+		virtual void enable();
+		virtual void disable();
+		virtual bool isEnable() const;
+		virtual bool execute(Referrer &, Goban::PION_TYPE, unsigned int, unsigned int);
 
-	int const * getCaptures() const;
+		int const * getCaptures() const;
 
-private:
-	bool _enable;
-	int  _capture[2];
-};
+	private:
+		bool _enable;
+		int  _capture[2];
+	};
+}
 
 #endif

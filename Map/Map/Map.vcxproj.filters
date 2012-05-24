@@ -62,9 +62,6 @@
     <ClInclude Include="Referrer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IRule.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="EachInTurnRule.h">
       <Filter>Header Files\Rules</Filter>
     </ClInclude>
@@ -88,6 +85,9 @@
     </ClInclude>
     <ClInclude Include="GobanIterator.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IRule.h">
+      <Filter>Header Files\Rules</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

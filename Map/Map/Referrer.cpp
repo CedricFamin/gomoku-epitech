@@ -20,7 +20,7 @@ bool Referrer::CanPlay(Goban::PION_TYPE pion, int x, int y)
 	if (this->_gameFinished)
 		return false;
 	std::for_each(this->_prePlayRules.begin(), this->_prePlayRules.end(),
-		[this, pion, x, y, &canPlay](IRule * rule)
+		[this, pion, x, y, &canPlay](Rules::IRule * rule)
 	{
 		if (rule->isEnable() && canPlay)
 			if (!rule->execute(*this, pion, x, y))
@@ -45,7 +45,7 @@ bool Referrer::Play()
 		this->_currentTurn.x,
 		this->_currentTurn.y);
 	std::for_each(this->_playRules.begin(), this->_playRules.end(),
-		[this](IRule * rule)
+		[this](Rules::IRule * rule)
 	{
 		if (rule->isEnable())
 			rule->execute(*this, this->_currentTurn.pion, this->_currentTurn.x, this->_currentTurn.y);
@@ -58,7 +58,7 @@ bool Referrer::AfterPlay()
 	bool finished = false;
 
 	std::for_each(this->_postPlayRules.begin(), this->_postPlayRules.end(),
-		[this, &finished](IRule * rule)
+		[this, &finished](Rules::IRule * rule)
 	{
 		if (rule->isEnable() && this->_playedTurns.size())
 			finished |= rule->execute(*this, this->_playedTurns.back().pion, this->_playedTurns.back().x, this->_playedTurns.back().y);
@@ -66,17 +66,17 @@ bool Referrer::AfterPlay()
 	return finished;
 }
 
-void Referrer::addPrePlayRule(IRule & rule)
+void Referrer::addPrePlayRule(Rules::IRule & rule)
 {
 	this->_prePlayRules.push_back(&rule);
 }
 
-void Referrer::addPlayRule(IRule & rule)
+void Referrer::addPlayRule(Rules::IRule & rule)
 {
 	this->_playRules.push_back(&rule);
 }
 
-void Referrer::addPostPlayRule(IRule & rule)
+void Referrer::addPostPlayRule(Rules::IRule & rule)
 {
 	this->_postPlayRules.push_back(&rule);
 }

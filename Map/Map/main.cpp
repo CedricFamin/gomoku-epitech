@@ -38,12 +38,14 @@ void print_case(unsigned long long int current)
 int main(int ac, char **av)
 {
 	Goban goban;
-	EachInTurnRule rule1;
-	NotEmptyRule rule2;
-	TakingRules rule3;
-	VictoryCapturesRule rule4(rule3);
-	VictoryAlignment rule5;
-	DoubleThree rule6;
+	Rules::EachInTurnRule rule1;
+	Rules::NotEmptyRule rule2;
+	Rules::TakingRules rule3;
+	Rules::VictoryCapturesRule rule4(rule3);
+	Rules::VictoryAlignment rule5;
+	Rules::DoubleThree rule6;
+
+	rule5.enableOptionalRule();
 
 	Referrer referrer(goban);
 	referrer.addPrePlayRule(rule1);
@@ -53,25 +55,63 @@ int main(int ac, char **av)
 	referrer.addPostPlayRule(rule5);
 	referrer.addPrePlayRule(rule6);
 
-	play(referrer, Goban::BLACK, 2, 1);
+	/*play(referrer, Goban::BLACK, 2, 1);
 	play(referrer, Goban::RED, 2, 3);
 	play(referrer, Goban::BLACK, 2, 2);
 	play(referrer, Goban::RED, 2, 0);
 	play(referrer, Goban::BLACK, 4, 4);
 	
+	goban.Putin(Goban::BLACK, 0, 4);
+	goban.Putin(Goban::RED, 0, 6);
 	goban.Putin(Goban::RED, 0, 5);
 	goban.Putin(Goban::RED, 1, 5);
 	goban.Putin(Goban::RED, 4, 5);
+	//goban.Putin(Goban::RED, 5, 5);
 	goban.Putin(Goban::RED, 3, 5);
-	play(referrer, Goban::RED, 2, 6);
+	play(referrer, Goban::RED, 2, 5);
 
 	//goban.Putin(Goban::RED, 0, 8);
-	goban.Putin(Goban::BLACK, 1, 11);
-	goban.Putin(Goban::BLACK, 2, 10);
+	goban.Putin(Goban::BLACK, 2, 9);
+	goban.Putin(Goban::BLACK, 1, 9);
 	goban.Putin(Goban::BLACK, 4, 9);
-	goban.Putin(Goban::BLACK, 4, 7);
+	//goban.Putin(Goban::BLACK, 4, 7);
 	play(referrer, Goban::BLACK, 4, 8);
-	
+	play(referrer, Goban::RED, 1, 7);
+	play(referrer, Goban::BLACK, 0, 7);*/
+
+	goban.Putin(Goban::RED, 8, 8);
+	goban.Putin(Goban::BLACK, 8, 7);
+	goban.Putin(Goban::BLACK, 8, 6);
+
+	goban.Putin(Goban::RED, 5, 8);
+	goban.Putin(Goban::BLACK, 6, 7);
+	goban.Putin(Goban::BLACK, 7, 6);
+
+	goban.Putin(Goban::RED, 5, 5);
+	goban.Putin(Goban::BLACK, 6, 5);
+	goban.Putin(Goban::BLACK, 7, 5);
+
+	goban.Putin(Goban::RED, 5, 2);
+	goban.Putin(Goban::BLACK, 6, 3);
+	goban.Putin(Goban::BLACK, 7, 4);
+
+	goban.Putin(Goban::RED, 8, 2);
+	goban.Putin(Goban::BLACK, 8, 3);
+	goban.Putin(Goban::BLACK, 8, 4);
+
+	goban.Putin(Goban::RED, 11, 2);
+	goban.Putin(Goban::BLACK, 10, 3);
+	goban.Putin(Goban::BLACK, 9, 4);
+
+	goban.Putin(Goban::RED, 11, 5);
+	goban.Putin(Goban::BLACK, 10, 5);
+	goban.Putin(Goban::BLACK, 9, 5);
+
+	goban.Putin(Goban::RED, 11, 8);
+	goban.Putin(Goban::BLACK, 10, 7);
+	goban.Putin(Goban::BLACK, 9, 6);
+	play(referrer, Goban::RED, 8, 5);
+
 	for (unsigned int y = 0; y < 19; y++)
 	{
 		for (unsigned int x = 0; x < 19; x++)
@@ -90,6 +130,7 @@ int main(int ac, char **av)
 		}
 		std::cout << std::endl;
 	}
+	std::cout << referrer.GameFinished() << " " << referrer.Winner() << std::endl;
 	system("pause");
 	return 0;
 }

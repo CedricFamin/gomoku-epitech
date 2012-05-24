@@ -5,20 +5,23 @@
 #include "IRule.h"
 #include "TakingRules.h"
 
-class VictoryCapturesRule : public IRule
+namespace Rules
 {
-public:
-	VictoryCapturesRule(TakingRules const &);
-	virtual ~VictoryCapturesRule(void);
+	class VictoryCapturesRule : public IRule
+	{
+	public:
+		VictoryCapturesRule(TakingRules const &);
+		virtual ~VictoryCapturesRule(void);
 
-	virtual void enable();
-	virtual void disable();
-	virtual bool isEnable() const;
-	virtual bool execute(Referrer &, Goban::PION_TYPE, unsigned int, unsigned int);
+		virtual void enable();
+		virtual void disable();
+		virtual bool isEnable() const;
+		virtual bool execute(Referrer &, Goban::PION_TYPE, unsigned int, unsigned int);
 
-private:
-	bool _enable;
-	TakingRules const & _takingRule;
-};
+	private:
+		bool _enable;
+		TakingRules const & _takingRule;
+	};
+}
 
 #endif

@@ -1,5 +1,6 @@
 #include "VictoryCapturesRule.h"
 
+using namespace Rules;
 
 VictoryCapturesRule::VictoryCapturesRule(TakingRules const & rule) : _takingRule(rule), _enable(true)
 {

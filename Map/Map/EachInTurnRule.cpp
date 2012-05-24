@@ -1,5 +1,6 @@
 #include "EachInTurnRule.h"
 
+using namespace Rules;
 
 EachInTurnRule::EachInTurnRule(void) : _enable(true)
 {
