@@ -48,7 +48,7 @@ int main(int ac, char **av)
 	rule5.enableOptionalRule();
 
 	Referrer referrer(goban);
-	referrer.addPrePlayRule(rule1);
+	//referrer.addPrePlayRule(rule1);
 	referrer.addPrePlayRule(rule2);
 	referrer.addPlayRule(rule3);
 	referrer.addPostPlayRule(rule4);
@@ -79,7 +79,7 @@ int main(int ac, char **av)
 	play(referrer, Goban::RED, 1, 7);
 	play(referrer, Goban::BLACK, 0, 7);*/
 
-	goban.Putin(Goban::RED, 8, 8);
+	/*goban.Putin(Goban::RED, 8, 8);
 	goban.Putin(Goban::BLACK, 8, 7);
 	goban.Putin(Goban::BLACK, 8, 6);
 
@@ -110,25 +110,37 @@ int main(int ac, char **av)
 	goban.Putin(Goban::RED, 11, 8);
 	goban.Putin(Goban::BLACK, 10, 7);
 	goban.Putin(Goban::BLACK, 9, 6);
-	play(referrer, Goban::RED, 8, 5);
-
-	for (unsigned int y = 0; y < 19; y++)
+	play(referrer, Goban::RED, 8, 5);*/
+	unsigned int x,  y;
+	/*goban.Putin(Goban::RED, 7, 6);
+	goban.Putin(Goban::RED, 8, 7);
+	goban.Putin(Goban::RED, 9, 8);
+	goban.Putin(Goban::RED, 12, 8);
+	play(referrer, Goban::RED, 10, 8);*/
+	while (!referrer.GameFinished())
 	{
-		for (unsigned int x = 0; x < 19; x++)
+		
+		std::cin >> x >> y;
+		play(referrer, Goban::RED, x, y);
+		//play(referrer, Goban::BLACK, x, y);
+		for (unsigned int y = 0; y < 19; y++)
 		{
-			switch (goban.GetMap()[y][x] & Goban::PIONMASK)
+			for (unsigned int x = 0; x < 19; x++)
 			{
-			case 0x1:
-				std::cout << "x ";
-				break;
-			case 0x3:
-				std::cout << "o ";
-				break;
-			default:
-				std::cout << ". ";
+				switch (goban.GetMap()[y][x] & Goban::PIONMASK)
+				{
+				case 0x1:
+					std::cout << "x ";
+					break;
+				case 0x3:
+					std::cout << "o ";
+					break;
+				default:
+					std::cout << ". ";
+				}
 			}
+			std::cout << std::endl;
 		}
-		std::cout << std::endl;
 	}
 	std::cout << referrer.GameFinished() << " " << referrer.Winner() << std::endl;
 	system("pause");

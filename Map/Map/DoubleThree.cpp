@@ -35,9 +35,9 @@ bool DoubleThree::execute(Referrer & r, Goban::PION_TYPE pion, unsigned int x, u
 {
 	int doublethree = 0;
 	Goban::Case cCase = r.getGoban().GetMap()[y][x] >> Goban::HEADERSIZE, subCase;
-	int double3move[7][2] = { {1, 2}, {-1, -2}, {1, -1}, {3, 2}, {-3, 2}, {1, 3}, {-1, -3} };
+	int double3move[9][2] = { {1, 2}, {-1, -2}, {1, -1}, {3, 2}, {-3, 2}, {1, 3}, {-1, -3}, {1, -2}, {2, -1} };
 	int direction[4][2] = { {0, -1}, {1,-1}, {1,0}, {1,1} };
-	unsigned long long int double3[7][2] = 
+	unsigned long long int double3[9][2] = 
 		{
 			{
 				pion | Pattern<1,3,0x3>::value, 
@@ -53,25 +53,33 @@ bool DoubleThree::execute(Referrer & r, Goban::PION_TYPE pion, unsigned int x, u
 			},
 			{
 				pion | Pattern<1,4,0x6>::value, 
-				0x3 | Pattern<1,4,0x6>::mask | (Pattern<0,1,0x1>::value << (Goban::PATTERNSIZE * 4)),
+				Pattern<1,4,0x6>::mask | (Pattern<0,1,0x1>::value << (Goban::PATTERNSIZE * 4)),
 			},
 			{
 				(pion | Pattern<1,4,0x6>::value) << (Goban::PATTERNSIZE * 4), 
-				Pattern<0,1,0x1>::value | ((0x3 | Pattern<1,4,0x6>::mask) << (Goban::PATTERNSIZE * 4)),
+				Pattern<0,1,0x1>::value | (Pattern<1,4,0x6>::mask << (Goban::PATTERNSIZE * 4)),
 			},
 			{
 				pion | Pattern<1,4,0x5>::value, 
-				0x3 | Pattern<1,4,0x5>::mask | (Pattern<0,1,0x1>::value << (Goban::PATTERNSIZE * 4)),
+				Pattern<1,4,0x5>::mask | (Pattern<0,1,0x1>::value << (Goban::PATTERNSIZE * 4)),
 			},
 			{
 				(pion | Pattern<1,4,0x5>::value) << (Goban::PATTERNSIZE * 4), 
-				Pattern<0,1,0x1>::value | ((0x3 | Pattern<1,4,0x5>::mask) << (Goban::PATTERNSIZE * 4)),
+				Pattern<0,1,0x1>::value | (Pattern<1,4,0x5>::mask << (Goban::PATTERNSIZE * 4)),
 			},
+			{
+				pion | Pattern<1,1,0x1>::value | ((pion | Pattern<1,2,0x2>::value) << (Goban::PATTERNSIZE * 4)), 
+				Pattern<1,1,0x1>::mask | (Pattern<1,2,0x2>::mask << (Goban::PATTERNSIZE * 4)),
+			},
+			{
+				pion | Pattern<1,2,0x2>::value | ((pion | Pattern<1,1,0x1>::value) << (Goban::PATTERNSIZE * 4)), 
+				Pattern<1,2,0x2>::mask | (Pattern<1,1,0x1>::mask << (Goban::PATTERNSIZE * 4)),
+			}
 	};
 
 	for (int i = 0; i < 5; ++i)
 	{
-		for (int j = 0; j < 7; ++j)
+		for (int j = 0; j < 9; ++j)
 		{
 			if ((cCase & double3[j][1]) == double3[j][0])
 			{
@@ -82,7 +90,7 @@ bool DoubleThree::execute(Referrer & r, Goban::PION_TYPE pion, unsigned int x, u
 					for (int d = 0; d < 5; ++d)
 					{
 						if (d != i)
-							for (int k = 0; k < 7; ++k)
+							for (int k = 0; k < 9; ++k)
 							{
 								if ((subCase & double3[k][1]) == double3[k][0])
 									return false;
