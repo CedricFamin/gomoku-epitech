@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/new/prefix1">
+        <file>goban.gif</file>
+        <file>pionNoir.png</file>
+        <file>pionBlanc.png</file>
+        <file>creation.png</file>
+    </qresource>
+</RCC>
