@@ -43,7 +43,7 @@ bool TakingRules::execute(Referrer & r, Goban::PION_TYPE pion, unsigned int x, u
 	};
 
 	Goban::Case cCase = r.getGoban().GetMap()[y][x] >> Goban::HEADERSIZE;
-	unsigned long long int capture, mask = Goban::PIONMASK | Pattern<0,3, 0x3>::mask;
+    unsigned long long int capture, mask = Goban::PIONMASK | Pattern<0,4, 0x3>::mask;
 	
 	capture = ((pion==Goban::RED) ? Goban::BLACK : Goban::RED) | Pattern<0,3, 0x3>::value;
 

@@ -26,7 +26,7 @@ bool VictoryCapturesRule::isEnable() const
 	return this->_enable;
 }
 
-bool VictoryCapturesRule::execute(Referrer & r, Goban::PION_TYPE pion, unsigned int x, unsigned int y)
+bool VictoryCapturesRule::execute(Referrer & r, Goban::PION_TYPE, unsigned int, unsigned int)
 {
 	if (this->_takingRule.getCaptures()[Goban::RED >> 1] >= 10 ||
 		this->_takingRule.getCaptures()[Goban::BLACK >> 1] >= 10)

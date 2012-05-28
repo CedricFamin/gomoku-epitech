@@ -26,7 +26,7 @@ bool LastTaking::isEnable() const
 	return this->_enable;
 }
 
-bool LastTaking::execute(Referrer & r, Goban::PION_TYPE pion, unsigned int x, unsigned int y)
+bool LastTaking::execute(Referrer &, Goban::PION_TYPE, unsigned int, unsigned int)
 {
 	return false;
 }

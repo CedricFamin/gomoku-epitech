@@ -12,7 +12,6 @@ QMAKE_CXXFLAGS += -std=c++0x
 
 SOURCES +=\
         mainwindow.cpp \
-    goban.cpp \
     main.cpp \
     TakingRules.cpp \
     VictoryAlignment.cpp \
@@ -24,10 +23,10 @@ SOURCES +=\
     Goban.cpp \
     EachInTurnRule.cpp \
     DoubleThree.cpp \
-    Finished.cpp
+    Finished.cpp \
+    qtgoban.cpp
 
 HEADERS  += mainwindow.h \
-    goban.h \
     Referrer.h \
     TakingRules.h \
     VictoryCapturesRule.h \
@@ -38,7 +37,8 @@ HEADERS  += mainwindow.h \
     LastTaking.h \
     EachInTurnRule.h \
     DoubleThree.h \
-    Finished.h
+    Finished.h \
+    qtgoban.h
 
 FORMS    += mainwindow.ui \
     Finished.ui

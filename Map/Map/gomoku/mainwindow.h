@@ -5,7 +5,7 @@
 #include <QMainWindow>
 #include <QPixmap>
 
-#include "goban.h"
+#include "qtgoban.h"
 
 namespace Ui {
 class MainWindow;

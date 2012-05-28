@@ -1,118 +1,124 @@
-#include "goban.h"
+#include "Goban.h"
 
-#include "EachInTurnRule.h"
-#include "DoubleThree.h"
-#include "NotEmptyRule.h"
-#include "TakingRules.h"
-#include "VictoryCapturesRule.h"
-#include "VictoryAlignment.h"
-#include "Finished.h"
+#include <iterator>
+#include "GobanIterator.h"
 
-GobanQt::GobanQt(QMainWindow *parent, QPixmap Image) :
-    QLabel(parent)
+#define MIN(x, y) ((x < y) ? x : y)
+
+Goban::Goban(unsigned int width, unsigned int height) : _width(width), _height(height)
 {
-    this->setPixmap(Image);
-    this->playerTurn = false;
-    unsigned int x = 1;
-    unsigned int y = 1;
-    unsigned short id = 0;
-    for (unsigned short i = 0; i < 19; ++i)
+    _map = new Case*[height];
+    for (unsigned int i = 0; i < height; i++)
     {
-        for (unsigned short j = 0; j < 19; ++j)
+        _map[i] = new Case[width];
+        for (unsigned int j = 0; j < width; j++)
         {
-            this->square[id].x = x;
-            this->square[id].y = y;
-            this->square[id].isEmpty = false;
-            this->square[id].rect = QRect(x, y, 18, 18);
-            this->square[id].image = new QLabel(this);
-            this->square[id].image->setMinimumHeight(18);
-            this->square[id].image->setMinimumWidth(18);
-            ++id;
-            x += 19;
+            _map[i][j] = 0;
         }
-        x = 1;
-        y += 19;
     }
-
-    Goban *  goban = new Goban();
-    this->referrer =  new Referrer(*goban);
-    this->referrer->addPrePlayRule(*(new Rules::EachInTurnRule()));
-    this->referrer->addPrePlayRule(*(new Rules::DoubleThree()));
-    this->referrer->addPrePlayRule(*(new Rules::NotEmptyRule()));
-    Rules::TakingRules * tkrule = new Rules::TakingRules();
-    this->referrer->addPlayRule(*tkrule);
-    this->referrer->addPostPlayRule(*(new Rules::VictoryCapturesRule(*tkrule)));
-    this->referrer->addPostPlayRule(*(new Rules::VictoryAlignment()));
 }
 
-GobanQt::~GobanQt()
+Goban::Case ** Goban::GetMap()
 {
-    for (unsigned short i = 0; i < 361; ++i)
-        delete this->square[i].image;
+    return this->_map;
 }
 
-void GobanQt::mousePressEvent(QMouseEvent* e)
+void Goban::update_pattern(unsigned int i, unsigned int j, int dir)
 {
-    Goban::PION_TYPE pion;
-    QString pionImg;
-    if (e->button() == Qt::LeftButton)
+    int moves[8][2] = {
+        { 0,-1}, { 1, -1}, { 1, 0}, { 1, 1},
+        {0, 1}, {-1, 1}, { -1,0}, { -1,-1}
+    };
+    bool beforeColor = false;
+    unsigned int color = 0, lx, ly;
+    int bitDecal = 8 + 7 * dir;
+
+    if (this->InBound(i, j) == false)
+        return ;
+    this->_map[j][i] &= ~(PATTERNMASK << bitDecal);
+    this->_map[j][i] |= (unsigned long long int)0x1 << (bitDecal + 2);
+    for (int dist = 1; dist <= 4; ++dist)
     {
-        if (!playerTurn)
+        lx = i + moves[dir][0] * dist;
+        ly = j + moves[dir][1] * dist;
+        if (this->InBound(lx, ly))
         {
-            pion = Goban::BLACK;
-            pionImg = ":/new/prefix1/pionNoir.png";
+            if (color && this->_map[ly][lx] & PIONMASK && color != (this->_map[ly][lx] & PIONMASK))
+            {
+                if (beforeColor)
+                    this->_map[j][i] &= ~((unsigned long long int)0x1 << (bitDecal + 2));
+                break;
+            }
+            if ((this->_map[ly][lx] & PIONMASK))
+            {
+                beforeColor = true;
+                color = this->_map[ly][lx] & PIONMASK;
+                this->_map[j][i] |= (((this->_map[ly][lx] & PIONMASK)) << bitDecal);
+                this->_map[j][i] |= ((unsigned long long int)0x1) << (bitDecal + 2 + dist);
+            }
+            else
+                beforeColor = false;
         }
         else
         {
-            pion = Goban::RED;
-            pionImg = ":/new/prefix1/pionBlanc.png";
+            this->_map[j][i] |= (unsigned long long int)0x1 << (bitDecal + 2);
+            break;
         }
-        for (unsigned short i = 0; i < 361; ++i)
-        {
-            if (this->square[i].y <= e->y() && this->square[i].x <= e->x() && (18 + this->square[i].x) >= e->x() && (this->square[i].y + 18) >= e->y())
-            {
-                if (!this->square[i].isEmpty)
-                {
-                    if (this->referrer->CanPlay(pion, i % 19, i / 19))
-                    {
-                        this->referrer->Play();
-                        this->square[i].isEmpty = true;
-                        this->square[i].image->setPixmap(QPixmap(pionImg));
-                        this->square[i].image->move(this->square[i].x, this->square[i].y);
-                        this->informations = i;
-                        playerTurn = !playerTurn;
-                        emit clicked();
-                        this->referrer->AfterPlay();
-                        break;
-                    }
-                }
-            }
-        }
+    }
 
-        this->coordinates = this->referrer->GetListOfTurn().front().captures;
-        std::for_each(this->coordinates.begin(), this->coordinates.end(),
-                [this](std::pair<unsigned int, unsigned int> & p)
-        {
-            unsigned int stoneToDelete = p.first + (p.second * 19);
-            this->square[stoneToDelete].isEmpty = true;
-            this->square[stoneToDelete].image->clear();
-        });
 
-        if (this->referrer->GameFinished())
-        {
-            pion = this->referrer->Winner();
-            Finished finish;
-            finish.exec();
-        }
+}
+
+void Goban::Putin(PION_TYPE type, unsigned int i, unsigned int j)
+{
+    int direction[8][2] = {
+        { 0,-1}, { 1, -1}, { 1, 0}, { 1, 1},
+        {0, 1}, {-1, 1}, { -1,0}, { -1,-1}
+    };
+    Case & cCase = this->_map[j][i];
+    cCase = (cCase & ~PIONMASK) | type;
+    for (int dir = 0; dir < 8; ++dir)
+    {
+        update_pattern(i - direction[dir][0] * 1, j - direction[dir][1] * 1, dir);
+        update_pattern(i - direction[dir][0] * 2, j - direction[dir][1] * 2, dir);
+        update_pattern(i - direction[dir][0] * 3, j - direction[dir][1] * 3, dir);
+        update_pattern(i - direction[dir][0] * 4, j - direction[dir][1] * 4, dir);
     }
 }
 
-int GobanQt::getInformation(void) const
+void Goban::subIn(unsigned int i, unsigned int j)
 {
-    return this->informations;
+    int direction[8][2] = {
+        { 0,-1}, { 1, -1}, { 1, 0}, { 1, 1},
+        {0, 1}, {-1, 1}, { -1,0}, { -1,-1}
+    };
+    Case & cCase = this->_map[j][i];
+
+    cCase = (cCase & ~PIONMASK);
+    for (int dir = 0; dir < 8; ++dir)
+    {
+        update_pattern(i - direction[dir][0] * 1, j - direction[dir][1] * 1, dir);
+        update_pattern(i - direction[dir][0] * 2, j - direction[dir][1] * 2, dir);
+        update_pattern(i - direction[dir][0] * 3, j - direction[dir][1] * 3, dir);
+        update_pattern(i - direction[dir][0] * 4, j - direction[dir][1] * 4, dir);
+    }
 }
 
-bool GobanQt::getPlayerTurn(void) const
+Goban::~Goban(void)
 {
-    return this->playerTurn;
+}
+
+unsigned int Goban::getWidth() const
+{
+    return this->_width;
+}
+
+unsigned int Goban::getHeight() const
+{
+    return this->_height;
+}
+
+bool Goban::InBound(unsigned int x, unsigned int y) const
+{
+    return x < this->_width && y < this->_height;
 }
