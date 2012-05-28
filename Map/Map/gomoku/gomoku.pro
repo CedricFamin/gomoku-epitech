@@ -13,32 +13,33 @@ QMAKE_CXXFLAGS += -std=c++0x
 SOURCES +=\
         mainwindow.cpp \
     main.cpp \
-    TakingRules.cpp \
-    VictoryAlignment.cpp \
-    VictoryCapturesRule.cpp \
-    NotEmptyRule.cpp \
     Referrer.cpp \
-    LastTaking.cpp \
     GobanIterator.cpp \
     Goban.cpp \
-    EachInTurnRule.cpp \
-    DoubleThree.cpp \
     Finished.cpp \
-    qtgoban.cpp
+    qtgoban.cpp \
+    Rules/DoubleThree.cpp \
+    Rules/VictoryCapturesRule.cpp \
+    Rules/VictoryAlignment.cpp \
+    Rules/TakingRules.cpp \
+    Rules/NotEmptyRule.cpp \
+    Rules/LastTaking.cpp \
+    Rules/EachInTurnRule.cpp
 
 HEADERS  += mainwindow.h \
     Referrer.h \
-    TakingRules.h \
-    VictoryCapturesRule.h \
-    VictoryAlignment.h \
-    NotEmptyRule.h \
     Goban.h \
-    IRule.h \
-    LastTaking.h \
-    EachInTurnRule.h \
-    DoubleThree.h \
     Finished.h \
-    qtgoban.h
+    qtgoban.h \
+    Rules/DoubleThree.h \
+    Rules/VictoryCapturesRule.h \
+    Rules/VictoryAlignment.h \
+    Rules/TakingRules.h \
+    Rules/NotEmptyRule.h \
+    Rules/LastTaking.h \
+    Rules/IRule.h \
+    Rules/EachInTurnRule.h \
+    GobanIterator.h
 
 FORMS    += mainwindow.ui \
     Finished.ui

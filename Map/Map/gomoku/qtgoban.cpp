@@ -77,7 +77,6 @@ void GobanQt::mousePressEvent(QMouseEvent* e)
                     this->square[i].isEmpty = true;
                     this->square[i].image->setPixmap(QPixmap(pionImg));
                     this->square[i].image->move(this->square[i].x, this->square[i].y);
-                    this->square[i].image->show();
                     this->informations = i;
                     playerTurn = !playerTurn;
                     emit clicked();
@@ -93,7 +92,7 @@ void GobanQt::mousePressEvent(QMouseEvent* e)
         {
             unsigned int stoneToDelete = p.first + (p.second * 19);
             this->square[stoneToDelete].isEmpty = true;
-            this->square[stoneToDelete].image->hide();
+            this->square[stoneToDelete].image->clear();
         });
 
         if (this->referrer->GameFinished())
