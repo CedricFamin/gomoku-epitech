@@ -54,8 +54,8 @@ bool TakingRules::execute(Referrer & r, Goban::PION_TYPE pion, unsigned int x, u
 		{
 			r.getGoban().subIn(x + direction[i][0], y + direction[i][1]);
 			r.getGoban().subIn(x + direction[i][0] * 2, y + direction[i][1] * 2);
-            r.GetListOfTurn().front().captures.push_back(std::make_pair(x + direction[i][0], y + direction[i][1]));
-            r.GetListOfTurn().front().captures.push_back(std::make_pair(x + direction[i][0] * 2, y + direction[i][1] * 2));
+            r.GetListOfTurn().back().captures.push_back(std::make_pair(x + direction[i][0], y + direction[i][1]));
+            r.GetListOfTurn().back().captures.push_back(std::make_pair(x + direction[i][0] * 2, y + direction[i][1] * 2));
 			this->_capture[pion >> 1] += 2;
 		}
 		cCase >>= Goban::PATTERNSIZE;

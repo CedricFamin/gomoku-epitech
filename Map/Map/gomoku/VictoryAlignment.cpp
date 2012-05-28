@@ -60,7 +60,7 @@ bool secure(Goban::Case const * const *map, unsigned int x, unsigned int y, int 
 	for (int i = 0; i < 5; ++i)
 	{
 		currentCase = map[y][x];
-		if ((currentCase & pion) != pion)
+        if ((currentCase & Goban::PIONMASK) != pion)
 		{
 			breaked = true;
 			return false;
@@ -84,7 +84,7 @@ bool VictoryAlignment::checkAlign(Referrer & r)
 {
 	bool victory = false;
 
-	std::remove_if(this->_aligments.begin(), this->_aligments.end(),
+    auto new_end = std::remove_if(this->_aligments.begin(), this->_aligments.end(),
 		[this, &r, &victory](Align & align)->bool
 	{
 		bool breaked = false;
@@ -100,6 +100,7 @@ bool VictoryAlignment::checkAlign(Referrer & r)
 		}
 		return breaked;
 	});
+    this->_aligments.erase(new_end, this->_aligments.end());
 	return victory;
 }
 
@@ -116,7 +117,7 @@ bool VictoryAlignment::execute(Referrer & r, Goban::PION_TYPE pion, unsigned int
 		0
 	};
 
-	if (this->checkAlign(r) == true)
+    if (this->checkAlign(r))
 		return true;
 	for (int dir = 0; dir < 4; dir++)
 	{

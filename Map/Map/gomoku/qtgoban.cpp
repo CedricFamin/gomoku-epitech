@@ -71,31 +71,29 @@ void GobanQt::mousePressEvent(QMouseEvent* e)
         {
             if (this->square[i].y <= e->y() && this->square[i].x <= e->x() && (18 + this->square[i].x) >= e->x() && (this->square[i].y + 18) >= e->y())
             {
-                if (!this->square[i].isEmpty)
+                if (this->referrer->CanPlay(pion, i % 19, i / 19))
                 {
-                    if (this->referrer->CanPlay(pion, i % 19, i / 19))
-                    {
-                        this->referrer->Play();
-                        this->square[i].isEmpty = true;
-                        this->square[i].image->setPixmap(QPixmap(pionImg));
-                        this->square[i].image->move(this->square[i].x, this->square[i].y);
-                        this->informations = i;
-                        playerTurn = !playerTurn;
-                        emit clicked();
-                        this->referrer->AfterPlay();
-                        break;
-                    }
+                    this->referrer->Play();
+                    this->square[i].isEmpty = true;
+                    this->square[i].image->setPixmap(QPixmap(pionImg));
+                    this->square[i].image->move(this->square[i].x, this->square[i].y);
+                    this->square[i].image->show();
+                    this->informations = i;
+                    playerTurn = !playerTurn;
+                    emit clicked();
+                    this->referrer->AfterPlay();
+                    break;
                 }
             }
         }
 
-        this->coordinates = this->referrer->GetListOfTurn().front().captures;
+        this->coordinates = this->referrer->GetListOfTurn().back().captures;
         std::for_each(this->coordinates.begin(), this->coordinates.end(),
                 [this](std::pair<unsigned int, unsigned int> & p)
         {
             unsigned int stoneToDelete = p.first + (p.second * 19);
             this->square[stoneToDelete].isEmpty = true;
-            this->square[stoneToDelete].image->clear();
+            this->square[stoneToDelete].image->hide();
         });
 
         if (this->referrer->GameFinished())

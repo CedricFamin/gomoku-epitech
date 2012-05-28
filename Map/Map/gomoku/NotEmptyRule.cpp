@@ -28,5 +28,5 @@ bool NotEmptyRule::isEnable() const
 
 bool NotEmptyRule::execute(Referrer & r, Goban::PION_TYPE, unsigned int x, unsigned int y)
 {
-	return ((r.getGoban().GetMap()[y][x] & Goban::PIONMASK) == 0);
+    return ((r.getGoban().GetMap()[y][x] & Goban::PIONMASK) == 0);
 }

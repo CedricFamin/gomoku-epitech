@@ -41,7 +41,7 @@ bool DoubleThree::execute(Referrer & r, Goban::PION_TYPE pion, unsigned int x, u
 		{
             {   // _oo-_
 				pion | Pattern<1,3,0x3>::value, 
-                Pattern<1,3,0x3>::mask | ((0x0 | Pattern<0,1,0x1>::value)  << (Goban::PATTERNSIZE * 4))
+                Pattern<1,3,0x3>::mask | (Pattern<0,1,0x1>::value  << (Goban::PATTERNSIZE * 4))
 			},
             {   // _-oo_
 				(pion | Pattern<1,3,0x3>::value) << (Goban::PATTERNSIZE * 4),
