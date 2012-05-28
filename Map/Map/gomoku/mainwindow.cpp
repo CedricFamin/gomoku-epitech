@@ -12,7 +12,6 @@ MainWindow::MainWindow(QWidget *parent) :
     label = new GobanQt(this, QString(":/new/prefix1/goban.gif"));
     ui->verticalLayout_2->insertWidget(0, label);
     label->show();
-    this->playerTurn = this->label->getPlayerTurn();
     connect(this->label, SIGNAL(clicked()), this, SLOT(checkTurn()));
     connect(ui->actionNew_game, SIGNAL(triggered()), this, SLOT(newGame()));
     connect(this->label, SIGNAL(clicked()), this, SLOT(displaySquareInformations()));

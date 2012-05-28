@@ -4,7 +4,7 @@
 #include <list>
 #include <utility>
 #include "Goban.h"
-#include "IRule.h"
+#include "Rules/IRule.h"
 
 class Referrer
 {

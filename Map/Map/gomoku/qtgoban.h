@@ -14,6 +14,7 @@
 #include <iostream>
 
 #include "Referrer.h"
+#include "iplayer.h"
 
 struct Square
 {
@@ -32,6 +33,8 @@ public:
     explicit GobanQt(QMainWindow *parent, QPixmap Image);
     bool getPlayerTurn(void) const;
     int getInformation(void) const;
+    void afterPlayer(void);
+    IPlayer * currentPlayer();
     ~GobanQt();
 protected:
     void mousePressEvent (QMouseEvent* e);
@@ -41,6 +44,7 @@ private:
     int informations;
     Referrer * referrer;
     std::list<std::pair<unsigned int, unsigned int> > coordinates;
+    IPlayer * _players[2];
 signals:
     void clicked();
 };
