@@ -1,3 +1,5 @@
+#include <functional>
+
 #include "qtgoban.h"
 
 #include "Rules/EachInTurnRule.h"
@@ -6,6 +8,7 @@
 #include "Rules/TakingRules.h"
 #include "Rules/VictoryCapturesRule.h"
 #include "Rules/VictoryAlignment.h"
+#include "AI/aiplayer.h"
 #include "Finished.h"
 #include "realplayer.h"
 
@@ -44,9 +47,9 @@ GobanQt::GobanQt(QMainWindow *parent, QPixmap Image) :
     this->referrer->addPlayRule(*tkrule);
     this->referrer->addPostPlayRule(*(new Rules::VictoryCapturesRule(*tkrule)));
     this->referrer->addPostPlayRule(*(new Rules::VictoryAlignment()));
-    this->_players[0] = new RealPlayer(Goban::BLACK);
+    this->_players[0] = new AIPlayer(Goban::BLACK);
     this->_players[1] = new RealPlayer(Goban::RED);
-    this->_players[0]->play(*this->referrer);
+    this->currentPlayer()->play(*this->referrer, std::tr1::bind(&GobanQt::PlayAt, this, std::tr1::placeholders::_1, std::tr1::placeholders::_2, std::tr1::placeholders::_3));
 
 }
 
@@ -56,32 +59,41 @@ GobanQt::~GobanQt()
         delete this->square[i].image;
 }
 
-void GobanQt::mousePressEvent(QMouseEvent* e)
+void GobanQt::PlayAt(Goban::PION_TYPE color, unsigned int x, unsigned int y)
 {
     QString pionImg;
+    int index = x + y * 19;
+    pionImg = (color == Goban::BLACK) ?":/new/prefix1/pionNoir.png" : ":/new/prefix1/pionBlanc.png";
+    this->square[index].isEmpty = true;
+    this->square[index].image->setPixmap(QPixmap(pionImg));
+    this->square[index].image->move(this->square[index].x, this->square[index].y);
+    playerTurn = !playerTurn;
+    emit clicked();
+    this->afterPlayer();
+}
+
+void GobanQt::mousePressEvent(QMouseEvent* e)
+{
+
     if (e->button() == Qt::LeftButton)
     {
-        pionImg = (this->currentPlayer()->getColor() == Goban::BLACK) ?":/new/prefix1/pionNoir.png" : ":/new/prefix1/pionBlanc.png";
         for (unsigned short i = 0; i < 361; ++i)
         {
             if (this->square[i].y <= e->y() && this->square[i].x <= e->x() && (18 + this->square[i].x) >= e->x() && (this->square[i].y + 18) >= e->y())
             {
                 if (this->referrer->CanPlay(this->currentPlayer()->getColor(), i % 19, i / 19))
                 {
+                    this->PlayAt(this->currentPlayer()->getColor(), i % 19, i/19);
                     this->referrer->Play();
-                    this->square[i].isEmpty = true;
-                    this->square[i].image->setPixmap(QPixmap(pionImg));
-                    this->square[i].image->move(this->square[i].x, this->square[i].y);
                     this->informations = i;
-                    playerTurn = !playerTurn;
-                    emit clicked();
                     this->referrer->AfterPlay();
+                    this->currentPlayer()->play(*this->referrer, std::tr1::bind(&GobanQt::PlayAt, this, std::tr1::placeholders::_1, std::tr1::placeholders::_2, std::tr1::placeholders::_3));
                     break;
                 }
+
             }
         }
-        this->afterPlayer();
-        this->currentPlayer()->play(*this->referrer);
+
     }
 }
 
@@ -89,14 +101,17 @@ void GobanQt::afterPlayer(void)
 {
     Goban::PION_TYPE pion;
 
-    this->coordinates = this->referrer->GetListOfTurn().back().captures;
-    std::for_each(this->coordinates.begin(), this->coordinates.end(),
-            [this](std::pair<unsigned int, unsigned int> & p)
+    if (this->referrer->GetListOfTurn().size())
     {
-        unsigned int stoneToDelete = p.first + (p.second * 19);
-        this->square[stoneToDelete].isEmpty = true;
-        this->square[stoneToDelete].image->clear();
-    });
+        this->coordinates = this->referrer->GetListOfTurn().back().captures;
+        std::for_each(this->coordinates.begin(), this->coordinates.end(),
+                [this](std::pair<unsigned int, unsigned int> & p)
+        {
+            unsigned int stoneToDelete = p.first + (p.second * 19);
+            this->square[stoneToDelete].isEmpty = true;
+            this->square[stoneToDelete].image->clear();
+        });
+    }
 
     if (this->referrer->GameFinished())
     {

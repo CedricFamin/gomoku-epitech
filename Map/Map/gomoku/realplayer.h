@@ -8,7 +8,7 @@ class RealPlayer : public IPlayer
 public:
     RealPlayer(Goban::PION_TYPE);
     virtual Goban::PION_TYPE getColor() const;
-    virtual void play(Referrer & r);
+    virtual void play(Referrer &, callback_type);
 
 protected:
 private:

@@ -9,7 +9,8 @@ Goban::PION_TYPE RealPlayer::getColor() const
     return this->_color;
 }
 
-void RealPlayer::play(Referrer &)
+void RealPlayer::play(Referrer &, callback_type callback)
 {
 
 }
+

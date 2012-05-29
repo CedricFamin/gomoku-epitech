@@ -15,8 +15,6 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this->label, SIGNAL(clicked()), this, SLOT(checkTurn()));
     connect(ui->actionNew_game, SIGNAL(triggered()), this, SLOT(newGame()));
     connect(this->label, SIGNAL(clicked()), this, SLOT(displaySquareInformations()));
-
-
 }
 
 MainWindow::~MainWindow()

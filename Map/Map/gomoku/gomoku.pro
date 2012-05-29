@@ -25,7 +25,8 @@ SOURCES +=\
     Rules/NotEmptyRule.cpp \
     Rules/LastTaking.cpp \
     Rules/EachInTurnRule.cpp \
-    realplayer.cpp
+    realplayer.cpp \
+    AI/aiplayer.cpp
 
 HEADERS  += mainwindow.h \
     Referrer.h \
@@ -42,7 +43,8 @@ HEADERS  += mainwindow.h \
     Rules/EachInTurnRule.h \
     GobanIterator.h \
     iplayer.h \
-    realplayer.h
+    realplayer.h \
+    AI/aiplayer.h
 
 FORMS    += mainwindow.ui \
     Finished.ui
