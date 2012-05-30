@@ -18,6 +18,13 @@ Goban::Goban(unsigned int width, unsigned int height) : _width(width), _height(h
     }
 }
 
+Goban::~Goban(void)
+{
+    for (unsigned int i = 0; i < this->_height; i++)
+        delete this->_map[i];
+    delete this->_map;
+}
+
 Goban::Case ** Goban::GetMap()
 {
     return this->_map;
@@ -65,8 +72,6 @@ void Goban::update_pattern(unsigned int i, unsigned int j, int dir)
             break;
         }
     }
-
-
 }
 
 void Goban::Putin(PION_TYPE type, unsigned int i, unsigned int j)
@@ -102,10 +107,6 @@ void Goban::subIn(unsigned int i, unsigned int j)
         update_pattern(i - direction[dir][0] * 3, j - direction[dir][1] * 3, dir);
         update_pattern(i - direction[dir][0] * 4, j - direction[dir][1] * 4, dir);
     }
-}
-
-Goban::~Goban(void)
-{
 }
 
 unsigned int Goban::getWidth() const

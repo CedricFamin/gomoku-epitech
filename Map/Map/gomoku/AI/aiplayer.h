@@ -13,6 +13,7 @@ public:
     virtual Goban::PION_TYPE getColor() const;
     virtual void play(Referrer & r, callback_type);
 private:
+    std::list<std::pair<unsigned int, unsigned int> > _getTurns(Goban & g, Referrer & r ,Goban::PION_TYPE pion);
     Goban::PION_TYPE _color;
 };
 

@@ -35,7 +35,7 @@ bool DoubleThree::execute(Referrer & r, Goban::PION_TYPE pion, unsigned int x, u
 {
 	int doublethree = 0;
 	Goban::Case cCase = r.getGoban().GetMap()[y][x] >> Goban::HEADERSIZE, subCase;
-	int double3move[9][2] = { {1, 2}, {-1, -2}, {1, -1}, {3, 2}, {-3, 2}, {1, 3}, {-1, -3}, {1, -2}, {2, -1} };
+    int double3move[9][2] = { {1, 2}, {-1, -2}, {1, -1}, {3, 2}, {-3, -2}, {1, 3}, {-1, -3}, {1, -2}, {2, -1} };
 	int direction[4][2] = { {0, -1}, {1,-1}, {1,0}, {1,1} };
 	unsigned long long int double3[9][2] = 
 		{
@@ -87,7 +87,9 @@ bool DoubleThree::execute(Referrer & r, Goban::PION_TYPE pion, unsigned int x, u
                     return false;
 				for (int caseIndex = 0; caseIndex < 2; ++caseIndex)
 				{
-					subCase = r.getGoban().GetMap()[double3move[j][caseIndex] * direction[i][1] + y][double3move[j][caseIndex] * direction[i][0] + x] >> Goban::HEADERSIZE;
+                    unsigned int lx = double3move[j][caseIndex] * direction[i][0] + x;
+                    unsigned int ly = double3move[j][caseIndex] * direction[i][1] + y;
+                    subCase = r.getGoban().GetMap()[ly][lx] >> Goban::HEADERSIZE;
                     for (int d = 0; d < 4; ++d)
 					{
 						if (d != i)

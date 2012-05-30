@@ -83,14 +83,14 @@ void GobanQt::mousePressEvent(QMouseEvent* e)
             {
                 if (this->referrer->CanPlay(this->currentPlayer()->getColor(), i % 19, i / 19))
                 {
-                    this->PlayAt(this->currentPlayer()->getColor(), i % 19, i/19);
+                    Goban::PION_TYPE pion = this->currentPlayer()->getColor();
                     this->referrer->Play();
                     this->informations = i;
                     this->referrer->AfterPlay();
+                    this->PlayAt(pion, i % 19, i/19);
                     this->currentPlayer()->play(*this->referrer, std::tr1::bind(&GobanQt::PlayAt, this, std::tr1::placeholders::_1, std::tr1::placeholders::_2, std::tr1::placeholders::_3));
                     break;
                 }
-
             }
         }
 
