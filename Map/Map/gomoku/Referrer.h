@@ -36,6 +36,7 @@ public:
     std::list<Turn> &GetListOfTurn();
 
 	Goban & getGoban() const;
+    void setGoban(Goban & g);
 
 protected:
 
@@ -45,7 +46,7 @@ private:
 	std::list<Rules::IRule*> _playRules;
 	std::list<Rules::IRule*> _postPlayRules;
 	std::list<Turn> _playedTurns;
-	Goban & _goban;
+    Goban * _goban;
 	Turn _currentTurn;
 	bool _gameFinished;
 	Goban::PION_TYPE _winner;

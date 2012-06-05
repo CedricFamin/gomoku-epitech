@@ -32,6 +32,7 @@ public:
     };
 
     Goban(unsigned int = 19, unsigned int = 19);
+    Goban(Goban const &);
     ~Goban(void);
 
     Case ** GetMap();

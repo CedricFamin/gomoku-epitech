@@ -3,7 +3,7 @@
 #include "Referrer.h"
 
 
-Referrer::Referrer(Goban & goban) : _goban(goban), _gameFinished(false)
+Referrer::Referrer(Goban & goban) : _goban(&goban), _gameFinished(false)
 {
 
 }
@@ -41,7 +41,7 @@ bool Referrer::Play()
 		return false;
 	this->_currentTurn.validate = false;
 	this->_playedTurns.push_back(this->_currentTurn);
-	this->_goban.Putin(this->_currentTurn.pion,
+    this->_goban->Putin(this->_currentTurn.pion,
 		this->_currentTurn.x,
 		this->_currentTurn.y);
 	std::for_each(this->_playRules.begin(), this->_playRules.end(),
@@ -83,7 +83,12 @@ void Referrer::addPostPlayRule(Rules::IRule & rule)
 
 Goban & Referrer::getGoban() const
 {
-	return this->_goban;
+    return *this->_goban;
+}
+
+void Referrer::setGoban(Goban & g)
+{
+    this->_goban = &g;
 }
 
 std::list<Referrer::Turn> & Referrer::GetListOfTurn()

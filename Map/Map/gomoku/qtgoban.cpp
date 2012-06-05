@@ -41,7 +41,7 @@ GobanQt::GobanQt(QMainWindow *parent, QPixmap Image) :
     Goban *  goban = new Goban();
     this->referrer =  new Referrer(*goban);
     this->referrer->addPrePlayRule(*(new Rules::EachInTurnRule()));
-    this->referrer->addPrePlayRule(*(new Rules::DoubleThree()));
+    //this->referrer->addPrePlayRule(*(new Rules::DoubleThree()));
     this->referrer->addPrePlayRule(*(new Rules::NotEmptyRule()));
     Rules::TakingRules * tkrule = new Rules::TakingRules();
     this->referrer->addPlayRule(*tkrule);
@@ -74,7 +74,6 @@ void GobanQt::PlayAt(Goban::PION_TYPE color, unsigned int x, unsigned int y)
 
 void GobanQt::mousePressEvent(QMouseEvent* e)
 {
-
     if (e->button() == Qt::LeftButton)
     {
         for (unsigned short i = 0; i < 361; ++i)

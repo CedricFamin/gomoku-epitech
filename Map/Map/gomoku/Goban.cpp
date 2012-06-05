@@ -18,6 +18,19 @@ Goban::Goban(unsigned int width, unsigned int height) : _width(width), _height(h
     }
 }
 
+Goban::Goban(Goban const & g) : _width(g._width), _height(g._height)
+{
+    _map = new Case*[_height];
+    for (unsigned int i = 0; i < _height; i++)
+    {
+        _map[i] = new Case[_width];
+        for (unsigned int j = 0; j < _width; j++)
+        {
+            _map[i][j] = g._map[i][j];
+        }
+    }
+}
+
 Goban::~Goban(void)
 {
     for (unsigned int i = 0; i < this->_height; i++)
