@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
     Referrer referrer(goban);
     Rules::TakingRules * tkrule = new Rules::TakingRules();
     IPlayer * currentPlayer;
-    bool closed = false;
+    bool affWon = false;
 
     referrer.addPrePlayRule(*(new Rules::EachInTurnRule()));
     //referrer.addPrePlayRule(*(new Rules::DoubleThree()));
@@ -47,15 +47,16 @@ int main(int argc, char *argv[])
         {
             auto coordinates = referrer.GetListOfTurn().back().captures;
             std::for_each(coordinates.begin(), coordinates.end(),
-                    [&uiGoban](std::pair<unsigned int, unsigned int> & p)
+            [&uiGoban](std::pair<unsigned int, unsigned int> & p)
             {
                           uiGoban.deleteStoneAt(p.first, p.second);
             });
         }
-        if (referrer.GameFinished())
+        if (referrer.GameFinished() && !affWon)
         {
             Finished finish;
             finish.exec();
+            affWon = true;
         }
         Sleep(100);
     }

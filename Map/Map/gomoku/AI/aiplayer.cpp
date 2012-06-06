@@ -130,15 +130,36 @@ int AIPlayer::alphabeta(Move & last, Goban & g, unsigned int depth, int alpha, i
     return best;
 }
 
-std::list<AIPlayer::Move> AIPlayer::_getTurns(Goban & g, Move & last ,Goban::PION_TYPE pion)
+std::list<AIPlayer::Move> AIPlayer::_getTurns(Goban & g, Move & last ,Goban::PION_TYPE)
 {
-    const int direction[8][2] = {
-            { 0,-1}, { 1, -1}, { 1, 0}, { 1, 1},
-            {0, 1}, {-1, 1}, { -1,0}, { -1,-1}
+    const int moves[4][2] = {
+            { 1, 0}, { 0, 1}, {-1, 0}, {0, -1}
         };
 
     std::list<Move> possiblesTurns;
+    int width = 0;
+    int lx = last.first;
+    int ly = last.second;
 
+    for (int i = 0; i < 4; ++i)
+    {
+        width += 2;
+        lx -= 1;
+        ly -= 1;
+        if (g.InBound(lx, ly) && (g.GetMap()[ly][lx] & Goban::PIONMASK) == 0)
+            possiblesTurns.push_front(std::make_pair(lx, ly));
+        for (int j = 0; j < 4; ++j)
+        {
+            for (int y = 0; y < width; ++y)
+            {
+                lx += moves[j][0];
+                ly += moves[j][1];
+                if (g.InBound(lx, ly) && (g.GetMap()[ly][lx] & Goban::PIONMASK) == 0)
+                    possiblesTurns.push_front(std::make_pair(lx, ly));
+            }
+        }
+    }
+/*
     for (int i = 0; i < 8; ++i)
     {
         for (int j = 1; j < 5; ++j)
@@ -148,6 +169,6 @@ std::list<AIPlayer::Move> AIPlayer::_getTurns(Goban & g, Move & last ,Goban::PIO
             if (g.InBound(lx, ly) && (g.GetMap()[ly][lx] & Goban::PIONMASK) == 0)
                 possiblesTurns.push_front(std::make_pair(lx, ly));
         }
-    }
+    }*/
     return possiblesTurns;
 }
