@@ -18,11 +18,17 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    bool IsClosed() const;
+    GobanQt & getGoban();
+
+protected:
+    void closeEvent(QCloseEvent* event);
     
 private:
     Ui::MainWindow *ui;
     GobanQt *label;
     bool playerTurn;
+    bool closed;
 
 private slots:
     void checkTurn();

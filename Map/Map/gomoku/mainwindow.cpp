@@ -15,6 +15,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this->label, SIGNAL(clicked()), this, SLOT(checkTurn()));
     connect(ui->actionNew_game, SIGNAL(triggered()), this, SLOT(newGame()));
     connect(this->label, SIGNAL(clicked()), this, SLOT(displaySquareInformations()));
+    closed = false;
 }
 
 MainWindow::~MainWindow()
@@ -44,4 +45,19 @@ void MainWindow::displaySquareInformations()
 void MainWindow::newGame()
 {
 
+}
+
+void MainWindow::closeEvent(QCloseEvent* event) {
+    event->accept();
+    closed = true;
+}
+
+bool MainWindow::IsClosed() const
+{
+    return this->closed;
+}
+
+GobanQt & MainWindow::getGoban()
+{
+    return *this->label;
 }

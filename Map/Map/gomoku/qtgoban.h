@@ -35,7 +35,9 @@ public:
     int getInformation(void) const;
     void PlayAt(Goban::PION_TYPE color, unsigned int x, unsigned int y);
     void afterPlayer(void);
-    IPlayer* currentPlayer();
+    IPlayer* currentPlayer(int turn);
+    std::pair<int, int> move;
+    void deleteStoneAt(unsigned int x, unsigned int y);
     ~GobanQt();
 protected:
     void mousePressEvent (QMouseEvent* e);

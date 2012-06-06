@@ -19,6 +19,8 @@ bool Referrer::CanPlay(Goban::PION_TYPE pion, int x, int y)
 	
 	if (this->_gameFinished)
 		return false;
+    if (!_goban->InBound(x, y))
+        return false;
 	std::for_each(this->_prePlayRules.begin(), this->_prePlayRules.end(),
 		[this, pion, x, y, &canPlay](Rules::IRule * rule)
 	{
