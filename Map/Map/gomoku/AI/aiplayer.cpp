@@ -51,42 +51,43 @@ int countBit(unsigned long long int value, int max)
 
 int eval(Goban & g, Goban::PION_TYPE pion)
 {
+    Goban::PION_TYPE currentPion;
     Goban::Case ** map = g.GetMap();
     unsigned long long int current;
-    int score;
+    int score, value;
     for (unsigned int x = 0; x < g.getWidth(); ++x)
     {
         for (unsigned int y = 0; y < g.getHeight(); ++y)
         {
             current = map[y][x];
-            if ((current & Goban::PIONMASK) != pion)
+            value = 0;
+            currentPion = (Goban::PION_TYPE)(current & Goban::PIONMASK);
+            if (currentPion == 0)
                 continue;
             current >>= Goban::COLORSIZE;
             for (unsigned int d = 0; d < 8; ++d)
             {
-                if ((current & Goban::PIONMASK) == pion)
+                if ((current & Goban::PIONMASK) != currentPion)
+                    continue;
+                switch (countBit(current >> Goban::COLORSIZE >> 1, 4))
                 {
-                    switch (countBit(current >> Goban::COLORSIZE >> 1, 4))
-                    {
-                    case 4:
-                        score += 900;
-                        break;
-                    case 3:
-                        score += 90;
-                        break;
-                    case 2:
-                        score += 9;
-                        break;
-                    case 1:
-                        score += 8;
-                        break;
-                    default:
-                        score += 0;
-                        break;
-                    }
+                case 4:
+                    value += 810;
+                case 3:
+                    value += 80;
+                case 2:
+                    value += 1;
+                case 1:
+                    value += 8;
+                default:
+                    value += 0;
                 }
                 current >>= Goban::PATTERNSIZE;
             }
+            if (currentPion != pion)
+               0;//score -= value * 10;
+            else
+               score += value;
         }
     }
     return score;
