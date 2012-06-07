@@ -41,7 +41,8 @@ int main(int argc, char *argv[])
         currentPlayer = uiGoban.currentPlayer(referrer.GetListOfTurn().size());
         if (app.hasPendingEvents())
             app.processEvents();
-        currentPlayer->play(referrer, std::tr1::bind(&GobanQt::PlayAt, &uiGoban, std::tr1::placeholders::_1, std::tr1::placeholders::_2, std::tr1::placeholders::_3));
+        if (referrer.GameFinished() == false)
+            currentPlayer->play(referrer, std::tr1::bind(&GobanQt::PlayAt, &uiGoban, std::tr1::placeholders::_1, std::tr1::placeholders::_2, std::tr1::placeholders::_3));
 
         if (referrer.GetListOfTurn().size())
         {
@@ -49,7 +50,7 @@ int main(int argc, char *argv[])
             std::for_each(coordinates.begin(), coordinates.end(),
             [&uiGoban](std::pair<unsigned int, unsigned int> & p)
             {
-                          uiGoban.deleteStoneAt(p.first, p.second);
+                uiGoban.deleteStoneAt(p.first, p.second);
             });
         }
         if (referrer.GameFinished() && !affWon)
@@ -58,7 +59,7 @@ int main(int argc, char *argv[])
             finish.exec();
             affWon = true;
         }
-        Sleep(100);
+        //Sleep(100);
     }
     app.exit();
     return 0;

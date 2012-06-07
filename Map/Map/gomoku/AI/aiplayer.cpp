@@ -52,6 +52,7 @@ AIPlayer::Move AIPlayer::alphabeta(Move & last, Goban & g)
         workers.push_back(new AlphaBetaThreading(g, m, this->_color));
         workers.back()->start();
     });
+qDebug() << workers.size();
     std::for_each(workers.begin(), workers.end(),
     [&bestMove, &bestScore](AlphaBetaThreading* worker)
     {

@@ -25,12 +25,12 @@ int eval(Goban & g, Goban::PION_TYPE pion)
             current = map[y][x];
             value = 0;
             currentPion = (Goban::PION_TYPE)(current & Goban::PIONMASK);
-            if (currentPion != pion)
+            if (currentPion == 0)
                 continue;
             current >>= Goban::HEADERSIZE;
             for (unsigned int d = 0; d < 8; ++d)
             {
-                if ((current & Goban::PIONMASK) == currentPion)
+                //if ((current & Goban::PIONMASK) == currentPion)
                 {
                     switch (countBit(current >> Goban::COLORSIZE >> 1, 4))
                     {
@@ -43,7 +43,10 @@ int eval(Goban & g, Goban::PION_TYPE pion)
                 }
                 current >>= Goban::PATTERNSIZE;
             }
-            score += value;
+            if (current == pion)
+                score += value;
+            else
+                score -= value;
         }
     }
     return score;
@@ -60,7 +63,7 @@ std::list<Goban::Move> _getTurns(Goban & g,Goban::Move & last , Goban::PION_TYPE
     int lx = last.first;
     int ly = last.second;
 
-    for (int i = 0; i < 3; ++i)
+    for (int i = 0; i < 2; ++i)
     {
         width += 2;
         lx -= 1;
@@ -87,7 +90,7 @@ AlphaBetaThreading::AlphaBetaThreading(Goban & g, const Goban::Move & m, Goban::
 
 void AlphaBetaThreading::run()
 {
-    this->_score = this->alphabeta(this->_move, this->_goban, 2,
+    this->_score = this->alphabeta(this->_move, this->_goban, 3,
                             std::numeric_limits<int>::min() + 1, std::numeric_limits<int>::max(), this->_pion);
 }
 
