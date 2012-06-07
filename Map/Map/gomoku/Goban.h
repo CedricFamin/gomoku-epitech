@@ -9,6 +9,7 @@ class Goban
 {
 public:
     typedef long long int Case;
+    typedef std::pair<unsigned int, unsigned int> Move;
     static const unsigned long long int PIONMASK = 0x3;
     static const unsigned long long int PATTERNMASK = 0x7F;
     static const unsigned int HEADERSIZE = 8;

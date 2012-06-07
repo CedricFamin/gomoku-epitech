@@ -13,7 +13,7 @@ public:
     AIPlayer(Goban::PION_TYPE);
     virtual Goban::PION_TYPE getColor() const;
     virtual void play(Referrer & r, callback_type);
-    int alphabeta(Move & last, Goban &g, unsigned int depth, int alpha, int beta, Goban::PION_TYPE pion, Move *move);
+    Move AIPlayer::alphabeta(Move & last, Goban & g);
 private:
     std::list<std::pair<unsigned int, unsigned int> > _getTurns(Goban & g, Move & last ,Goban::PION_TYPE pion);
     Goban::PION_TYPE _color;

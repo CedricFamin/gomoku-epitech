@@ -27,7 +27,8 @@ SOURCES +=\
     Rules/EachInTurnRule.cpp \
     realplayer.cpp \
     AI/aiplayer.cpp \
-    connect_functor_helper.cpp
+    connect_functor_helper.cpp \
+    AI/alphabetathreading.cpp
 
 HEADERS  += mainwindow.h \
     Referrer.h \
@@ -46,7 +47,8 @@ HEADERS  += mainwindow.h \
     iplayer.h \
     realplayer.h \
     AI/aiplayer.h \
-    connect_functor_helper.h
+    connect_functor_helper.h \
+    AI/alphabetathreading.h
 
 FORMS    += mainwindow.ui \
     Finished.ui

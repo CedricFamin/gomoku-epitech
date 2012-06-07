@@ -4,6 +4,7 @@
 
 #include <time.h>
 #include <QDebug>
+#include "alphabetathreading.h"
 
 #include "aiplayer.h"
 
@@ -17,8 +18,6 @@ Goban::PION_TYPE AIPlayer::getColor() const
     return this->_color;
 }
 
-
-
 void AIPlayer::play(Referrer & r, callback_type callback)
 {
     Move move;
@@ -31,7 +30,7 @@ void AIPlayer::play(Referrer & r, callback_type callback)
     {
         move.first = r.GetListOfTurn().back().x;
         move.second = r.GetListOfTurn().back().y;
-        this->alphabeta(move, r.getGoban(), 0, std::numeric_limits<int>::min() + 1, std::numeric_limits<int>::max(), this->_color, &move);
+        move = this->alphabeta(move, r.getGoban());
     }
     if (r.CanPlay(this->getColor(), move.first, move.second))
     {
@@ -41,92 +40,34 @@ void AIPlayer::play(Referrer & r, callback_type callback)
     }
 }
 
-int countBit(unsigned long long int value, int max)
+AIPlayer::Move AIPlayer::alphabeta(Move & last, Goban & g)
 {
-    int count = 0;
-    for (int i = 0; i < max; ++i)
-    {
-        count += value & 1;
-        value >>= 1;
-    }
-    return count;
-}
-
-int eval(Goban & g, Goban::PION_TYPE pion)
-{
-    Goban::PION_TYPE currentPion;
-    Goban::Case ** map = g.GetMap();
-    unsigned long long int current;
-    int score = 0, value;
-    for (unsigned int x = 0; x < g.getWidth(); ++x)
-    {
-        for (unsigned int y = 0; y < g.getHeight(); ++y)
-        {
-            current = map[y][x];
-            value = 0;
-            currentPion = (Goban::PION_TYPE)(current & Goban::PIONMASK);
-            if (currentPion != pion)
-                continue;
-            current >>= Goban::HEADERSIZE;
-            for (unsigned int d = 0; d < 8; ++d)
-            {
-                if ((current & Goban::PIONMASK) == currentPion)
-                {
-                    switch (countBit(current >> Goban::COLORSIZE >> 1, 4))
-                    {
-                    case 4:  value += 810;
-                    case 3:  value += 81;
-                    case 2:  value += 8;
-                    case 1:  value += 1;
-                    default: value += 0;
-                    }
-                }
-                current >>= Goban::PATTERNSIZE;
-            }
-            score += value;
-        }
-    }
-    return score;
-}
-
-int AIPlayer::alphabeta(Move & last, Goban & g, unsigned int depth, int alpha, int beta, Goban::PION_TYPE pion, Move * move = 0)
-{
-    if (depth == 2)
-    {
-        return eval(g, pion);
-    }
-    bool stop = false;
-    int best = std::numeric_limits<int>::min() + 1;
-    std::list<Move> turns = _getTurns(g, last, pion);
+    Move bestMove;
+    int bestScore = std::numeric_limits<int>::min();
+    std::list<Move> turns = _getTurns(g, last, this->_color);
+    std::list<AlphaBetaThreading*> workers;
     std::for_each(turns.begin(), turns.end(),
-    [this, &best, &g, depth, &alpha, &beta, pion, &stop, &move](Move & coord)
+    [&g, &workers, this](Move & m)
     {
-        if (stop)
-           return ;
-        Goban sun = g;
-        int value;
-
-        sun.Putin(pion, coord.first, coord.second);
-        value = -alphabeta(coord, sun, depth + 1, -beta, -alpha, (pion == Goban::BLACK) ? Goban::RED: Goban::BLACK);
-        if (value > best)
-        {
-            best = value;
-            if (best > alpha)
-            {
-                if (move)
-                {
-                    move->first = coord.first;
-                    move->second = coord.second;
-                }
-                alpha = best;
-                if (alpha > beta)
-                {
-                    stop = true;
-                }
-            }
-        }
+        workers.push_back(new AlphaBetaThreading(g, m, this->_color));
+        workers.back()->start();
     });
-    return best;
+    std::for_each(workers.begin(), workers.end(),
+    [&bestMove, &bestScore](AlphaBetaThreading* worker)
+    {
+        int score;
+        worker->wait();
+        score = worker->getScore();
+        if (score > bestScore)
+        {
+            bestScore = score;
+            bestMove.first = worker->getMove().first;
+            bestMove.second = worker->getMove().second;
+        }
+        delete worker;
+    });
+
+    return bestMove;
 }
 
 std::list<AIPlayer::Move> AIPlayer::_getTurns(Goban & g, Move & last ,Goban::PION_TYPE)
