@@ -10,20 +10,13 @@ class Goban
 public:
     typedef long long int Case;
     typedef std::pair<unsigned int, unsigned int> Move;
-    static const unsigned long long int PIONMASK = 0x3;
-    static const unsigned long long int PATTERNMASK = 0x7F;
-    static const unsigned int HEADERSIZE = 8;
-    static const unsigned int PATTERNSIZE = 7;
+    static const long long int PIONMASK = 0x3;
+    static const long long int PATTERNMASK = 0xF;
+    static const unsigned int HEADERSIZE = 2;
+    static const unsigned int PATTERNSIZE = 4;
     static const unsigned int COLORSIZE = 2;
     static const unsigned int SAFESIZE = 1;
     static const unsigned int CONTENTSIZE = 4;
-    static const unsigned long long int SUITED1 = 0x1;
-    static const unsigned long long int SUITED2 = 0x3;
-    static const unsigned long long int SUITED3 = 0x7;
-    static const unsigned long long int SUITED4 = 0xF;
-    static const unsigned long long int PA11000 = (0x1 | (Goban::SUITED1 << Goban::SAFESIZE) << Goban::COLORSIZE);
-    static const unsigned long long int PA10110 = (0x1 | (Goban::SUITED2 << (Goban::SAFESIZE + 1) ) << Goban::COLORSIZE);
-    static const unsigned long long int PA11100 = (0x1 | (Goban::SUITED2 << Goban::SAFESIZE) << Goban::COLORSIZE);
 
     enum PION_TYPE
     {

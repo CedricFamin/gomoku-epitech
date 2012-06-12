@@ -1,4 +1,5 @@
 #include <limits>
+#include <QDebug>
 #include "alphabetathreading.h"
 
 int countBit(unsigned long long int value, int max)
@@ -14,6 +15,7 @@ int countBit(unsigned long long int value, int max)
 
 int eval(Goban & g, Goban::PION_TYPE pion)
 {
+    return 0;
     Goban::PION_TYPE currentPion;
     Goban::Case ** map = g.GetMap();
     unsigned long long int current;
@@ -25,30 +27,41 @@ int eval(Goban & g, Goban::PION_TYPE pion)
             current = map[y][x];
             value = 0;
             currentPion = (Goban::PION_TYPE)(current & Goban::PIONMASK);
-            if (currentPion == 0)
+            if (currentPion != 0)
                 continue;
             current >>= Goban::HEADERSIZE;
+            if (!current)
+                continue;
             for (unsigned int d = 0; d < 8; ++d)
             {
-                //if ((current & Goban::PIONMASK) == currentPion)
+                if ((current & Goban::PATTERNMASK))
                 {
-                    switch (countBit(current >> Goban::COLORSIZE >> 1, 4))
+                    if ((current & Goban::PIONMASK) == pion)
                     {
-                    case 4:  value += 810;
-                    case 3:  value += 81;
-                    case 2:  value += 8;
-                    case 1:  value += 1;
-                    default: value += 0;
+                        switch (countBit(current >> Goban::COLORSIZE >> 1, 4))
+                        {
+                        case 4:  score += 810;
+                        case 3:  score += 81;
+                        case 2:  score += 8;
+                        default: score += 0;
+                        }
+                    }
+                    else
+                    {
+                        switch (countBit(current >> Goban::COLORSIZE >> 1, 4))
+                        {
+                        case 4:  score -= 810;
+                        case 3:  score -= 81;
+                        case 2:  score -= 8;
+                        default: score += 0;
+                        }
                     }
                 }
                 current >>= Goban::PATTERNSIZE;
             }
-            if (current == pion)
-                score += value;
-            else
-                score -= value;
         }
     }
+    qDebug() << score;
     return score;
 }
 
@@ -63,11 +76,13 @@ std::list<Goban::Move> _getTurns(Goban & g,Goban::Move & last , Goban::PION_TYPE
     int lx = last.first;
     int ly = last.second;
 
-    for (int i = 0; i < 2; ++i)
+    for (int i = 0; i < 1; ++i)
     {
         width += 2;
         lx -= 1;
         ly -= 1;
+        if (g.InBound(lx, ly) && (g.GetMap()[ly][lx] & Goban::PIONMASK) == 0)
+            possiblesTurns.push_back(std::make_pair(lx, ly));
         for (int j = 0; j < 4; ++j)
         {
             for (int y = 0; y < width; ++y)
@@ -90,26 +105,32 @@ AlphaBetaThreading::AlphaBetaThreading(Goban & g, const Goban::Move & m, Goban::
 
 void AlphaBetaThreading::run()
 {
-    this->_score = this->alphabeta(this->_move, this->_goban, 3,
-                            std::numeric_limits<int>::min() + 1, std::numeric_limits<int>::max(), this->_pion);
+    this->_goban.Putin(this->_pion, this->_move.first, this->_move.second);
+    this->_moveList = _getTurns(this->_goban, this->_move, this->_pion);
+    this->_score = this->alphabeta(this->_move, this->_goban, 6,
+                                   std::numeric_limits<int>::min() + 1, std::numeric_limits<int>::max(),
+                                   (this->_pion == Goban::BLACK) ? Goban::RED: Goban::BLACK);
 }
 
 int AlphaBetaThreading::alphabeta(Goban::Move & last, Goban & g, int depth, int alpha, int beta, Goban::PION_TYPE pion)
 {
+    static int i = 0;
+    i++;
     if (depth == 0)
+    {
         return eval(g, pion);
+    }
     bool stop = false;
     int best = std::numeric_limits<int>::min() + 1;
-    std::list<Goban::Move> turns = _getTurns(g, last, pion);
+    std::list<Goban::Move> turns = this->_moveList;
     std::for_each(turns.begin(), turns.end(),
     [this, &best, &g, depth, &alpha, &beta, pion, &stop](Goban::Move & coord)
     {
-        if (stop)
-           return ;
-        int value;
+        if (stop) return ;
+        int value = 0;
         g.Putin(pion, coord.first, coord.second);
         value = -alphabeta(coord, g, depth - 1, -beta, -alpha, (pion == Goban::BLACK) ? Goban::RED: Goban::BLACK);
-        g.subIn(coord.first, coord.second);
+		g.subIn(coord.first, coord.second);
         if (value > best)
         {
             best = value;

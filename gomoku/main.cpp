@@ -15,6 +15,62 @@
 #include "qtgoban.h"
 #include "Finished.h"
 
+/*class Game : public QThread
+{
+public:
+    Game(GobanQt & gobanUI) : _gobanUI(gobanUI), _referrer(_goban), _victoryCapture(_takingRule)
+    {
+        _referrer.addPrePlayRule(_notEmpty);
+        _referrer.addPrePlayRule(_eitr);
+        _referrer.addPrePlayRule(_double3);
+        _referrer.addPlayRule(_takingRule);
+        _referrer.addPostPlayRule(_victoryCapture);
+        _referrer.addPostPlayRule(_victoryAlignment);
+    }
+
+    void run()
+    {
+        IPlayer * currentPlayer;
+        bool affWon = false;
+
+        while (1)
+        {
+            currentPlayer = this->_gobanUI.currentPlayer(this->_referrer.GetListOfTurn().size());
+            if (this->_referrer.GameFinished() == false)
+                currentPlayer->play(this->_referrer, std::tr1::bind(&GobanQt::PlayAt, &this->_gobanUI, std::tr1::placeholders::_1, std::tr1::placeholders::_2, std::tr1::placeholders::_3));
+
+            if (this->_referrer.GetListOfTurn().size())
+            {
+                auto coordinates = this->_referrer.GetListOfTurn().back().captures;
+                std::for_each(coordinates.begin(), coordinates.end(),
+                [this](std::pair<unsigned int, unsigned int> & p)
+                {
+                    _gobanUI.deleteStoneAt(p.first, p.second);
+                });
+            }
+            if (this->_referrer.GameFinished() && !affWon)
+            {
+                Finished finish;
+                finish.exec();
+                affWon = true;
+            }
+            Sleep(100);
+        }
+    }
+
+private:
+    GobanQt & _gobanUI;
+    Goban _goban;
+    Rules::EachInTurnRule _eitr;
+    Rules::DoubleThree _double3;
+    Rules::NotEmptyRule _notEmpty;
+    Rules::TakingRules _takingRule;
+    Rules::VictoryCapturesRule _victoryCapture;
+    Rules::VictoryAlignment _victoryAlignment;
+    Referrer _referrer;
+
+};*/
+
 
 int main(int argc, char *argv[])
 {
@@ -29,7 +85,7 @@ int main(int argc, char *argv[])
     bool affWon = false;
 
     referrer.addPrePlayRule(*(new Rules::EachInTurnRule()));
-    //referrer.addPrePlayRule(*(new Rules::DoubleThree()));
+    referrer.addPrePlayRule(*(new Rules::DoubleThree()));
     referrer.addPrePlayRule(*(new Rules::NotEmptyRule()));
     referrer.addPlayRule(*tkrule);
     referrer.addPostPlayRule(*(new Rules::VictoryCapturesRule(*tkrule)));
@@ -59,7 +115,7 @@ int main(int argc, char *argv[])
             finish.exec();
             affWon = true;
         }
-        //Sleep(100);
+        Sleep(100);
     }
     app.exit();
     return 0;

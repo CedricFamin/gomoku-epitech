@@ -52,7 +52,6 @@ AIPlayer::Move AIPlayer::alphabeta(Move & last, Goban & g)
         workers.push_back(new AlphaBetaThreading(g, m, this->_color));
         workers.back()->start();
     });
-qDebug() << workers.size();
     std::for_each(workers.begin(), workers.end(),
     [&bestMove, &bestScore](AlphaBetaThreading* worker)
     {
@@ -87,6 +86,8 @@ std::list<AIPlayer::Move> AIPlayer::_getTurns(Goban & g, Move & last ,Goban::PIO
         width += 2;
         lx -= 1;
         ly -= 1;
+        if (g.InBound(lx, ly) && (g.GetMap()[ly][lx] & Goban::PIONMASK) == 0)
+            possiblesTurns.push_back(std::make_pair(lx, ly));
         for (int j = 0; j < 4; ++j)
         {
             for (int y = 0; y < width; ++y)

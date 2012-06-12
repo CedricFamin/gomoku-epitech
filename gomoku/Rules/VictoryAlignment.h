@@ -20,12 +20,13 @@ namespace Rules
 		virtual bool execute(Referrer &, Goban::PION_TYPE, unsigned int, unsigned int);
 
 	private:
-		bool checkAlign(Referrer & r);
+        int GetAlign(Goban & g, unsigned int x, unsigned int y, Goban::Case pattern, Goban::PION_TYPE pion);
 		struct Align
 		{
 			unsigned int x;
 			unsigned int y;
 			unsigned int dir;
+			unsigned int size;
 			Goban::PION_TYPE pion;
 		};
 		bool _enable;

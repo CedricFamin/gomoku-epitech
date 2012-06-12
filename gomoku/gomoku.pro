@@ -48,7 +48,8 @@ HEADERS  += mainwindow.h \
     realplayer.h \
     AI/aiplayer.h \
     connect_functor_helper.h \
-    AI/alphabetathreading.h
+    AI/alphabetathreading.h \
+    PatternIdentifier.h
 
 FORMS    += mainwindow.ui \
     Finished.ui

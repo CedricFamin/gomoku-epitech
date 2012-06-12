@@ -2,8 +2,18 @@
 
 #include <iterator>
 #include "GobanIterator.h"
+#include "PatternIdentifier.h"
 
 #define MIN(x, y) ((x < y) ? x : y)
+
+PatternIdentifier<0> pi0 = PatternIdentifier<0>();
+PatternIdentifier<1> pi1 = PatternIdentifier<1>();
+PatternIdentifier<2> pi2 = PatternIdentifier<2>();
+PatternIdentifier<3> pi3 = PatternIdentifier<3>();
+PatternIdentifier<4> pi4 = PatternIdentifier<4>();
+PatternIdentifier<5> pi5 = PatternIdentifier<5>();
+PatternIdentifier<6> pi6 = PatternIdentifier<6>();
+PatternIdentifier<7> pi7 = PatternIdentifier<7>();
 
 Goban::Goban(unsigned int width, unsigned int height) : _width(width), _height(height)
 {
@@ -89,36 +99,44 @@ void Goban::update_pattern(unsigned int i, unsigned int j, int dir)
 
 void Goban::Putin(PION_TYPE type, unsigned int i, unsigned int j)
 {
-    int direction[8][2] = {
+    static int const direction[8][2] = {
         { 0,-1}, { 1, -1}, { 1, 0}, { 1, 1},
-        {0, 1}, {-1, 1}, { -1,0}, { -1,-1}
+        { 0, 1}, {-1,  1}, {-1, 0}, {-1,-1}
     };
     Case & cCase = this->_map[j][i];
     cCase = (cCase & ~PIONMASK) | type;
-    for (int dir = 0; dir < 8; ++dir)
+    for (int dist = 1; dist <= 4; ++dist)
     {
-        update_pattern(i - direction[dir][0] * 1, j - direction[dir][1] * 1, dir);
-        update_pattern(i - direction[dir][0] * 2, j - direction[dir][1] * 2, dir);
-        update_pattern(i - direction[dir][0] * 3, j - direction[dir][1] * 3, dir);
-        update_pattern(i - direction[dir][0] * 4, j - direction[dir][1] * 4, dir);
+        pi4.match(*this, i + direction[0][0] * dist, j + direction[0][1] * dist);
+        pi5.match(*this, i + direction[1][0] * dist, j + direction[1][1] * dist);
+        pi6.match(*this, i + direction[2][0] * dist, j + direction[2][1] * dist);
+        pi7.match(*this, i + direction[3][0] * dist, j + direction[3][1] * dist);
+        pi0.match(*this, i + direction[4][0] * dist, j + direction[4][1] * dist);
+        pi1.match(*this, i + direction[5][0] * dist, j + direction[5][1] * dist);
+        pi2.match(*this, i + direction[6][0] * dist, j + direction[6][1] * dist);
+        pi3.match(*this, i + direction[7][0] * dist, j + direction[7][1] * dist);
     }
 }
 
 void Goban::subIn(unsigned int i, unsigned int j)
 {
     int direction[8][2] = {
-        { 0,-1}, { 1, -1}, { 1, 0}, { 1, 1},
-        {0, 1}, {-1, 1}, { -1,0}, { -1,-1}
+        { 0,-1}, { 1,-1}, { 1, 0}, { 1, 1},
+        { 0, 1}, {-1, 1}, {-1, 0}, {-1,-1}
     };
     Case & cCase = this->_map[j][i];
 
     cCase = (cCase & ~PIONMASK);
-    for (int dir = 0; dir < 8; ++dir)
+    for (int dist = 1; dist <= 4; ++dist)
     {
-        update_pattern(i - direction[dir][0] * 1, j - direction[dir][1] * 1, dir);
-        update_pattern(i - direction[dir][0] * 2, j - direction[dir][1] * 2, dir);
-        update_pattern(i - direction[dir][0] * 3, j - direction[dir][1] * 3, dir);
-        update_pattern(i - direction[dir][0] * 4, j - direction[dir][1] * 4, dir);
+        pi4.match(*this, i + direction[0][0] * dist, j + direction[0][1] * dist);
+        pi5.match(*this, i + direction[1][0] * dist, j + direction[1][1] * dist);
+        pi6.match(*this, i + direction[2][0] * dist, j + direction[2][1] * dist);
+        pi7.match(*this, i + direction[3][0] * dist, j + direction[3][1] * dist);
+        pi0.match(*this, i + direction[4][0] * dist, j + direction[4][1] * dist);
+        pi1.match(*this, i + direction[5][0] * dist, j + direction[5][1] * dist);
+        pi2.match(*this, i + direction[6][0] * dist, j + direction[6][1] * dist);
+        pi3.match(*this, i + direction[7][0] * dist, j + direction[7][1] * dist);
     }
 }
 

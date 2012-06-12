@@ -18,6 +18,7 @@ private:
     Goban::PION_TYPE _pion;
     Goban _goban;
     int _score;
+    std::list<Goban::Move> _moveList;
 
 };
 

@@ -2,10 +2,11 @@
 #include <iostream>
 
 #include "TakingRules.h"
+#include "PatternIdentifier.h"
 
 using namespace Rules;
 
-TakingRules::TakingRules(void)
+TakingRules::TakingRules(void) : _enable(true)
 {
 	_capture[0] = 0;
 	_capture[1] = 0;
@@ -39,21 +40,21 @@ bool TakingRules::execute(Referrer & r, Goban::PION_TYPE pion, unsigned int x, u
 {
 	const int direction[8][2] = {
 		{ 0,-1}, { 1, -1}, { 1, 0}, { 1, 1},
-		{0, 1}, {-1, 1}, { -1,0}, { -1,-1}
+        { 0, 1}, {-1,  1}, {-1, 0}, {-1,-1}
 	};
 
-	Goban::Case cCase = r.getGoban().GetMap()[y][x] >> Goban::HEADERSIZE;
-	unsigned long long int capture, mask = Goban::PIONMASK | Pattern<0,3, 0x3>::mask;
-	
-	capture = ((pion==Goban::RED) ? Goban::BLACK : Goban::RED) | Pattern<0,3, 0x3>::value;
-
-	
+    Goban::Case cCase = r.getGoban().GetMap()[y][x] >> Goban::HEADERSIZE;
 	for (int i = 0; i < 8; ++i)
 	{
-		if ((cCase & mask) == capture)
+        unsigned int lx = x + direction[i][0];
+        unsigned int ly = y + direction[i][1];
+        if ((cCase & Goban::PATTERNMASK) == Patterns::oox &&
+            (r.getGoban().GetMap()[ly][lx] & Goban::PIONMASK) != pion)
 		{
 			r.getGoban().subIn(x + direction[i][0], y + direction[i][1]);
 			r.getGoban().subIn(x + direction[i][0] * 2, y + direction[i][1] * 2);
+            r.GetListOfTurn().back().captures.push_back(std::make_pair(x + direction[i][0], y + direction[i][1]));
+            r.GetListOfTurn().back().captures.push_back(std::make_pair(x + direction[i][0] * 2, y + direction[i][1] * 2));
 			this->_capture[pion >> 1] += 2;
 		}
 		cCase >>= Goban::PATTERNSIZE;
