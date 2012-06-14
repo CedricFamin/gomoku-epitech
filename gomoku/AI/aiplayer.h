@@ -15,7 +15,6 @@ public:
     virtual void play(Referrer & r, callback_type);
     Move AIPlayer::alphabeta(Move & last, Goban & g);
 private:
-    std::list<std::pair<unsigned int, unsigned int> > _getTurns(Goban & g, Move & last ,Goban::PION_TYPE pion);
     Goban::PION_TYPE _color;
 };
 

@@ -14,6 +14,7 @@ public:
 	GobanIterator& operator--();
 	bool operator==(GobanIterator const & it) const;
 	bool operator!=(GobanIterator const & it) const;
+	Goban::Case& operator[](unsigned int);
 	Goban::Case& operator*();
 	Goban::Case* operator->();
 
@@ -22,7 +23,7 @@ public:
 	GobanIterator makeEndIterator() const;
 private:
 	unsigned int _baseX, _baseY, _maxX, _maxY, _position;
-	Goban::Case **_map;
+	Goban _map;
 };
 
 #endif

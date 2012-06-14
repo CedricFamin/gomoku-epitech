@@ -44,7 +44,7 @@ AIPlayer::Move AIPlayer::alphabeta(Move & last, Goban & g)
 {
     Move bestMove;
     int bestScore = std::numeric_limits<int>::min();
-    std::list<Move> turns = _getTurns(g, last, this->_color);
+	std::list<Move> turns = AlphaBetaThreading::GetTurns(g, last, this->_color);
     std::list<AlphaBetaThreading*> workers;
     std::for_each(turns.begin(), turns.end(),
     [&g, &workers, this](Move & m)
@@ -68,36 +68,4 @@ AIPlayer::Move AIPlayer::alphabeta(Move & last, Goban & g)
     });
 
     return bestMove;
-}
-
-std::list<AIPlayer::Move> AIPlayer::_getTurns(Goban & g, Move & last ,Goban::PION_TYPE)
-{
-    const int moves[4][2] = {
-            { 1, 0}, { 0, 1}, {-1, 0}, {0, -1}
-        };
-
-    std::list<Move> possiblesTurns;
-    int width = 0;
-    int lx = last.first;
-    int ly = last.second;
-
-    for (int i = 0; i < 2; ++i)
-    {
-        width += 2;
-        lx -= 1;
-        ly -= 1;
-        if (g.InBound(lx, ly) && (g.GetMap()[ly][lx] & Goban::PIONMASK) == 0)
-            possiblesTurns.push_back(std::make_pair(lx, ly));
-        for (int j = 0; j < 4; ++j)
-        {
-            for (int y = 0; y < width; ++y)
-            {
-                lx += moves[j][0];
-                ly += moves[j][1];
-                if (g.InBound(lx, ly) && (g.GetMap()[ly][lx] & Goban::PIONMASK) == 0)
-                    possiblesTurns.push_back(std::make_pair(lx, ly));
-            }
-        }
-    }
-    return possiblesTurns;
 }

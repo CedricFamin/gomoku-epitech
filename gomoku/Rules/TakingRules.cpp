@@ -43,13 +43,13 @@ bool TakingRules::execute(Referrer & r, Goban::PION_TYPE pion, unsigned int x, u
         { 0, 1}, {-1,  1}, {-1, 0}, {-1,-1}
 	};
 
-    Goban::Case cCase = r.getGoban().GetMap()[y][x] >> Goban::HEADERSIZE;
+    Goban::Case cCase = r.getGoban()[y][x] >> Goban::HEADERSIZE;
 	for (int i = 0; i < 8; ++i)
 	{
         unsigned int lx = x + direction[i][0];
         unsigned int ly = y + direction[i][1];
         if ((cCase & Goban::PATTERNMASK) == Patterns::oox &&
-            (r.getGoban().GetMap()[ly][lx] & Goban::PIONMASK) != pion)
+            (r.getGoban()[ly][lx] & Goban::PIONMASK) != pion)
 		{
 			r.getGoban().subIn(x + direction[i][0], y + direction[i][1]);
 			r.getGoban().subIn(x + direction[i][0] * 2, y + direction[i][1] * 2);

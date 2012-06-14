@@ -6,7 +6,7 @@
 
 namespace Patterns
 {
-    enum Patterns
+    enum Patterns : Goban::Case
     {
         _o_ = 1,    // 0 align
         _oo,
@@ -35,69 +35,58 @@ template<int direction>
 class PatternIdentifier
 {
 public:
-    static const int moves[8][2];
-    static Goban::Case pion;
-
-    class INode
+	template<int index>
+    class Node
     {
     public:
-        virtual unsigned long long int match(Goban & g, unsigned int, unsigned int) = 0;
-    };
-
-    template<int index>
-    class Node : public INode
-    {
-    public:
-        Node(INode * sameColor, INode * otherColor, INode * empty, INode * wall)
-            : _sameColor(sameColor), _otherColor(otherColor), _wall(wall), _empty(empty)
+		typedef Node<index+1> NextNode;
+        Node(NextNode * sameColor, NextNode * otherColor, NextNode * empty, NextNode * wall)
+            : _sameColor(sameColor), _otherColor(otherColor), _wall(wall), _empty(empty), _leaf(false)
         { }
-        virtual ~Node() { }
-        virtual unsigned long long int match(Goban & g, unsigned int x, unsigned int y)
+		Node(Goban::Case pattern) : _pattern(pattern) , _leaf(true) { }
+        ~Node() { }
+        long long int match(Goban & g, unsigned int x, unsigned int y, Goban::Case pion)
         {
-            unsigned int lx = x + moves[direction][0] * index;
-            unsigned int ly = y + moves[direction][1] * index;
-            INode * branch = this->_empty;
+			if (this->_leaf)
+				return this->_pattern;
+            unsigned int lx = x + Padding<direction, index>::x;
+            unsigned int ly = y + Padding<direction, index>::y;
+            NextNode * branch = this->_empty;
             if (!g.InBound(lx, ly))
                 branch = this->_wall;
             else
             {
-                Goban::Case pion = g.GetMap()[ly][lx] & Goban::PIONMASK;
-                if (pion)
+                Goban::Case cpion = g[ly][lx] & Goban::PIONMASK;
+                if (cpion)
                 {
-                    if (!PatternIdentifier::pion)
-                        PatternIdentifier::pion = pion;
-                    if (pion == PatternIdentifier::pion)
+                    branch = this->_otherColor;
+                    if (pion == 0)
+                        pion = cpion;
+                    if (cpion == pion)
                         branch = this->_sameColor;
-                    else if (pion)
-                        branch = this->_otherColor;
                 }
             }
-            if (branch)
-                return branch->match(g, x, y);
-            return 0;
-
+            return (branch) ? branch->match(g, x, y, pion) : 0;
         }
 
     private:
-        INode * _sameColor;
-        INode * _otherColor;
-        INode * _wall;
-        INode * _empty;
+        NextNode * _sameColor;
+        NextNode * _otherColor;
+        NextNode * _wall;
+        NextNode * _empty;
+		Goban::Case _pattern;
+		bool _leaf;
     };
 
-    class Leaf : public INode
-    {
-    public:
-        Leaf(Goban::Case pattern) : _pattern(pattern) {}
-        virtual ~Leaf() {}
-        virtual unsigned long long int match(Goban &, unsigned int, unsigned int)
-        {
-            return this->_pattern;
-        }
-    private:
-        Goban::Case _pattern;
-
-    };
+	template<>
+	class Node<6> 
+	{
+	public:
+		long long int match(Goban & g, unsigned int x, unsigned int y, Goban::Case pion)
+		{
+			return 0;
+		}
+	};
 
     PatternIdentifier()
     {
@@ -105,34 +94,34 @@ public:
                     new Node<2>(
                         new Node<3>(
                             new Node<4>(
-                                new Leaf(Patterns::oooo),
-                                new Leaf(Patterns::ooox),
-                                new Leaf(Patterns::ooo_),
-                                new Leaf(Patterns::ooo)),
-                            new Leaf(Patterns::oox),
-                            new Leaf(Patterns::oo_),
-                            new Leaf(Patterns::oo)),
-                        new Leaf(Patterns::ox),
+                                new Node<5>(Patterns::oooo),
+                                new Node<5>(Patterns::ooox),
+                                new Node<5>(Patterns::ooo_),
+                                new Node<5>(Patterns::ooo)),
+                            new Node<4>(Patterns::oox),
+                            new Node<4>(Patterns::oo_),
+                            new Node<4>(Patterns::oo)),
+                        new Node<3>(Patterns::ox),
                         new Node<3>(
                             new Node<4>(
-                                new Leaf(Patterns::o_),
-                                new Leaf(Patterns::o_),
-                                new Leaf(Patterns::o_o_),
-                                new Leaf(Patterns::o_)),
-                            new Leaf(Patterns::o_),
-                            new Leaf(Patterns::o_),
-                            new Leaf(Patterns::o_)),
+                                new Node<5>(Patterns::o_),
+                                new Node<5>(Patterns::o_),
+                                new Node<5>(Patterns::o_o_),
+                                new Node<5>(Patterns::o_)),
+                            new Node<4>(Patterns::o_),
+                            new Node<4>(Patterns::o_),
+                            new Node<4>(Patterns::o_)),
                         0),
                     0,
                     new Node<2>(
                         new Node<3>(
                             new Node<4>(
-                                new Leaf(Patterns::_ooo),
-                                new Leaf(Patterns::_oox),
-                                new Leaf(Patterns::_oo_),
-                                new Leaf(Patterns::_oo)),
+                                new Node<5>(Patterns::_ooo),
+                                new Node<5>(Patterns::_oox),
+                                new Node<5>(Patterns::_oo_),
+                                new Node<5>(Patterns::_oo)),
                             0,
-                            new Leaf(Patterns::_o_),
+                            new Node<4>(Patterns::_o_),
                             0),
                         0,
                         0,
@@ -142,24 +131,15 @@ public:
 
     void match(Goban & g, int x, int y)
     {
-        if (!g.InBound(x, y))
-            return ;
-        pion = 0;
-        Goban::Case pattern = 0;
-        pattern = this->_root->match(g, x, y);
-        g.GetMap()[y][x] &= ~(Goban::PATTERNMASK << Goban::HEADERSIZE << (Goban::PATTERNSIZE * direction));
-        g.GetMap()[y][x] |= pattern << Goban::HEADERSIZE << (Goban::PATTERNSIZE * direction);
-
+		if (!g.InBound(x, y))
+			return ;
+        Goban::Case pattern = this->_root->match(g, x, y, 0);
+        g[y][x] &= ~(Goban::PATTERNMASK << Goban::HEADERSIZE << (Goban::PATTERNSIZE * direction));
+        g[y][x] |= pattern << Goban::HEADERSIZE << (Goban::PATTERNSIZE * direction);
     }
 
 private:
-    INode * _root;
+    Node<1> * _root;
 };
-
-template<int direction>
-int const PatternIdentifier<direction>::moves[8][2]  = {{ 0,-1}, { 1, -1}, { 1, 0}, { 1, 1},
-                                                        { 0, 1}, {-1,  1}, {-1, 0}, {-1,-1}};
-template<int direction>
-Goban::Case PatternIdentifier<direction>::pion = 0;
 
 #endif // PATTERNIDENTIFIER_H

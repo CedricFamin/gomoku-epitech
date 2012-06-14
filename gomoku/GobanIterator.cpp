@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include "GobanIterator.h"
 
 const int GobanIterator::direction[8][2] = {
@@ -5,7 +6,7 @@ const int GobanIterator::direction[8][2] = {
 		{0, 1}, {-1, 1}, { -1,0}, { -1,-1}
 	};
 
-GobanIterator::GobanIterator(Goban & g, unsigned int x, unsigned int y) : _baseX(x), _baseY(y), _maxX(g.getWidth()), _maxY(g.getHeight()), _position(0), _map(g.GetMap()) { }
+GobanIterator::GobanIterator(Goban & g, unsigned int x, unsigned int y) : _baseX(x), _baseY(y), _maxX(g.getWidth()), _maxY(g.getHeight()), _position(0), _map(g) { }
 GobanIterator::GobanIterator(GobanIterator const & it) : _baseX(it._baseX), _baseY(it._baseY), _maxX(it._maxX), _maxY(it._maxY), _position(it._position), _map(it._map) {}
 
 GobanIterator& GobanIterator::operator++() {
@@ -44,6 +45,17 @@ bool GobanIterator::operator!=(GobanIterator const & it) const
 	return !(*this == it);
 }
 
+Goban::Case& GobanIterator::operator[](unsigned int i)
+{
+	unsigned int lx = this->_baseX + direction[i][0];
+	unsigned int ly = this->_baseY + direction[i][1];
+
+	if (lx >= this->_maxX || ly >= this->_maxY)
+		throw std::out_of_range("Case not found");
+	return this->_map[ly][lx];
+
+}
+
 Goban::Case& GobanIterator::operator*()
 {
 	unsigned int lx = this->_baseX + direction[this->_position][0];
@@ -63,7 +75,7 @@ bool GobanIterator::isNull() const
 	unsigned int lx = this->_baseX + direction[this->_position][0];
 	unsigned int ly = this->_baseY + direction[this->_position][1];
 		
-	return this->_position < 0 || this->_position >= 8 || lx >= this->_maxX || ly >= this->_maxY;
+	return lx >= this->_maxX || ly >= this->_maxY;
 }
 GobanIterator GobanIterator::makeEndIterator() const
 {

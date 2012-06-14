@@ -5,6 +5,27 @@
 
 #include <functional>
 
+template<int direction> struct Moves { };
+template<> struct Moves<0> { enum Values {x = 0, y =-1 };};
+template<> struct Moves<1> { enum Values {x = 1, y =-1 };};
+template<> struct Moves<2> { enum Values {x = 1, y = 0 };};
+template<> struct Moves<3> { enum Values {x = 1, y = 1 };};
+template<> struct Moves<4> { enum Values {x = 0, y = 1 };};
+template<> struct Moves<5> { enum Values {x =-1, y = 1 };};
+template<> struct Moves<6> { enum Values {x =-1, y = 0 };};
+template<> struct Moves<7> { enum Values {x =-1, y =-1 };};
+
+template<int direction, int dist>
+struct Padding
+{
+	enum Values
+	{
+		x = Moves<direction>::x * dist,
+		y = Moves<direction>::y * dist
+	};
+};
+
+
 class Goban
 {
 public:
@@ -22,26 +43,37 @@ public:
     {
         EMPTY,
         BLACK = 0x1,
-        RED = 0x3
+        RED = 0x2
     };
 
-    Goban(unsigned int = 19, unsigned int = 19);
+    Goban();
     Goban(Goban const &);
     ~Goban(void);
 
-    Case ** GetMap();
     void Putin(PION_TYPE, unsigned int, unsigned int);
     void subIn(unsigned int, unsigned int);
 
-    unsigned int getWidth() const;
-    unsigned int getHeight() const;
+   inline unsigned int Goban::getWidth() const
+	{
+		return this->_width;
+	}
 
-    bool InBound(unsigned int, unsigned int) const;
+	inline unsigned int Goban::getHeight() const
+	{
+		return this->_height;
+	}
+
+	inline bool Goban::InBound(unsigned int x, unsigned int y) const
+	{
+		return x < this->_width && y < this->_height;
+	}
+
+	Case * operator[](unsigned int);
 
 protected:
 
 private:
-    Case **_map;
+    Case _map[19][19];
     int update_serie(unsigned int i, unsigned int j, int decal_x, int decal_y, int dir, int depth);
     void update_pattern(unsigned int, unsigned int, int);
     unsigned int _width;

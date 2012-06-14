@@ -44,7 +44,7 @@ int VictoryAlignment::GetAlign(Goban & g, unsigned int x, unsigned int y, Goban:
 {
     int maxAlign = 0;
 
-    if (g.InBound(x, y) && (g.GetMap()[y][x] & Goban::PIONMASK) == pion)
+    if (g.InBound(x, y) && (g[y][x] & Goban::PIONMASK) == pion)
     {
         maxAlign += 1;
         maxAlign += (pattern >= Patterns::align_2) ? 1: 0;
@@ -62,7 +62,7 @@ bool winningAlignment(Goban & g, int size, int dir, int x, int y, Goban::PION_TY
 
 	for (int i = 0; i <= size; ++i)
 	{
-		aCase = g.GetMap()[y][x];
+		aCase = g[y][x];
 		if ((aCase & Goban::PIONMASK) != pion)
 		{
 			if (size - i < 4)
@@ -84,10 +84,10 @@ bool winningAlignment(Goban & g, int size, int dir, int x, int y, Goban::PION_TY
 					unsigned int uy = y - moves[j][1];
 					unsigned int dx = x + moves[j][0];
 					unsigned int dy = y + moves[j][1];
-					Goban::Case upCase   = (g.InBound(ux, uy)) ? g.GetMap()[uy][ux] & Goban::PIONMASK : -1;
-					Goban::Case downCase = (g.InBound(dx, dy)) ? g.GetMap()[dy][dx] & Goban::PIONMASK : -1;
-					if ((pattern1 == Patterns::ox && upCase == 0) ||
-						(pattern2 == Patterns::ox && downCase == 0))
+					Goban::Case upCase   = (g.InBound(ux, uy)) ? g[uy][ux] & Goban::PIONMASK : -1;
+					Goban::Case downCase = (g.InBound(dx, dy)) ? g[dy][dx] & Goban::PIONMASK : -1;
+                    if ((pattern1 == Patterns::ox && upCase == 0 && downCase == pion) ||
+                        (pattern2 == Patterns::ox && downCase == 0 && upCase == pion))
 					{
 						align = -1;
 						break;
@@ -117,7 +117,7 @@ bool VictoryAlignment::execute(Referrer & r, Goban::PION_TYPE pion, unsigned int
         {0, 1}, {-1, 1}, { -1,0}, { -1,-1}
     };
 
-    Goban::Case cCase = r.getGoban().GetMap()[y][x] >> Goban::HEADERSIZE;
+    Goban::Case cCase = r.getGoban()[y][x] >> Goban::HEADERSIZE;
     Goban::Case pattern1, pattern2;
 	unsigned int lx, ly;
 
