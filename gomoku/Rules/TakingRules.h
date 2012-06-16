@@ -18,11 +18,8 @@ namespace Rules
 		virtual bool isEnable() const;
 		virtual bool execute(Referrer &, Goban::PION_TYPE, unsigned int, unsigned int);
 
-		int const * getCaptures() const;
-
 	private:
 		bool _enable;
-		int  _capture[2];
 	};
 }
 

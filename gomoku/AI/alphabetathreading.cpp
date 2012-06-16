@@ -24,91 +24,131 @@ int AlphaBetaThreading::_emptyPattern(Goban &, unsigned int, unsigned int,int, G
 
 int AlphaBetaThreading::__o_Pattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
 {
+	unsigned int lx = GobanIterator::direction[dir][0] * 2 + x;
+	unsigned int ly = GobanIterator::direction[dir][1] * 2 + y;
+	if ((g[ly][lx] & Goban::PIONMASK) == pion)
+		return 20;
 	return 0;
 }
 int AlphaBetaThreading::__ooPattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
 {
-	return 0;
+	unsigned int lx = GobanIterator::direction[dir][0] * 2 + x;
+	unsigned int ly = GobanIterator::direction[dir][1] * 2 + y;
+	if ((g[ly][lx] & Goban::PIONMASK) == pion)
+		return 45;
+	return -25;
 }
 int AlphaBetaThreading::__oo_Pattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
 {
-	return 0;
+	unsigned int lx = GobanIterator::direction[dir][0] * 2 + x;
+	unsigned int ly = GobanIterator::direction[dir][1] * 2 + y;
+	if ((g[ly][lx] & Goban::PIONMASK) == pion)
+		return 30;
+	return -10;
 }
 int AlphaBetaThreading::__ooxPattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
 {
-	return 0;
+	unsigned int lx = GobanIterator::direction[dir][0] * 2 + x;
+	unsigned int ly = GobanIterator::direction[dir][1] * 2 + y;
+	if ((g[ly][lx] & Goban::PIONMASK) == pion)
+		return -25;
+	return 45;
 }
 int AlphaBetaThreading::__oooPattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
 {
-	return 0;
+	unsigned int lx = GobanIterator::direction[dir][0] * 2 + x;
+	unsigned int ly = GobanIterator::direction[dir][1] * 2 + y;
+	if ((g[ly][lx] & Goban::PIONMASK) == pion)
+		return 35;
+	return -15;
 }
 int AlphaBetaThreading::_o_Pattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
 {
+	unsigned int lx = GobanIterator::direction[dir][0] * 2 + x;
+	unsigned int ly = GobanIterator::direction[dir][1] * 2 + y;
+	if ((g[ly][lx] & Goban::PIONMASK) == pion)
+		return 20;
 	return 0;
 }
 int AlphaBetaThreading::_o_o_Pattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
 {
-	return 0;
+	unsigned int lx = GobanIterator::direction[dir][0] * 2 + x;
+	unsigned int ly = GobanIterator::direction[dir][1] * 2 + y;
+	if ((g[ly][lx] & Goban::PIONMASK) == pion)
+		return 30;
+	return -10;
 }
 int AlphaBetaThreading::_oxPattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
 {
-	GobanIterator it(g, x, y);
-	if ((it[dir] & Goban::PIONMASK) == pion)
+	unsigned int lx = GobanIterator::direction[dir][0] + x;
+	unsigned int ly = GobanIterator::direction[dir][1] + y;
+	if ((g[ly][lx] & Goban::PIONMASK) == pion)
 		return -10;
-	return 10;
+	return 30;
 }
 int AlphaBetaThreading::_ooPattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
 {
-	return 0;
+	unsigned int lx = GobanIterator::direction[dir][0] + x;
+	unsigned int ly = GobanIterator::direction[dir][1] + y;
+	if ((g[ly][lx] & Goban::PIONMASK) == pion)
+		return 25;
+	return 5;
 }
  int AlphaBetaThreading::_oo_Pattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
 {
-	GobanIterator it(g, x, y);
-	if ((it[dir] & Goban::PIONMASK) == pion)
-		return 10;
-	return 0;
+	unsigned int lx = GobanIterator::direction[dir][0] + x;
+	unsigned int ly = GobanIterator::direction[dir][1] + y;
+	if ((g[ly][lx] & Goban::PIONMASK) == pion)
+		return 30;
+	return -10;
 }
 int AlphaBetaThreading::_ooxPattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
 {
-	GobanIterator it(g, x, y);
-	if ((it[dir] & Goban::PIONMASK) == pion)
-		return 0;
-	return 00;
+	unsigned int lx = GobanIterator::direction[dir][0] + x;
+	unsigned int ly = GobanIterator::direction[dir][1] + y;
+	if ((g[ly][lx] & Goban::PIONMASK) == pion)
+		return -15;
+	return 35;
 }
 int AlphaBetaThreading::_oooPattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
 {
-	GobanIterator it(g, x, y);
-	if ((it[dir] & Goban::PIONMASK) == pion)
-		return 00;
-	return 0;
+	unsigned int lx = GobanIterator::direction[dir][0] + x;
+	unsigned int ly = GobanIterator::direction[dir][1] + y;
+	if ((g[ly][lx] & Goban::PIONMASK) == pion)
+		return 40;
+	return -20;
 }
 int AlphaBetaThreading::_ooo_Pattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
 {
-	GobanIterator it(g, x, y);
-	if ((it[dir] & Goban::PIONMASK) == pion)
-		return 00;
-	return 0;
+	unsigned int lx = GobanIterator::direction[dir][0] + x;
+	unsigned int ly = GobanIterator::direction[dir][1] + y;
+	if ((g[ly][lx] & Goban::PIONMASK) == pion)
+		return 50;
+	return -30;
 }
 int AlphaBetaThreading::_oooxPattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
 {
-	GobanIterator it(g, x, y);
-	if ((it[dir] & Goban::PIONMASK) == pion)
-		return 0;
-	return 0;
+	unsigned int lx = GobanIterator::direction[dir][0] + x;
+	unsigned int ly = GobanIterator::direction[dir][1] + y;
+	if ((g[ly][lx] & Goban::PIONMASK) == pion)
+		return 45;
+	return -25;
 }
 int AlphaBetaThreading::_ooooPattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
 {
-	GobanIterator it(g, x, y);
-	if ((it[dir] & Goban::PIONMASK) == pion)
-		return 0;
-	return 0;
+	unsigned int lx = GobanIterator::direction[dir][0] + x;
+	unsigned int ly = GobanIterator::direction[dir][1] + y;
+	if ((g[ly][lx] & Goban::PIONMASK) == pion)
+		return 100;
+	return -35;
 }
 
 int AlphaBetaThreading::eval(Goban & g, Goban::PION_TYPE pion)
 {
     Goban::PION_TYPE currentPion;
     unsigned long long int current;
-    int score = 0, value;
+    int score = 0;
+	int value;
 	typedef int (AlphaBetaThreading::*ScoringMethod)(Goban &, unsigned int, unsigned int, int, Goban::PION_TYPE);
 	ScoringMethod scorings[] = {
 		&AlphaBetaThreading::_emptyPattern,
@@ -128,28 +168,32 @@ int AlphaBetaThreading::eval(Goban & g, Goban::PION_TYPE pion)
 		&AlphaBetaThreading::_oooxPattern,
 		&AlphaBetaThreading::_ooooPattern,
 	};
-
-    for (unsigned int x = 0; x < g.getWidth(); ++x)
-    {
-        for (unsigned int y = 0; y < g.getHeight(); ++y)
-        {
-            current = g[y][x];
-            value = 0;
-            currentPion = (Goban::PION_TYPE)(current & Goban::PIONMASK);
-            if (currentPion != 0)
-                continue;
-            current >>= Goban::HEADERSIZE;
-            if (!current)
-                continue;
-            for (unsigned int d = 0; d < 8; ++d)
-            {
-				if ((current & Goban::PATTERNMASK) <= Patterns::oooo)
+	auto begin = this->_moveList.begin(), end = this->_moveList.end();
+	for (; begin != end; ++begin)
+	{
+		for (int dist = 1; dist <= 4; dist++)
+		{
+			for (int dir = 0; dir < 8; ++dir)
+			{
+				unsigned int x = begin->first + GobanIterator::direction[dir][0] * dist;
+				unsigned int y = begin->second + GobanIterator::direction[dir][1] * dist;
+				if (!g.InBound(x, y))
+					continue;
+				current = g[y][x];
+				value = this->_scoreTable[y * 19 + x];
+				currentPion = (Goban::PION_TYPE)(current & Goban::PIONMASK);
+				current >>= Goban::HEADERSIZE;
+				if (!value)
 				{
-					score += (this->*scorings[current & Goban::PATTERNMASK])(g, x, y, d, pion);
+					if (currentPion == 0 && current)
+						for (unsigned int d = 0; d < 8; ++d, current >>= Goban::PATTERNSIZE)
+							if ((current & Goban::PATTERNMASK) <= Patterns::oooo)
+								value += (this->*scorings[current & Goban::PATTERNMASK])(g, x, y, d, pion);
+					this->_scoreTable[y * 19 + x] = value;
 				}
-                current >>= Goban::PATTERNSIZE;
-            }
-        }
+				score += value;
+			}
+		}
     }
     return score;
 }
@@ -157,63 +201,77 @@ int AlphaBetaThreading::eval(Goban & g, Goban::PION_TYPE pion)
 std::list<Goban::Move> AlphaBetaThreading::GetTurns(Goban & g,Goban::Move & last , Goban::PION_TYPE)
 {
     std::list<Goban::Move> possiblesTurns;
-	for (unsigned int x = 0; x < g.getWidth(); ++x)
-    {
+	for (unsigned int x = 0; x < g.getWidth(); ++x) 
         for (unsigned int y = 0; y < g.getHeight(); ++y)
-        {
 			if (!(g[y][x] & Goban::PIONMASK) && ((g[y][x] & ~Goban::PIONMASK) || (abs((int)x - (int)last.first) <= 1 && abs((int)y - (int)last.second) <= 1)))
-			{
 				possiblesTurns.push_back(std::make_pair(x, y));
-			}
-		}
-	}
     return possiblesTurns;
 }
 
 
-AlphaBetaThreading::AlphaBetaThreading(Goban & g, const Goban::Move & m, Goban::PION_TYPE p)
-    : _move(m), _pion(p), _goban(g), _score(0)
+AlphaBetaThreading::AlphaBetaThreading(Goban & g, const Goban::Move & m, Goban::PION_TYPE p, Referrer & r)
+    : _move(m), _pion(p), _goban(g), _score(0), _referrer(r)
 {
+	memset(this->_scoreTable, 0, sizeof(*_scoreTable) * 19 * 19);
 }
 
 void AlphaBetaThreading::run()
 {
     this->_goban.Putin(this->_pion, this->_move.first, this->_move.second);
-    this->_moveList = GetTurns(this->_goban, this->_move, this->_pion);
-    this->_score = this->alphabeta(this->_move, this->_goban, 1,
+	this->eval(this->_goban, this->_pion);
+    this->_score = this->alphabeta(this->_move, this->_goban, 2,
                                    std::numeric_limits<int>::min() + 1, std::numeric_limits<int>::max(),
                                    (this->_pion == Goban::BLACK) ? Goban::RED: Goban::BLACK);
-	qDebug() << this->_score;
+}
+
+void AlphaBetaThreading::update(Goban & g, int x, int y)
+{
+	for (int dist = 1; dist <= 4; dist++)
+	{
+		for (int dir = 0; dir < 8; ++dir)
+		{
+			unsigned int lx = x + GobanIterator::direction[dir][0] * dist;
+			unsigned int ly = y + GobanIterator::direction[dir][1] * dist;
+			if (g.InBound(lx, ly))
+				this->_scoreTable[ly * 19 + lx] = 0;
+		}
+	}
 }
 
 int AlphaBetaThreading::alphabeta(Goban::Move &, Goban & g, int depth, int alpha, int beta, Goban::PION_TYPE pion)
 {
-    static int i = 0;
-    i++;
-    if (depth == 0)
-    {
-        return eval(g, pion);
-    }
+	if (g.gameFinished())
+		return g.getWinner() == pion ? std::numeric_limits<int>::max() : -std::numeric_limits<int>::max();
+    if (depth == 0) return eval(g, pion);
     int best = std::numeric_limits<int>::min() + 1;
     for (unsigned int x = 0; x < g.getWidth(); ++x)
     {
         for (unsigned int y = 0; y < g.getHeight(); ++y)
         {
 			if (!((g[y][x] & ~Goban::PIONMASK))) continue;
-            int value = 0;
-            Goban s = g;
-            s.Putin(pion, x, y);
-            value = -alphabeta(this->_move, s, depth - 1, -beta, -alpha, (pion == Goban::BLACK) ? Goban::RED: Goban::BLACK);
-            if (value > best)
-            {
-                best = value;
-                if (best > alpha)
-                {
-                    alpha = best;
-                    if (alpha > beta) 
-						return best;
-                }
-            }
+			
+			int value = 0;
+			Goban s = g;
+			this->_referrer.setGoban(s);
+			if (this->_referrer.CanPlay(pion, x, y))
+			{
+				this->_referrer.Play();
+				this->_referrer.AfterPlay();
+				update(g, x, y);
+				this->_moveList.push_front(std::make_pair(x , y));
+				value = -alphabeta(this->_move, s, depth - 1, -beta, -alpha, (pion == Goban::BLACK) ? Goban::RED: Goban::BLACK);
+				update(g, x, y);
+				this->_moveList.pop_front();
+				if (value > best)
+				{
+					best = value;
+					if (best > alpha)
+					{
+						alpha = best;
+						if (alpha > beta) return best;
+					}
+				}
+			}
         }
     }
     return best;

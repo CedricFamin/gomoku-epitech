@@ -121,7 +121,7 @@ bool VictoryAlignment::execute(Referrer & r, Goban::PION_TYPE pion, unsigned int
     Goban::Case pattern1, pattern2;
 	unsigned int lx, ly;
 
-	this->_aligments.remove_if([&r](Align & align)->bool
+	/*this->_aligments.remove_if([&r](Align & align)->bool
 	{
 		bool breaked = false;
 		if (winningAlignment(r.getGoban(), align.size, align.dir, align.x, align.y, align.pion, std::forward<bool>(breaked)))
@@ -130,7 +130,7 @@ bool VictoryAlignment::execute(Referrer & r, Goban::PION_TYPE pion, unsigned int
 			r.setWinner(align.pion);
 		}
 		return breaked;
-	});
+	});*/
 	if (r.GameFinished()) return true;
     for (int i = 0; i < 4; ++i)
     {

@@ -30,7 +30,7 @@ void AIPlayer::play(Referrer & r, callback_type callback)
     {
         move.first = r.GetListOfTurn().back().x;
         move.second = r.GetListOfTurn().back().y;
-        move = this->alphabeta(move, r.getGoban());
+        move = this->alphabeta(move, r.getGoban(), r);
     }
     if (r.CanPlay(this->getColor(), move.first, move.second))
     {
@@ -40,16 +40,16 @@ void AIPlayer::play(Referrer & r, callback_type callback)
     }
 }
 
-AIPlayer::Move AIPlayer::alphabeta(Move & last, Goban & g)
+AIPlayer::Move AIPlayer::alphabeta(Move & last, Goban & g, Referrer & r)
 {
     Move bestMove;
     int bestScore = std::numeric_limits<int>::min();
 	std::list<Move> turns = AlphaBetaThreading::GetTurns(g, last, this->_color);
     std::list<AlphaBetaThreading*> workers;
     std::for_each(turns.begin(), turns.end(),
-    [&g, &workers, this](Move & m)
+    [&g, &workers, this, &r](Move & m)
     {
-        workers.push_back(new AlphaBetaThreading(g, m, this->_color));
+        workers.push_back(new AlphaBetaThreading(g, m, this->_color, r));
         workers.back()->start();
     });
     std::for_each(workers.begin(), workers.end(),

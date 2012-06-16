@@ -8,8 +8,6 @@ using namespace Rules;
 
 TakingRules::TakingRules(void) : _enable(true)
 {
-	_capture[0] = 0;
-	_capture[1] = 0;
 }
 
 TakingRules::~TakingRules(void)
@@ -31,11 +29,6 @@ bool TakingRules::isEnable() const
 	return this->_enable;
 }
 
-int const * TakingRules::getCaptures() const
-{
-	return this->_capture;
-}
-
 bool TakingRules::execute(Referrer & r, Goban::PION_TYPE pion, unsigned int x, unsigned int y)
 {
 	const int direction[8][2] = {
@@ -55,7 +48,6 @@ bool TakingRules::execute(Referrer & r, Goban::PION_TYPE pion, unsigned int x, u
 			r.getGoban().subIn(x + direction[i][0] * 2, y + direction[i][1] * 2);
             r.GetListOfTurn().back().captures.push_back(std::make_pair(x + direction[i][0], y + direction[i][1]));
             r.GetListOfTurn().back().captures.push_back(std::make_pair(x + direction[i][0] * 2, y + direction[i][1] * 2));
-			this->_capture[pion >> 1] += 2;
 		}
 		cCase >>= Goban::PATTERNSIZE;
 	}

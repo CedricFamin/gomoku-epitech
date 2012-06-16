@@ -7,21 +7,22 @@
 
 #define MIN(x, y) ((x < y) ? x : y)
 
-Goban::Goban() : _width(19), _height(19)
+Goban::Goban() : _width(19), _height(19), _gameFinished(false)
 {
-    for (unsigned int i = 0; i < _width; i++)
+	for (unsigned int i = 0; i < _width * _height; i++)
     {
-        for (unsigned int j = 0; j < _height; j++)
-        {
-            _map[i][j] = 0;
-        }
+        _map[i] = 0;
     }
+	_deletedStone[0] = 0;
+	_deletedStone[1] = 0;
 }
 
 Goban::Goban(Goban const & g) : _width(g._width), _height(g._height)
 {
-    
-	memcpy(_map,g._map, sizeof(**_map) * 19 * 19);
+	_gameFinished = g._gameFinished;
+	_deletedStone[0] = g._deletedStone[0];
+	_deletedStone[1] = g._deletedStone[1];
+	memcpy(_map,g._map, sizeof(*_map) * 19 * 19);
 }
 
 Goban::~Goban(void)
@@ -30,51 +31,7 @@ Goban::~Goban(void)
 
 Goban::Case * Goban::operator[](unsigned int i)
 {
-	return this->_map[i];
-}
-
-void Goban::update_pattern(unsigned int i, unsigned int j, int dir)
-{
-    int moves[8][2] = {
-        { 0,-1}, { 1, -1}, { 1, 0}, { 1, 1},
-        {0, 1}, {-1, 1}, { -1,0}, { -1,-1}
-    };
-    bool beforeColor = false;
-    unsigned int color = 0, lx, ly;
-    int bitDecal = 8 + 7 * dir;
-
-    if (this->InBound(i, j) == false)
-        return ;
-    this->_map[j][i] &= ~(PATTERNMASK << bitDecal);
-    this->_map[j][i] |= (unsigned long long int)0x1 << (bitDecal + 2);
-    for (int dist = 1; dist <= 4; ++dist)
-    {
-        lx = i + moves[dir][0] * dist;
-        ly = j + moves[dir][1] * dist;
-        if (this->InBound(lx, ly))
-        {
-            if (color && this->_map[ly][lx] & PIONMASK && color != (this->_map[ly][lx] & PIONMASK))
-            {
-                if (beforeColor)
-                    this->_map[j][i] &= ~((unsigned long long int)0x1 << (bitDecal + 2));
-                break;
-            }
-            if ((this->_map[ly][lx] & PIONMASK))
-            {
-                beforeColor = true;
-                color = this->_map[ly][lx] & PIONMASK;
-                this->_map[j][i] |= (((this->_map[ly][lx] & PIONMASK)) << bitDecal);
-                this->_map[j][i] |= ((unsigned long long int)0x1) << (bitDecal + 2 + dist);
-            }
-            else
-                beforeColor = false;
-        }
-        else
-        {
-            this->_map[j][i] |= (unsigned long long int)0x1 << (bitDecal + 2);
-            break;
-        }
-    }
+	return this->_map + i * 19;
 }
 
 template<unsigned int p>
@@ -162,7 +119,7 @@ inline void updatePattern(Goban & g, unsigned int x, unsigned int y)
 
 void Goban::Putin(PION_TYPE type, unsigned int i, unsigned int j)
 {
-    Case & cCase = this->_map[j][i];
+    Case & cCase = this->_map[j * 19 + i];
     cCase = (cCase & ~PIONMASK) | type;
 
 	updatePattern<0>(*this, i, j);
@@ -177,17 +134,20 @@ void Goban::Putin(PION_TYPE type, unsigned int i, unsigned int j)
 
 void Goban::subIn(unsigned int i, unsigned int j)
 {
-    Case & cCase = this->_map[j][i];
-
-    cCase = (cCase & ~PIONMASK);
-	updatePattern<0>(*this, i, j);
-	updatePattern<1>(*this, i, j);
-	updatePattern<2>(*this, i, j);
-	updatePattern<3>(*this, i, j);
-	updatePattern<4>(*this, i, j);
-	updatePattern<5>(*this, i, j);
-	updatePattern<6>(*this, i, j);
-	updatePattern<7>(*this, i, j);
+    Case & cCase = this->_map[j * 19 + i];
+	if (cCase & PIONMASK)
+	{
+		++this->_deletedStone[(cCase & PIONMASK) >> 1];
+		cCase = (cCase & ~PIONMASK);
+		updatePattern<0>(*this, i, j);
+		updatePattern<1>(*this, i, j);
+		updatePattern<2>(*this, i, j);
+		updatePattern<3>(*this, i, j);
+		updatePattern<4>(*this, i, j);
+		updatePattern<5>(*this, i, j);
+		updatePattern<6>(*this, i, j);
+		updatePattern<7>(*this, i, j);
+	}
 }
 
 

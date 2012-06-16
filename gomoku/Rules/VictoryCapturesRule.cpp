@@ -2,7 +2,7 @@
 
 using namespace Rules;
 
-VictoryCapturesRule::VictoryCapturesRule(TakingRules const & rule) : _enable(true), _takingRule(rule)
+VictoryCapturesRule::VictoryCapturesRule() : _enable(true)
 {
 }
 
@@ -28,10 +28,10 @@ bool VictoryCapturesRule::isEnable() const
 
 bool VictoryCapturesRule::execute(Referrer & r, Goban::PION_TYPE, unsigned int, unsigned int)
 {
-	if (this->_takingRule.getCaptures()[Goban::RED >> 1] >= 10 ||
-		this->_takingRule.getCaptures()[Goban::BLACK >> 1] >= 10)
+	if (r.getGoban().deletedStone(Goban::BLACK) >= 10 ||
+		r.getGoban().deletedStone(Goban::RED) >= 10)
 	{
-		if (this->_takingRule.getCaptures()[Goban::RED >> 1] >= 10)
+		if (r.getGoban().deletedStone(Goban::RED) >= 10)
 			r.setWinner(Goban::RED);
 		else
 			r.setWinner(Goban::BLACK);
@@ -40,5 +40,3 @@ bool VictoryCapturesRule::execute(Referrer & r, Goban::PION_TYPE, unsigned int, 
 	}
 	return false;
 }
-
-

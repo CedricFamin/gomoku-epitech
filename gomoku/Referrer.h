@@ -19,11 +19,13 @@ public:
 	};
 
 	Referrer(Goban &);
+	Referrer(Referrer const &);
 	~Referrer(void);
 
 	bool CanPlay(Goban::PION_TYPE, int, int);
 	bool Play();
 	bool AfterPlay();
+
 	bool GameFinished() const;
 	void setGameFinished(bool);
 	Goban::PION_TYPE Winner() const;
@@ -48,9 +50,6 @@ private:
 	std::list<Turn> _playedTurns;
     Goban * _goban;
 	Turn _currentTurn;
-	bool _gameFinished;
-	Goban::PION_TYPE _winner;
-
 };
 
 #endif

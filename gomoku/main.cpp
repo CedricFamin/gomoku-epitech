@@ -85,10 +85,10 @@ int main(int argc, char *argv[])
     bool affWon = false;
 
     referrer.addPrePlayRule(*(new Rules::EachInTurnRule()));
-    referrer.addPrePlayRule(*(new Rules::DoubleThree()));
+    //referrer.addPrePlayRule(*(new Rules::DoubleThree()));
     referrer.addPrePlayRule(*(new Rules::NotEmptyRule()));
     referrer.addPlayRule(*tkrule);
-    referrer.addPostPlayRule(*(new Rules::VictoryCapturesRule(*tkrule)));
+    referrer.addPostPlayRule(*(new Rules::VictoryCapturesRule()));
     referrer.addPostPlayRule(*(new Rules::VictoryAlignment()));
 
     win.show();

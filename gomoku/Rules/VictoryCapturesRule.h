@@ -10,7 +10,7 @@ namespace Rules
 	class VictoryCapturesRule : public IRule
 	{
 	public:
-		VictoryCapturesRule(TakingRules const &);
+		VictoryCapturesRule();
 		virtual ~VictoryCapturesRule(void);
 
 		virtual void enable();
@@ -20,7 +20,6 @@ namespace Rules
 
 	private:
 		bool _enable;
-		TakingRules const & _takingRule;
 	};
 }
 

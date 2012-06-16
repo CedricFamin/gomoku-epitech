@@ -30,7 +30,7 @@ bool DoubleThree::isEnable() const
 	return this->_enable;
 }
 
-bool Check(Goban & g, unsigned int x, unsigned int y, int dir, int patternIndex, Goban::Case pattern, Goban::Case double3, int caseIndex, Goban::PION_TYPE pion)
+bool Check(Goban & g, unsigned int x, unsigned int y, int dir, Goban::Case pattern, Goban::Case double3, int caseIndex, Goban::PION_TYPE pion)
 {
     const int moves[8][2] = {
         { 0,-1}, { 1, -1}, { 1, 0}, { 1, 1},
@@ -55,7 +55,6 @@ bool Check(Goban & g, unsigned int x, unsigned int y, int dir, int patternIndex,
         if ((g[ly][lx] & Goban::PIONMASK) != pion)
             return false;
     }
-	if (double3) qDebug() << "pattern: " << double3 << "dir: " << dir << " (" << x << "," << y << ")";
     return true;
 }
 
@@ -66,10 +65,9 @@ Goban::Case Double3(Goban & g, unsigned int x, unsigned int y, int dir, Goban::C
 
     for (int j = 0; j < 9; ++j)
     {
-        if (Check(g, x, y, dir, j, pattern1, patterns[j][0], caseIndex[j][0], pion) &&
-            Check(g, x, y, dir + 4, j, pattern2, patterns[j][1], caseIndex[j][1], pion))
+        if (Check(g, x, y, dir, pattern1, patterns[j][0], caseIndex[j][0], pion) &&
+            Check(g, x, y, dir + 4, pattern2, patterns[j][1], caseIndex[j][1], pion))
         {
-			qDebug() << "trois:" << x << " " << y << "j" << j;
             if (doubleThree >= 0) return -2;
             doubleThree = j;
         }

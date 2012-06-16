@@ -36,9 +36,9 @@ public:
     static const unsigned int HEADERSIZE = 2;
     static const unsigned int PATTERNSIZE = 4;
     static const unsigned int COLORSIZE = 2;
-    static const unsigned int SAFESIZE = 1;
     static const unsigned int CONTENTSIZE = 4;
-
+	static const unsigned int SCOREINDEX = HEADERSIZE + PATTERNSIZE * 8;
+	static const long long int SCOREMASK = 0xFFFF;
     enum PION_TYPE
     {
         EMPTY,
@@ -53,31 +53,26 @@ public:
     void Putin(PION_TYPE, unsigned int, unsigned int);
     void subIn(unsigned int, unsigned int);
 
-   inline unsigned int Goban::getWidth() const
-	{
-		return this->_width;
-	}
-
-	inline unsigned int Goban::getHeight() const
-	{
-		return this->_height;
-	}
-
-	inline bool Goban::InBound(unsigned int x, unsigned int y) const
-	{
-		return x < this->_width && y < this->_height;
-	}
+	inline bool gameFinished(void)								const { return this->_gameFinished; }
+	inline unsigned int getWidth()								const { return this->_width; }
+	inline unsigned int getHeight()								const { return this->_height; }
+	inline Goban::PION_TYPE getWinner()							const { return this->_winner; }
+	inline bool Goban::InBound(unsigned int x, unsigned int y)	const { return x < this->_width && y < this->_height; }
+	inline int deletedStone(Goban::PION_TYPE pion)					  { return this->_deletedStone[pion>>1]; }
+	inline void setGameFinished(bool value)							  { this->_gameFinished = value; }
+	inline void setWinner(Goban::PION_TYPE pion)					  { this->_winner = pion; }
 
 	Case * operator[](unsigned int);
 
 protected:
 
 private:
-    Case _map[19][19];
-    int update_serie(unsigned int i, unsigned int j, int decal_x, int decal_y, int dir, int depth);
-    void update_pattern(unsigned int, unsigned int, int);
+    Case _map[19 * 19];
     unsigned int _width;
     unsigned int _height;
+	bool _gameFinished;
+	int _deletedStone[2];
+	Goban::PION_TYPE _winner;
 };
 
 template<int nbBits>

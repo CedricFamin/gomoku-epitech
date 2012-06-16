@@ -3,11 +3,12 @@
 
 #include <QThread>
 #include "Goban.h"
+#include "Referrer.h"
 
 class AlphaBetaThreading : public QThread
 {
 public:
-    AlphaBetaThreading(Goban &, Goban::Move const &, Goban::PION_TYPE);
+    AlphaBetaThreading(Goban &, Goban::Move const &, Goban::PION_TYPE, Referrer & r);
     int getScore() const;
     Goban::Move const & getMove() const;
 	int eval(Goban & g, Goban::PION_TYPE pion);
@@ -34,12 +35,16 @@ private:
 	int _ooooPattern(Goban &, unsigned int, unsigned int,int, Goban::PION_TYPE);
 	int _emptyPattern(Goban &, unsigned int, unsigned int,int, Goban::PION_TYPE);
 	
+	void update(Goban & g, int x, int y);
 
+	bool _toEval[19*19];
     Goban::Move _move;
     Goban::PION_TYPE _pion;
     Goban _goban;
     int _score;
+	int _scoreTable[19*19];
     std::list<Goban::Move> _moveList;
+	Referrer _referrer;
 
 };
 

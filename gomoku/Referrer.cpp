@@ -3,9 +3,13 @@
 #include "Referrer.h"
 
 
-Referrer::Referrer(Goban & goban) : _goban(&goban), _gameFinished(false)
+Referrer::Referrer(Goban & goban) : _goban(&goban)
 {
 
+}
+
+Referrer::Referrer(Referrer const & r) : _prePlayRules(r._prePlayRules), _playRules(r._playRules), _postPlayRules(r._postPlayRules), _goban(r._goban)
+{
 }
 
 
@@ -17,9 +21,9 @@ bool Referrer::CanPlay(Goban::PION_TYPE pion, int x, int y)
 {
 	bool canPlay = true;
 	
-	if (this->_gameFinished)
+	if (this->_goban->gameFinished())
 		return false;
-    if (!_goban->InBound(x, y))
+    if (!this->_goban->InBound(x, y))
         return false;
 	std::for_each(this->_prePlayRules.begin(), this->_prePlayRules.end(),
 		[this, pion, x, y, &canPlay](Rules::IRule * rule)
@@ -100,20 +104,20 @@ std::list<Referrer::Turn> & Referrer::GetListOfTurn()
 
 bool Referrer::GameFinished() const
 {
-	return this->_gameFinished;
+	return this->_goban->gameFinished();
 }
 
 void Referrer::setGameFinished(bool value)
 {
-	this->_gameFinished = value;
+	this->_goban->setGameFinished(value);
 }
 
 void Referrer::setWinner(Goban::PION_TYPE value)
 {
-	this->_winner = value;
+	this->_goban->setWinner(value);
 }
 
 Goban::PION_TYPE Referrer::Winner() const
 {
-	return this->_winner;
+	return this->_goban->getWinner();
 }
