@@ -2,18 +2,18 @@
 #define CONNECT_FUNCTION_HELPER_H
 
 #include <QObject>
-#include <functional>
+#include <tr1/functional>
 
 class connect_functor_helper : public QObject {
     Q_OBJECT
 public:
-    connect_functor_helper(QObject *parent, const std::function<void()> &f);
+    connect_functor_helper(QObject *parent, const std::tr1::function<void()> &f);
 
 public Q_SLOTS:
     void signaled();
 
 private:
-    std::function<void()> function_;
+    std::tr1::function<void()> function_;
 };
 
 template <class T>

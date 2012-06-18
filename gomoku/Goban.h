@@ -3,7 +3,7 @@
 
 #include <stdio.h>
 
-#include <functional>
+#include <tr1/functional>
 
 template<int direction> struct Moves { };
 template<> struct Moves<0> { enum Values {x = 0, y =-1 };};
@@ -57,7 +57,7 @@ public:
 	inline unsigned int getWidth()								const { return this->_width; }
 	inline unsigned int getHeight()								const { return this->_height; }
 	inline Goban::PION_TYPE getWinner()							const { return this->_winner; }
-	inline bool Goban::InBound(unsigned int x, unsigned int y)	const { return x < this->_width && y < this->_height; }
+    inline bool InBound(unsigned int x, unsigned int y)	const { return x < this->_width && y < this->_height; }
 	inline int deletedStone(Goban::PION_TYPE pion)					  { return this->_deletedStone[pion>>1]; }
 	inline void setGameFinished(bool value)							  { this->_gameFinished = value; }
 	inline void setWinner(Goban::PION_TYPE pion)					  { this->_winner = pion; }

@@ -3,7 +3,7 @@
 
 #include "iplayer.h"
 
-#include "goban.h"
+#include "Goban.h"
 #include "Referrer.h"
 
 class AIPlayer : public IPlayer

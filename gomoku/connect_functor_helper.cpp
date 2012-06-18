@@ -1,6 +1,6 @@
 #include "connect_functor_helper.h"
 
-connect_functor_helper::connect_functor_helper(QObject *parent, const std::function<void()> &f) : QObject(parent), function_(f)
+connect_functor_helper::connect_functor_helper(QObject *parent, const std::tr1::function<void()> &f) : QObject(parent), function_(f)
 {
 }
 

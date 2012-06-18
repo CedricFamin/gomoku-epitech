@@ -2,7 +2,7 @@
 #define PATTERNIDENTIFIER_H
 
 #include <QDebug>
-#include "goban.h"
+#include "Goban.h"
 
 namespace Patterns
 {
@@ -78,15 +78,15 @@ public:
 		bool _leaf;
     };
 
-	template<>
-	class Node<6> 
-	{
-	public:
-		long long int match(Goban & g, unsigned int x, unsigned int y, Goban::Case pion)
-		{
-			return 0;
-		}
-	};
+//    template<>
+//    class Node<6>
+//	{
+//	public:
+//		long long int match(Goban & g, unsigned int x, unsigned int y, Goban::Case pion)
+//		{
+//			return 0;
+//		}
+//	};
 
     PatternIdentifier()
     {

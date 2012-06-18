@@ -1,10 +1,13 @@
 #include  <QtGui/QApplication>
-#include <Windows.h>
+#ifdef _WIN32
+    #include <Windows.h>
+#endif
 #include <QDebug>
+#include <tr1/functional>
 
 #include "connect_functor_helper.h"
 #include "mainwindow.h"
-#include "goban.h"
+#include "Goban.h"
 #include "Rules/EachInTurnRule.h"
 #include "Rules/DoubleThree.h"
 #include "Rules/NotEmptyRule.h"
@@ -115,7 +118,11 @@ int main(int argc, char *argv[])
             finish.exec();
             affWon = true;
         }
+#ifdef _WIN32
         Sleep(100);
+#else
+        sleep(1);
+#endif
     }
     app.exit();
     return 0;

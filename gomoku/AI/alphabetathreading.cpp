@@ -11,9 +11,9 @@
 void print_goban(Goban & g)
 {
 	std::stringstream buffer;
-	for (int y = 0; y < g.getHeight(); ++y)
+    for (unsigned int y = 0; y < g.getHeight(); ++y)
 	{
-		for (int x = 0; x < g.getWidth(); ++x)
+        for (unsigned int x = 0; x < g.getWidth(); ++x)
 		{
 			switch (g[y][x] & Goban::PIONMASK)
 			{

@@ -1,6 +1,6 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "goban.h"
+#include "Goban.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
