@@ -16,7 +16,7 @@ public:
 protected:
     virtual void run();
 private:
-    int alphabeta(Goban::Move &last, Goban &g, int depth, int alpha, int beta, Goban::PION_TYPE pion);
+    int alphabeta(Goban &g, int depth, int alpha, int beta, Goban::PION_TYPE pion);
 
 	int __o_Pattern(Goban &, unsigned int, unsigned int,int, Goban::PION_TYPE);
 	int __ooPattern(Goban &, unsigned int, unsigned int,int, Goban::PION_TYPE);

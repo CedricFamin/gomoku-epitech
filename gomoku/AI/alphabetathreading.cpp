@@ -5,17 +5,38 @@
 #include "PatternIdentifier.h"
 #include "GobanIterator.h"
 
-int countBit(unsigned long long int value, int max)
+#include <iostream>
+#include <sstream>
+
+void print_goban(Goban & g)
 {
-    int count = 0;
-    for (int i = 0; i < max; ++i)
-    {
-        count += value & 1;
-        value >>= 1;
-    }
-    return count;
+	std::stringstream buffer;
+	for (int y = 0; y < g.getHeight(); ++y)
+	{
+		for (int x = 0; x < g.getWidth(); ++x)
+		{
+			switch (g[y][x] & Goban::PIONMASK)
+			{
+			case Goban::BLACK:
+				buffer << "o";
+				break;
+			case Goban::RED:
+				buffer << "x";
+				break;
+			default:
+				buffer << ".";
+			}
+		}
+		buffer << std::endl;
+	}
+	qDebug() << buffer.str().c_str();
 }
 
+AlphaBetaThreading::AlphaBetaThreading(Goban & g, const Goban::Move & m, Goban::PION_TYPE p, Referrer & r)
+    : _move(m), _pion(p), _goban(g), _score(0), _referrer(r)
+{
+	memset(this->_scoreTable, 0, sizeof(*_scoreTable) * 19 * 19);
+}
 
 int AlphaBetaThreading::_emptyPattern(Goban &, unsigned int, unsigned int,int, Goban::PION_TYPE)
 {
@@ -139,7 +160,7 @@ int AlphaBetaThreading::_ooooPattern(Goban & g, unsigned int x, unsigned int y, 
 	unsigned int lx = GobanIterator::direction[dir][0] + x;
 	unsigned int ly = GobanIterator::direction[dir][1] + y;
 	if ((g[ly][lx] & Goban::PIONMASK) == pion)
-		return 100;
+		return 1000;
 	return -35;
 }
 
@@ -183,12 +204,15 @@ int AlphaBetaThreading::eval(Goban & g, Goban::PION_TYPE pion)
 				value = this->_scoreTable[y * 19 + x];
 				currentPion = (Goban::PION_TYPE)(current & Goban::PIONMASK);
 				current >>= Goban::HEADERSIZE;
-				if (!value)
+				if (!value ||1)
 				{
 					if (currentPion == 0 && current)
 						for (unsigned int d = 0; d < 8; ++d, current >>= Goban::PATTERNSIZE)
-							if ((current & Goban::PATTERNMASK) <= Patterns::oooo)
+						{
+							int pattern = (current & Goban::PATTERNMASK);
+							if (pattern == Patterns::oo_)
 								value += (this->*scorings[current & Goban::PATTERNMASK])(g, x, y, d, pion);
+						}
 					this->_scoreTable[y * 19 + x] = value;
 				}
 				score += value;
@@ -208,18 +232,12 @@ std::list<Goban::Move> AlphaBetaThreading::GetTurns(Goban & g,Goban::Move & last
     return possiblesTurns;
 }
 
-
-AlphaBetaThreading::AlphaBetaThreading(Goban & g, const Goban::Move & m, Goban::PION_TYPE p, Referrer & r)
-    : _move(m), _pion(p), _goban(g), _score(0), _referrer(r)
-{
-	memset(this->_scoreTable, 0, sizeof(*_scoreTable) * 19 * 19);
-}
-
 void AlphaBetaThreading::run()
 {
     this->_goban.Putin(this->_pion, this->_move.first, this->_move.second);
+	this->_moveList.push_front(std::make_pair(this->_move.first , this->_move.second));
 	this->eval(this->_goban, this->_pion);
-    this->_score = this->alphabeta(this->_move, this->_goban, 2,
+    this->_score = this->alphabeta(this->_goban, 3,
                                    std::numeric_limits<int>::min() + 1, std::numeric_limits<int>::max(),
                                    (this->_pion == Goban::BLACK) ? Goban::RED: Goban::BLACK);
 }
@@ -238,11 +256,14 @@ void AlphaBetaThreading::update(Goban & g, int x, int y)
 	}
 }
 
-int AlphaBetaThreading::alphabeta(Goban::Move &, Goban & g, int depth, int alpha, int beta, Goban::PION_TYPE pion)
+int AlphaBetaThreading::alphabeta(Goban & g, int depth, int alpha, int beta, Goban::PION_TYPE pion)
 {
 	if (g.gameFinished())
 		return g.getWinner() == pion ? std::numeric_limits<int>::max() : -std::numeric_limits<int>::max();
-    if (depth == 0) return eval(g, pion);
+    if (depth == 0) 
+	{
+		return eval(g, pion);
+	}
     int best = std::numeric_limits<int>::min() + 1;
     for (unsigned int x = 0; x < g.getWidth(); ++x)
     {
@@ -259,7 +280,7 @@ int AlphaBetaThreading::alphabeta(Goban::Move &, Goban & g, int depth, int alpha
 				this->_referrer.AfterPlay();
 				update(g, x, y);
 				this->_moveList.push_front(std::make_pair(x , y));
-				value = -alphabeta(this->_move, s, depth - 1, -beta, -alpha, (pion == Goban::BLACK) ? Goban::RED: Goban::BLACK);
+				value = -alphabeta(s, depth - 1, -beta, -alpha, (pion == Goban::BLACK) ? Goban::RED: Goban::BLACK);
 				update(g, x, y);
 				this->_moveList.pop_front();
 				if (value > best)
