@@ -110,14 +110,14 @@ bool winningAlignment(Goban & g, int size, int dir, int x, int y, Goban::PION_TY
 	return false;
 }
 
-bool VictoryAlignment::execute(Referrer & r, Goban::PION_TYPE pion, unsigned int x, unsigned int y)
+bool VictoryAlignment::execute(Goban & g, Goban::PION_TYPE pion, unsigned int x, unsigned int y)
 {
     const int direction[8][2] = {
         { 0,-1}, { 1, -1}, { 1, 0}, { 1, 1},
         {0, 1}, {-1, 1}, { -1,0}, { -1,-1}
     };
 
-    Goban::Case cCase = r.getGoban()[y][x] >> Goban::HEADERSIZE;
+    Goban::Case cCase = g[y][x] >> Goban::HEADERSIZE;
     Goban::Case pattern1, pattern2;
 	unsigned int lx, ly;
 
@@ -131,22 +131,22 @@ bool VictoryAlignment::execute(Referrer & r, Goban::PION_TYPE pion, unsigned int
 		}
 		return breaked;
 	});*/
-	if (r.GameFinished()) return true;
+	if (g.gameFinished()) return true;
     for (int i = 0; i < 4; ++i)
     {
         int maxAlign = 0;
         pattern1 = cCase & Goban::PATTERNMASK;
         pattern2 = (cCase >> (Goban::PATTERNSIZE * 4)) & Goban::PATTERNMASK;
-        maxAlign += GetAlign(r.getGoban(), x+direction[i][0], y+direction[i][1], pattern1, pion);
+        maxAlign += GetAlign(g, x+direction[i][0], y+direction[i][1], pattern1, pion);
 		lx = x + direction[i][0] * maxAlign;
 		ly = y + direction[i][1] * maxAlign;
-        maxAlign += GetAlign(r.getGoban(), x-direction[i][0], y-direction[i][1], pattern2, pion);
+        maxAlign += GetAlign(g, x-direction[i][0], y-direction[i][1], pattern2, pion);
 		if (maxAlign >= 4)
         {
-			if (winningAlignment(r.getGoban(), maxAlign, i, lx, ly, pion))
+			if (winningAlignment(g, maxAlign, i, lx, ly, pion))
 			{
-				r.setGameFinished(true);
-				r.setWinner(pion);
+				g.setGameFinished(true);
+				g.setWinner(pion);
 				return true;
 			}
 			else

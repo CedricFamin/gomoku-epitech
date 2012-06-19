@@ -75,10 +75,10 @@ Goban::Case Double3(Goban & g, unsigned int x, unsigned int y, int dir, Goban::C
     return doubleThree;
 }
 
-bool DoubleThree::execute(Referrer & r, Goban::PION_TYPE pion, unsigned int x, unsigned int y)
+bool DoubleThree::execute(Goban & g, Goban::PION_TYPE pion, unsigned int x, unsigned int y)
 {
     int doublethree = 0, result, subresult;
-	Goban::Case cCase = r.getGoban()[y][x] >> Goban::HEADERSIZE, subCase;
+	Goban::Case cCase = g[y][x] >> Goban::HEADERSIZE, subCase;
     static const Goban::Case double3[9][2] = {
         {Patterns::o_, Patterns::o_},
         {Patterns::oo_, 0},
@@ -99,7 +99,7 @@ bool DoubleThree::execute(Referrer & r, Goban::PION_TYPE pion, unsigned int x, u
 	{
         pattern1 = cCase & Goban::PATTERNMASK;
         pattern2 = (cCase >> (Goban::PATTERNSIZE * 4)) & Goban::PATTERNMASK;
-        result = Double3(r.getGoban(), x, y, dir, pattern1, pattern2, double3, pion);
+        result = Double3(g, x, y, dir, pattern1, pattern2, double3, pion);
         switch(result)
         {
         case -2: return false;
@@ -110,14 +110,14 @@ bool DoubleThree::execute(Referrer & r, Goban::PION_TYPE pion, unsigned int x, u
             {
                 lx = x + moves[dir][0] * caseIndex[result][iCase];
                 ly = y + moves[dir][1] * caseIndex[result][iCase];
-                subCase = r.getGoban()[ly][lx] >> Goban::HEADERSIZE;
+                subCase = g[ly][lx] >> Goban::HEADERSIZE;
                 for (int subDir = 0; subDir < 4; ++subDir)
                 {
                     if (subDir != dir)
                     {
                         pattern1 = subCase & Goban::PATTERNMASK;
                         pattern2 = (subCase >> (Goban::PATTERNSIZE * 4)) & Goban::PATTERNMASK;
-                        subresult = Double3(r.getGoban(), lx, ly, subDir, pattern1, pattern2, double3, pion);
+                        subresult = Double3(g, lx, ly, subDir, pattern1, pattern2, double3, pion);
                         if (subresult != -1) return false;
                     }
                     subCase >>= Goban::PATTERNSIZE;

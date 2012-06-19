@@ -26,7 +26,7 @@ bool NotEmptyRule::isEnable() const
 	return this->_enable;
 }
 
-bool NotEmptyRule::execute(Referrer & r, Goban::PION_TYPE, unsigned int x, unsigned int y)
+bool NotEmptyRule::execute(Goban & g, Goban::PION_TYPE, unsigned int x, unsigned int y)
 {
-    return ((r.getGoban()[y][x] & Goban::PIONMASK) == 0);
+    return ((g[y][x] & Goban::PIONMASK) == 0);
 }

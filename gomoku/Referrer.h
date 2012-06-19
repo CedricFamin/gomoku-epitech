@@ -9,37 +9,14 @@
 class Referrer
 {
 public:
-	struct Turn
-	{
-		unsigned int x;
-		unsigned int y;
-		Goban::PION_TYPE pion;
-		bool validate;
-        std::list<std::pair<unsigned int, unsigned int> > captures;
-	};
-
-	Referrer(Goban &);
+	Referrer();
 	Referrer(Referrer const &);
 	~Referrer(void);
 
-	bool CanPlay(Goban::PION_TYPE, int, int);
-	bool Play();
-	bool AfterPlay();
-
-	bool GameFinished() const;
-	void setGameFinished(bool);
-	Goban::PION_TYPE Winner() const;
-	void setWinner(Goban::PION_TYPE);
-	
+	bool operator()(Goban & g, Goban::PION_TYPE, unsigned int, unsigned int);
 	void addPrePlayRule(Rules::IRule &);
 	void addPlayRule(Rules::IRule &);
 	void addPostPlayRule(Rules::IRule &);
-
-    std::list<Turn> &GetListOfTurn();
-
-	Goban & getGoban() const;
-    void setGoban(Goban & g);
-
 protected:
 
 private:
@@ -47,9 +24,6 @@ private:
 	std::list<Rules::IRule*> _prePlayRules;
 	std::list<Rules::IRule*> _playRules;
 	std::list<Rules::IRule*> _postPlayRules;
-	std::list<Turn> _playedTurns;
-    Goban * _goban;
-	Turn _currentTurn;
 };
 
 #endif

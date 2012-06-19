@@ -26,7 +26,7 @@ bool EachInTurnRule::isEnable() const
 	return this->_enable;
 }
 
-bool EachInTurnRule::execute(Referrer & r, Goban::PION_TYPE pion, unsigned int, unsigned int)
+bool EachInTurnRule::execute(Goban & g, Goban::PION_TYPE pion, unsigned int, unsigned int)
 {
-	return r.GetListOfTurn().size() == 0 || r.GetListOfTurn().back().pion != pion;
+	return g.Turns().size() == 0 || g.Turns().back().pion != pion;
 }

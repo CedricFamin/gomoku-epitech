@@ -2,7 +2,11 @@
 #define CONNECT_FUNCTION_HELPER_H
 
 #include <QObject>
+#ifndef WIN32
 #include <tr1/functional>
+#else
+#include <functional>
+#endif
 
 class connect_functor_helper : public QObject {
     Q_OBJECT

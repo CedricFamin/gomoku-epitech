@@ -3,7 +3,11 @@
     #include <Windows.h>
 #endif
 #include <QDebug>
+#ifndef WIN32
 #include <tr1/functional>
+#else
+#include <functional>
+#endif
 
 #include "connect_functor_helper.h"
 #include "mainwindow.h"
@@ -82,7 +86,7 @@ int main(int argc, char *argv[])
     GobanQt & uiGoban = win.getGoban();
 
     Goban goban;
-    Referrer referrer(goban);
+    Referrer referrer;
     Rules::TakingRules * tkrule = new Rules::TakingRules();
     IPlayer * currentPlayer;
     bool affWon = false;
@@ -93,26 +97,26 @@ int main(int argc, char *argv[])
     referrer.addPlayRule(*tkrule);
     referrer.addPostPlayRule(*(new Rules::VictoryCapturesRule()));
     referrer.addPostPlayRule(*(new Rules::VictoryAlignment()));
-
+	
     win.show();
     while (!win.IsClosed())
     {
-        currentPlayer = uiGoban.currentPlayer(referrer.GetListOfTurn().size());
+		currentPlayer = uiGoban.currentPlayer(goban.Turns().size());
         if (app.hasPendingEvents())
             app.processEvents();
-        if (referrer.GameFinished() == false)
-            currentPlayer->play(referrer, std::tr1::bind(&GobanQt::PlayAt, &uiGoban, std::tr1::placeholders::_1, std::tr1::placeholders::_2, std::tr1::placeholders::_3));
+		if (goban.gameFinished() == false)
+            currentPlayer->play(referrer, goban, std::tr1::bind(&GobanQt::PlayAt, &uiGoban, std::tr1::placeholders::_1, std::tr1::placeholders::_2, std::tr1::placeholders::_3));
 
-        if (referrer.GetListOfTurn().size())
+        if (goban.Turns().size())
         {
-            auto coordinates = referrer.GetListOfTurn().back().captures;
+            auto coordinates = goban.Turns().back().captures;
             std::for_each(coordinates.begin(), coordinates.end(),
             [&uiGoban](std::pair<unsigned int, unsigned int> & p)
             {
                 uiGoban.deleteStoneAt(p.first, p.second);
             });
         }
-        if (referrer.GameFinished() && !affWon)
+        if (goban.gameFinished() && !affWon)
         {
             Finished finish;
             finish.exec();

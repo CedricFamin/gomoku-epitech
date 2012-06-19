@@ -45,6 +45,7 @@ int AlphaBetaThreading::_emptyPattern(Goban &, unsigned int, unsigned int,int, G
 
 int AlphaBetaThreading::__o_Pattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
 {
+	return 0;
 	unsigned int lx = GobanIterator::direction[dir][0] * 2 + x;
 	unsigned int ly = GobanIterator::direction[dir][1] * 2 + y;
 	if ((g[ly][lx] & Goban::PIONMASK) == pion)
@@ -53,6 +54,7 @@ int AlphaBetaThreading::__o_Pattern(Goban & g, unsigned int x, unsigned int y, i
 }
 int AlphaBetaThreading::__ooPattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
 {
+	return 0;
 	unsigned int lx = GobanIterator::direction[dir][0] * 2 + x;
 	unsigned int ly = GobanIterator::direction[dir][1] * 2 + y;
 	if ((g[ly][lx] & Goban::PIONMASK) == pion)
@@ -61,6 +63,7 @@ int AlphaBetaThreading::__ooPattern(Goban & g, unsigned int x, unsigned int y, i
 }
 int AlphaBetaThreading::__oo_Pattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
 {
+	return 0;
 	unsigned int lx = GobanIterator::direction[dir][0] * 2 + x;
 	unsigned int ly = GobanIterator::direction[dir][1] * 2 + y;
 	if ((g[ly][lx] & Goban::PIONMASK) == pion)
@@ -69,6 +72,7 @@ int AlphaBetaThreading::__oo_Pattern(Goban & g, unsigned int x, unsigned int y, 
 }
 int AlphaBetaThreading::__ooxPattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
 {
+	return 0;
 	unsigned int lx = GobanIterator::direction[dir][0] * 2 + x;
 	unsigned int ly = GobanIterator::direction[dir][1] * 2 + y;
 	if ((g[ly][lx] & Goban::PIONMASK) == pion)
@@ -77,6 +81,7 @@ int AlphaBetaThreading::__ooxPattern(Goban & g, unsigned int x, unsigned int y, 
 }
 int AlphaBetaThreading::__oooPattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
 {
+	return 0;
 	unsigned int lx = GobanIterator::direction[dir][0] * 2 + x;
 	unsigned int ly = GobanIterator::direction[dir][1] * 2 + y;
 	if ((g[ly][lx] & Goban::PIONMASK) == pion)
@@ -93,6 +98,7 @@ int AlphaBetaThreading::_o_Pattern(Goban & g, unsigned int x, unsigned int y, in
 }
 int AlphaBetaThreading::_o_o_Pattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
 {
+	return 0;
 	unsigned int lx = GobanIterator::direction[dir][0] * 2 + x;
 	unsigned int ly = GobanIterator::direction[dir][1] * 2 + y;
 	if ((g[ly][lx] & Goban::PIONMASK) == pion)
@@ -101,6 +107,7 @@ int AlphaBetaThreading::_o_o_Pattern(Goban & g, unsigned int x, unsigned int y, 
 }
 int AlphaBetaThreading::_oxPattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
 {
+	return 0;
 	unsigned int lx = GobanIterator::direction[dir][0] + x;
 	unsigned int ly = GobanIterator::direction[dir][1] + y;
 	if ((g[ly][lx] & Goban::PIONMASK) == pion)
@@ -109,6 +116,7 @@ int AlphaBetaThreading::_oxPattern(Goban & g, unsigned int x, unsigned int y, in
 }
 int AlphaBetaThreading::_ooPattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
 {
+	return 0;
 	unsigned int lx = GobanIterator::direction[dir][0] + x;
 	unsigned int ly = GobanIterator::direction[dir][1] + y;
 	if ((g[ly][lx] & Goban::PIONMASK) == pion)
@@ -125,6 +133,7 @@ int AlphaBetaThreading::_ooPattern(Goban & g, unsigned int x, unsigned int y, in
 }
 int AlphaBetaThreading::_ooxPattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
 {
+	return 0;
 	unsigned int lx = GobanIterator::direction[dir][0] + x;
 	unsigned int ly = GobanIterator::direction[dir][1] + y;
 	if ((g[ly][lx] & Goban::PIONMASK) == pion)
@@ -157,10 +166,11 @@ int AlphaBetaThreading::_oooxPattern(Goban & g, unsigned int x, unsigned int y, 
 }
 int AlphaBetaThreading::_ooooPattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
 {
+	
 	unsigned int lx = GobanIterator::direction[dir][0] + x;
 	unsigned int ly = GobanIterator::direction[dir][1] + y;
 	if ((g[ly][lx] & Goban::PIONMASK) == pion)
-		return 1000;
+		return 60;
 	return -35;
 }
 
@@ -227,19 +237,24 @@ std::list<Goban::Move> AlphaBetaThreading::GetTurns(Goban & g,Goban::Move & last
     std::list<Goban::Move> possiblesTurns;
 	for (unsigned int x = 0; x < g.getWidth(); ++x) 
         for (unsigned int y = 0; y < g.getHeight(); ++y)
-			if (!(g[y][x] & Goban::PIONMASK) && ((g[y][x] & ~Goban::PIONMASK) || (abs((int)x - (int)last.first) <= 1 && abs((int)y - (int)last.second) <= 1)))
+			if (!(g[y][x] & Goban::PIONMASK) && ((g[y][x] & ~Goban::PIONMASK)))
 				possiblesTurns.push_back(std::make_pair(x, y));
     return possiblesTurns;
 }
 
 void AlphaBetaThreading::run()
 {
-    this->_goban.Putin(this->_pion, this->_move.first, this->_move.second);
-	this->_moveList.push_front(std::make_pair(this->_move.first , this->_move.second));
-	this->eval(this->_goban, this->_pion);
-    this->_score = this->alphabeta(this->_goban, 3,
-                                   std::numeric_limits<int>::min() + 1, std::numeric_limits<int>::max(),
-                                   (this->_pion == Goban::BLACK) ? Goban::RED: Goban::BLACK);
+	if (this->_referrer(this->_goban, this->_pion, this->_move.first, this->_move.second))
+	{
+		print_goban(this->_goban);
+		this->_moveList.push_front(std::make_pair(this->_move.first , this->_move.second));
+		this->eval(this->_goban, this->_pion);
+		this->_score = this->alphabeta(this->_goban, 0,
+			                           std::numeric_limits<int>::min() + 1, std::numeric_limits<int>::max(),
+				                       (this->_pion == Goban::BLACK) ? Goban::RED: Goban::BLACK);
+	}
+	else
+		this->_score = -std::numeric_limits<int>::max();
 }
 
 void AlphaBetaThreading::update(Goban & g, int x, int y)
@@ -259,7 +274,10 @@ void AlphaBetaThreading::update(Goban & g, int x, int y)
 int AlphaBetaThreading::alphabeta(Goban & g, int depth, int alpha, int beta, Goban::PION_TYPE pion)
 {
 	if (g.gameFinished())
+	{
 		return g.getWinner() == pion ? std::numeric_limits<int>::max() : -std::numeric_limits<int>::max();
+	}
+	qDebug() << "text";
     if (depth == 0) 
 	{
 		return eval(g, pion);
@@ -273,11 +291,8 @@ int AlphaBetaThreading::alphabeta(Goban & g, int depth, int alpha, int beta, Gob
 			
 			int value = 0;
 			Goban s = g;
-			this->_referrer.setGoban(s);
-			if (this->_referrer.CanPlay(pion, x, y))
+			if (this->_referrer(g, pion, x, y))
 			{
-				this->_referrer.Play();
-				this->_referrer.AfterPlay();
 				update(g, x, y);
 				this->_moveList.push_front(std::make_pair(x , y));
 				value = -alphabeta(s, depth - 1, -beta, -alpha, (pion == Goban::BLACK) ? Goban::RED: Goban::BLACK);

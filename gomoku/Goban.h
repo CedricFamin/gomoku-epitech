@@ -3,7 +3,13 @@
 
 #include <stdio.h>
 
+#ifndef WIN32
 #include <tr1/functional>
+#else
+#include <functional>
+#endif
+
+#include <list>
 
 template<int direction> struct Moves { };
 template<> struct Moves<0> { enum Values {x = 0, y =-1 };};
@@ -46,6 +52,16 @@ public:
         RED = 0x2
     };
 
+	struct Turn
+	{
+		inline Turn(PION_TYPE p, unsigned int x, unsigned int y) : pion(p), x(x), y(y) {}
+		unsigned int x;
+		unsigned int y;
+		Goban::PION_TYPE pion;
+		bool validate;
+        std::list<std::pair<unsigned int, unsigned int> > captures;
+	};
+
     Goban();
     Goban(Goban const &);
     ~Goban(void);
@@ -61,6 +77,7 @@ public:
 	inline int deletedStone(Goban::PION_TYPE pion)					  { return this->_deletedStone[pion>>1]; }
 	inline void setGameFinished(bool value)							  { this->_gameFinished = value; }
 	inline void setWinner(Goban::PION_TYPE pion)					  { this->_winner = pion; }
+	inline std::list<Turn> & Turns()								  { return this->_turnList; }
 
 	Case * operator[](unsigned int);
 
@@ -73,6 +90,7 @@ private:
 	bool _gameFinished;
 	int _deletedStone[2];
 	Goban::PION_TYPE _winner;
+	std::list<Turn> _turnList;
 };
 
 template<int nbBits>

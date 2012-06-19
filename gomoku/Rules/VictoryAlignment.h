@@ -17,7 +17,7 @@ namespace Rules
 		virtual void enable();
 		virtual void disable();
 		virtual bool isEnable() const;
-		virtual bool execute(Referrer &, Goban::PION_TYPE, unsigned int, unsigned int);
+		virtual bool execute(Goban &, Goban::PION_TYPE, unsigned int, unsigned int);
 
 	private:
         int GetAlign(Goban & g, unsigned int x, unsigned int y, Goban::Case pattern, Goban::PION_TYPE pion);

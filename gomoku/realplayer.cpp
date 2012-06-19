@@ -9,14 +9,12 @@ Goban::PION_TYPE RealPlayer::getColor() const
     return this->_color;
 }
 
-void RealPlayer::play(Referrer & r, callback_type callback)
+void RealPlayer::play(Referrer & r, Goban & g, callback_type callback)
 {
 	if (this->_ui.move.first == -1 || this->_ui.move.second == -1)
 		return ;
-    if (r.CanPlay(this->getColor(), this->_ui.move.first, this->_ui.move.second))
+    if (r(g, this->getColor(), this->_ui.move.first, this->_ui.move.second))
     {
-        r.Play();
-        r.AfterPlay();
         callback(this->getColor(), this->_ui.move.first, this->_ui.move.second);
 		this->_ui.move.first = -1;
 		this->_ui.move.second = -1;

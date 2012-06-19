@@ -26,16 +26,16 @@ bool VictoryCapturesRule::isEnable() const
 	return this->_enable;
 }
 
-bool VictoryCapturesRule::execute(Referrer & r, Goban::PION_TYPE, unsigned int, unsigned int)
+bool VictoryCapturesRule::execute(Goban & g, Goban::PION_TYPE, unsigned int, unsigned int)
 {
-	if (r.getGoban().deletedStone(Goban::BLACK) >= 10 ||
-		r.getGoban().deletedStone(Goban::RED) >= 10)
+	if (g.deletedStone(Goban::BLACK) >= 10 ||
+		g.deletedStone(Goban::RED) >= 10)
 	{
-		if (r.getGoban().deletedStone(Goban::RED) >= 10)
-			r.setWinner(Goban::RED);
+		if (g.deletedStone(Goban::RED) >= 10)
+			g.setWinner(Goban::RED);
 		else
-			r.setWinner(Goban::BLACK);
-		r.setGameFinished(true);
+			g.setWinner(Goban::BLACK);
+		g.setGameFinished(true);
 		return true;
 	}
 	return false;

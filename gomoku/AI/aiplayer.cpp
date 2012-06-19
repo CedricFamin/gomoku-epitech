@@ -18,24 +18,22 @@ Goban::PION_TYPE AIPlayer::getColor() const
     return this->_color;
 }
 
-void AIPlayer::play(Referrer & r, callback_type callback)
+void AIPlayer::play(Referrer & r, Goban & g, callback_type callback)
 {
     Move move;
-    if (r.GetListOfTurn().size() == 0)
+    if (g.Turns().size() == 0)
     {
         move.first = 9;
         move.second = 9;
     }
     else
     {
-        move.first = r.GetListOfTurn().back().x;
-        move.second = r.GetListOfTurn().back().y;
-        move = this->alphabeta(move, r.getGoban(), r);
+        move.first = g.Turns().back().x;
+        move.second = g.Turns().back().y;
+        move = this->alphabeta(move, g, r);
     }
-    if (r.CanPlay(this->getColor(), move.first, move.second))
+    if (r(g, this->getColor(), move.first, move.second))
     {
-        r.Play();
-        r.AfterPlay();
         callback(this->getColor(), move.first, move.second);
     }
 }
@@ -66,6 +64,5 @@ AIPlayer::Move AIPlayer::alphabeta(Move & last, Goban & g, Referrer & r)
         }
         delete worker;
     });
-
     return bestMove;
 }
