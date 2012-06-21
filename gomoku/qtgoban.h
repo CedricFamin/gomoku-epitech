@@ -38,6 +38,10 @@ public:
     IPlayer* currentPlayer(int turn);
     std::pair<int, int> move;
     void deleteStoneAt(unsigned int x, unsigned int y);
+    unsigned int getX() const;
+    unsigned int getY() const;
+    unsigned short getCapturedStoneBlack() const;
+    unsigned short getCapturedStoneWhite() const;
     ~GobanQt();
 protected:
     void mousePressEvent (QMouseEvent* e);
@@ -48,8 +52,13 @@ private:
     Referrer * referrer;
     std::list<std::pair<unsigned int, unsigned int> > coordinates;
     IPlayer * _players[2];
+    unsigned int x;
+    unsigned int y;
+    unsigned short capturedStoneBlack;
+    unsigned short capturedStoneWhite;
 signals:
     void clicked();
+    void captured();
 };
 
 #endif // GOBAN_H

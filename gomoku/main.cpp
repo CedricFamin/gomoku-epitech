@@ -90,7 +90,6 @@ int main(int argc, char *argv[])
     Rules::TakingRules * tkrule = new Rules::TakingRules();
     IPlayer * currentPlayer;
     bool affWon = false;
-    //QObject::connect(win.getUi().ui.actionAbout_Qt, SIGNAL(triggered()), app, SLOT(aboutQt()));
     referrer.addPrePlayRule(*(new Rules::EachInTurnRule()));
     //referrer.addPrePlayRule(*(new Rules::DoubleThree()));
     referrer.addPrePlayRule(*(new Rules::NotEmptyRule()));
