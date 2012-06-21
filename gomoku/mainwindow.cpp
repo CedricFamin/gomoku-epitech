@@ -24,6 +24,11 @@ MainWindow::~MainWindow()
     delete label;
 }
 
+Ui::MainWindow& MainWindow::getUi() const
+{
+    return *this->ui;
+}
+
 void MainWindow::checkTurn()
 {
     this->playerTurn = this->label->getPlayerTurn();

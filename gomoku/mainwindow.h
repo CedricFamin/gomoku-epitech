@@ -20,6 +20,7 @@ public:
     ~MainWindow();
     bool IsClosed() const;
     GobanQt & getGoban();
+    Ui::MainWindow& getUi() const;
 
 protected:
     void closeEvent(QCloseEvent* event);

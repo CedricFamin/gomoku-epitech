@@ -29,12 +29,12 @@ bool GobanIterator::operator==(GobanIterator const & it) const
 		return true;
 	if (this->_baseX == it._baseX && this->_baseY == it._baseY && this->_maxX == it._maxX && this->_maxY == it._maxY)
 	{
-		if (this->_position >= 0 && this->_position < 8)
+        if (this->_position < 8)
 		{
-			if (it._position >= 0 && it._position < 8)
+            if (it._position < 8)
 				return this->_position == it._position;
 		}
-		else if (it._position >= 0 && it._position < 8) return false;
+        else if (it._position < 8) return false;
 		else return true;
 	}
 	return false;

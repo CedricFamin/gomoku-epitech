@@ -67,7 +67,6 @@ void GobanQt::mousePressEvent(QMouseEvent* e)
 {
     if (e->button() == Qt::LeftButton)
     {
-
         for (unsigned short i = 0; i < 361; ++i)
         {
             if (this->square[i].y <= e->y() && this->square[i].x <= e->x() && (18 + this->square[i].x) >= e->x() && (this->square[i].y + 18) >= e->y())

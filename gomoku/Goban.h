@@ -55,9 +55,9 @@ public:
 	struct Turn
 	{
 		inline Turn(PION_TYPE p, unsigned int x, unsigned int y) : pion(p), x(x), y(y) {}
-		unsigned int x;
+        Goban::PION_TYPE pion;
+        unsigned int x;
 		unsigned int y;
-		Goban::PION_TYPE pion;
 		bool validate;
         std::list<std::pair<unsigned int, unsigned int> > captures;
 	};
