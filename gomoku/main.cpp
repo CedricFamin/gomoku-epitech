@@ -82,16 +82,17 @@ private:
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
-    MainWindow win;
+	Goban goban;
+	MainWindow win;
     GobanQt & uiGoban = win.getGoban();
+	connect(&win, SIGNAL(newGameSignal()), std::tr1::bind(&Goban::clear, &goban));
 
-    Goban goban;
     Referrer referrer;
     Rules::TakingRules * tkrule = new Rules::TakingRules();
     IPlayer * currentPlayer;
     bool affWon = false;
     referrer.addPrePlayRule(*(new Rules::EachInTurnRule()));
-    //referrer.addPrePlayRule(*(new Rules::DoubleThree()));
+    referrer.addPrePlayRule(*(new Rules::DoubleThree()));
     referrer.addPrePlayRule(*(new Rules::NotEmptyRule()));
     referrer.addPlayRule(*tkrule);
     referrer.addPostPlayRule(*(new Rules::VictoryCapturesRule()));

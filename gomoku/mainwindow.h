@@ -21,6 +21,9 @@ public:
     bool IsClosed() const;
     GobanQt & getGoban();
 
+signals:
+	void newGameSignal();
+
 protected:
     void closeEvent(QCloseEvent* event);
     

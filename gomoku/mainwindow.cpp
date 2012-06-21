@@ -34,6 +34,7 @@ void MainWindow::newGame()
     this->ui->label_19->setText(QString::number(0));
     this->ui->label_20->setText(QString::number(0));
     this->label->newGame();
+	emit this->newGameSignal();
 }
 
 void MainWindow::checkTurn()

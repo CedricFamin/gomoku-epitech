@@ -1,7 +1,6 @@
 #include "Goban.h"
 
 #include <iterator>
-#include <QDebug>
 #include "GobanIterator.h"
 #include "PatternIdentifier.h"
 
@@ -156,5 +155,6 @@ void Goban::clear()
 	this->_deletedStone[1] = 0;
 	this->_winner = EMPTY;
 	this->_gameFinished = false;
+	this->_turnList.clear();
 	memset(this->_map, 0, this->_height * this->_width * sizeof(*this->_map));
 }
