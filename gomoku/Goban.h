@@ -78,7 +78,7 @@ public:
 	inline unsigned int getHeight()								const { return this->_height; }
 	inline Goban::PION_TYPE getWinner()							const { return this->_winner; }
     inline bool InBound(unsigned int x, unsigned int y)	const { return x < this->_width && y < this->_height; }
-	inline int deletedStone(Goban::PION_TYPE pion)					  { return this->_deletedStone[pion>>1]; }
+	inline int const deletedStone(Goban::PION_TYPE pion)		const { return this->_deletedStone[pion>>1]; }
 	inline void setGameFinished(bool value)							  { this->_gameFinished = value; }
 	inline void setWinner(Goban::PION_TYPE pion)					  { this->_winner = pion; }
 	inline std::list<Turn> & Turns()								  { return this->_turnList; }
