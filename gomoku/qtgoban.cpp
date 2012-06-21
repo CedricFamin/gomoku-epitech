@@ -37,10 +37,10 @@ GobanQt::GobanQt(QMainWindow *parent, QPixmap Image) :
         x = 1;
         y += 19;
     }
-    this->_players[0] = new AIPlayer(Goban::BLACK);
-    this->_players[1] = new AIPlayer(Goban::RED);
-    //this->_players[0] = new RealPlayer(Goban::BLACK, *this);
-    //this->_players[1] = new RealPlayer(Goban::RED, *this);
+    //this->_players[0] = new AIPlayer(Goban::BLACK);
+    //this->_players[1] = new AIPlayer(Goban::RED);
+    this->_players[0] = new RealPlayer(Goban::BLACK, *this);
+    this->_players[1] = new RealPlayer(Goban::RED, *this);
 
     move.first = -1;
     move.second = -1;
@@ -104,10 +104,7 @@ void GobanQt::mousePressEvent(QMouseEvent* e)
 
 void GobanQt::deleteStoneAt(unsigned int x, unsigned int y)
 {
-    if (playerTurn)
-        this->capturedStoneBlack += 1;
-    else
-        this->capturedStoneWhite += 1;
+    playerTurn ? this->capturedStoneBlack += 1 : this->capturedStoneWhite += 1;
     unsigned int stoneToDelete = x + (y * 19);
     this->square[stoneToDelete].isEmpty = true;
     this->square[stoneToDelete].image->clear();
@@ -149,6 +146,18 @@ unsigned short GobanQt::getCapturedStoneBlack() const
 unsigned short GobanQt::getCapturedStoneWhite() const
 {
     return this->capturedStoneWhite;
+}
+
+void GobanQt::newGame()
+{
+    this->playerTurn = false;
+    this->x = 0;
+    this->y = 0;
+    for (unsigned short i = 0; i < 361; ++i)
+    {
+        this->square[i].isEmpty = true;
+        this->square[i].image->clear();
+    }
 }
 
 IPlayer * GobanQt::currentPlayer(int turn)

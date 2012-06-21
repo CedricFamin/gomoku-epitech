@@ -32,9 +32,9 @@ private:
 
 private slots:
     void checkTurn();
-    void newGame();
     void displaySquareInformations();
     void capturedStone();
+    void newGame();
 };
 
 #endif // MAINWINDOW_H

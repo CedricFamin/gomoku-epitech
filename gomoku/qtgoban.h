@@ -42,6 +42,7 @@ public:
     unsigned int getY() const;
     unsigned short getCapturedStoneBlack() const;
     unsigned short getCapturedStoneWhite() const;
+    void newGame();
     ~GobanQt();
 protected:
     void mousePressEvent (QMouseEvent* e);

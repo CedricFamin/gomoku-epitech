@@ -27,13 +27,18 @@ MainWindow::~MainWindow()
     delete label;
 }
 
+void MainWindow::newGame()
+{
+    this->ui->label_8->setText(QString::number(0));
+    this->ui->label_9->setText(QString::number(0));
+    this->ui->label_19->setText(QString::number(0));
+    this->ui->label_20->setText(QString::number(0));
+    this->label->newGame();
+}
+
 void MainWindow::checkTurn()
 {
-    this->playerTurn = this->label->getPlayerTurn();
-    if (!this->playerTurn)
-        ui->label_11->setText(QString("Player 1"));
-    else
-        ui->label_11->setText(QString("Player 2"));
+    (this->playerTurn = this->label->getPlayerTurn()) ? ui->label_11->setText(QString("Player 2")) : ui->label_11->setText(QString("Player 1"));
 }
 
 void MainWindow::capturedStone()
@@ -52,12 +57,8 @@ void MainWindow::displaySquareInformations()
     this->ui->label_9->setText(QString::number(y));
 }
 
-void MainWindow::newGame()
+void MainWindow::closeEvent(QCloseEvent* event)
 {
-
-}
-
-void MainWindow::closeEvent(QCloseEvent* event) {
     event->accept();
     closed = true;
 }
