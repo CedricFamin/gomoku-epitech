@@ -20,7 +20,6 @@ public:
     ~MainWindow();
     bool IsClosed() const;
     GobanQt & getGoban();
-    Ui::MainWindow& getUi() const;
 
 protected:
     void closeEvent(QCloseEvent* event);
@@ -35,6 +34,7 @@ private slots:
     void checkTurn();
     void newGame();
     void displaySquareInformations();
+    void capturedStone();
 };
 
 #endif // MAINWINDOW_H

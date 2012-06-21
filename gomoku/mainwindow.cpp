@@ -8,6 +8,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
     ui->setupUi(this);
     this->setFixedSize(1063, 648);
+    ui->label_19->setText(QString::number(0));
+    ui->label_20->setText(QString::number(0));
     this->setStyleSheet("QMainWindow {image : url(:/new/prefix1/creation.png)}");
     label = new GobanQt(this, QString(":/new/prefix1/goban.gif"));
     ui->verticalLayout_2->insertWidget(0, label);
@@ -15,6 +17,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(this->label, SIGNAL(clicked()), this, SLOT(checkTurn()));
     connect(ui->actionNew_game, SIGNAL(triggered()), this, SLOT(newGame()));
     connect(this->label, SIGNAL(clicked()), this, SLOT(displaySquareInformations()));
+    connect(this->label, SIGNAL(captured()), this, SLOT(capturedStone()));
     closed = false;
 }
 
@@ -22,11 +25,6 @@ MainWindow::~MainWindow()
 {
     delete ui;
     delete label;
-}
-
-Ui::MainWindow& MainWindow::getUi() const
-{
-    return *this->ui;
 }
 
 void MainWindow::checkTurn()
@@ -38,13 +36,20 @@ void MainWindow::checkTurn()
         ui->label_11->setText(QString("Player 2"));
 }
 
+void MainWindow::capturedStone()
+{
+    this->ui->label_20->setText(QString::number(this->label->getCapturedStoneBlack()));
+    this->ui->label_19->setText(QString::number(this->label->getCapturedStoneWhite()));
+}
+
 void MainWindow::displaySquareInformations()
 {
-    int informationSquare = this->label->getInformation();
+    unsigned int x = this->label->getX();
+    unsigned int y = this->label->getY();
     this->ui->label_6->text();
     this->ui->label_7->text();
-    this->ui->label_8->setText(QString::number(informationSquare / 19));
-    this->ui->label_9->setText(QString::number(informationSquare % 19));
+    this->ui->label_8->setText(QString::number(x));
+    this->ui->label_9->setText(QString::number(y));
 }
 
 void MainWindow::newGame()

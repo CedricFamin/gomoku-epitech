@@ -18,6 +18,8 @@ GobanQt::GobanQt(QMainWindow *parent, QPixmap Image) :
     unsigned int x = 1;
     unsigned int y = 1;
     unsigned short id = 0;
+    this->capturedStoneBlack = 0;
+    this->capturedStoneWhite = 0;
     for (unsigned short i = 0; i < 19; ++i)
     {
         for (unsigned short j = 0; j < 19; ++j)
@@ -44,6 +46,16 @@ GobanQt::GobanQt(QMainWindow *parent, QPixmap Image) :
     move.second = -1;
 }
 
+unsigned int GobanQt::getX() const
+{
+    return this->x;
+}
+
+unsigned int GobanQt::getY() const
+{
+    return this->y;
+}
+
 GobanQt::~GobanQt()
 {
     for (unsigned short i = 0; i < 361; ++i)
@@ -53,6 +65,8 @@ GobanQt::~GobanQt()
 void GobanQt::PlayAt(Goban::PION_TYPE color, unsigned int x, unsigned int y)
 {
     QString pionImg;
+    this->x = x;
+    this->y = y;
     int index = x + y * 19;
     pionImg = (color == Goban::BLACK) ?":/new/prefix1/pionNoir.png" : ":/new/prefix1/pionBlanc.png";
     this->square[index].isEmpty = true;
@@ -90,9 +104,14 @@ void GobanQt::mousePressEvent(QMouseEvent* e)
 
 void GobanQt::deleteStoneAt(unsigned int x, unsigned int y)
 {
+    if (playerTurn)
+        this->capturedStoneBlack += 1;
+    else
+        this->capturedStoneWhite += 1;
     unsigned int stoneToDelete = x + (y * 19);
     this->square[stoneToDelete].isEmpty = true;
     this->square[stoneToDelete].image->clear();
+    emit captured();
 }
 
 void GobanQt::afterPlayer(void)
@@ -120,6 +139,16 @@ int GobanQt::getInformation(void) const
 bool GobanQt::getPlayerTurn(void) const
 {
     return this->playerTurn;
+}
+
+unsigned short GobanQt::getCapturedStoneBlack() const
+{
+    return this->capturedStoneBlack;
+}
+
+unsigned short GobanQt::getCapturedStoneWhite() const
+{
+    return this->capturedStoneWhite;
 }
 
 IPlayer * GobanQt::currentPlayer(int turn)

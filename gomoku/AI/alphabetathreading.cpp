@@ -10,7 +10,7 @@
 
 void print_goban(Goban & g)
 {
-	std::stringstream buffer;
+    /*std::stringstream buffer;
     for (unsigned int y = 0; y < g.getHeight(); ++y)
 	{
         for (unsigned int x = 0; x < g.getWidth(); ++x)
@@ -29,7 +29,7 @@ void print_goban(Goban & g)
 		}
 		buffer << std::endl;
 	}
-	qDebug() << buffer.str().c_str();
+    qDebug() << buffer.str().c_str();*/
 }
 
 AlphaBetaThreading::AlphaBetaThreading(Goban & g, const Goban::Move & m, Goban::PION_TYPE p, Referrer & r)
@@ -277,7 +277,7 @@ int AlphaBetaThreading::alphabeta(Goban & g, int depth, int alpha, int beta, Gob
 	{
 		return g.getWinner() == pion ? std::numeric_limits<int>::max() : -std::numeric_limits<int>::max();
 	}
-	qDebug() << "text";
+    //qDebug() << "text";
     if (depth == 0) 
 	{
 		return eval(g, pion);
