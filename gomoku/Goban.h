@@ -42,6 +42,7 @@ public:
     static const unsigned int HEADERSIZE = 2;
     static const unsigned int PATTERNSIZE = 4;
     static const unsigned int COLORSIZE = 2;
+
     static const unsigned int CONTENTSIZE = 4;
 	static const unsigned int SCOREINDEX = HEADERSIZE + PATTERNSIZE * 8;
 	static const long long int SCOREMASK = 0xFFFF;
@@ -51,6 +52,8 @@ public:
         BLACK = 0x1,
         RED = 0x2
     };
+
+	inline static PION_TYPE Other(PION_TYPE pion) { return (pion == BLACK) ? RED : BLACK; }
 
 	struct Turn
 	{
@@ -68,13 +71,14 @@ public:
 
     void Putin(PION_TYPE, unsigned int, unsigned int);
     void subIn(unsigned int, unsigned int);
+	void clear();
 
 	inline bool gameFinished(void)								const { return this->_gameFinished; }
 	inline unsigned int getWidth()								const { return this->_width; }
 	inline unsigned int getHeight()								const { return this->_height; }
 	inline Goban::PION_TYPE getWinner()							const { return this->_winner; }
     inline bool InBound(unsigned int x, unsigned int y)	const { return x < this->_width && y < this->_height; }
-	inline int deletedStone(Goban::PION_TYPE pion)					  { return this->_deletedStone[pion>>1]; }
+	inline int const deletedStone(Goban::PION_TYPE pion)		const { return this->_deletedStone[pion>>1]; }
 	inline void setGameFinished(bool value)							  { this->_gameFinished = value; }
 	inline void setWinner(Goban::PION_TYPE pion)					  { this->_winner = pion; }
 	inline std::list<Turn> & Turns()								  { return this->_turnList; }

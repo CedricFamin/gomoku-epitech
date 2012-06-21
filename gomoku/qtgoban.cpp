@@ -41,7 +41,6 @@ GobanQt::GobanQt(QMainWindow *parent, QPixmap Image) :
     //this->_players[1] = new AIPlayer(Goban::RED);
     this->_players[0] = new RealPlayer(Goban::BLACK, *this);
     this->_players[1] = new RealPlayer(Goban::RED, *this);
-
     move.first = -1;
     move.second = -1;
 }
