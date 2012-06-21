@@ -4,6 +4,7 @@
 #include <QThread>
 #include "Goban.h"
 #include "Referrer.h"
+#include "Evaluator.h"
 
 class AlphaBetaThreading : public QThread
 {
@@ -45,6 +46,7 @@ private:
 	int _scoreTable[19*19];
     std::list<Goban::Move> _moveList;
 	Referrer _referrer;
+	Evaluator _evaluator;
 
 };
 

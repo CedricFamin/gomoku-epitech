@@ -150,4 +150,11 @@ void Goban::subIn(unsigned int i, unsigned int j)
 	}
 }
 
-
+void Goban::clear()
+{
+	this->_deletedStone[0] = 0;
+	this->_deletedStone[1] = 0;
+	this->_winner = EMPTY;
+	this->_gameFinished = false;
+	memset(this->_map, 0, this->_height * this->_width * sizeof(*this->_map));
+}

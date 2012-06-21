@@ -33,7 +33,7 @@ void print_goban(Goban & g)
 }
 
 AlphaBetaThreading::AlphaBetaThreading(Goban & g, const Goban::Move & m, Goban::PION_TYPE p, Referrer & r)
-    : _move(m), _pion(p), _goban(g), _score(0), _referrer(r)
+	: _move(m), _pion(p), _goban(g), _score(0), _referrer(r), _evaluator(&g)
 {
 	memset(this->_scoreTable, 0, sizeof(*_scoreTable) * 19 * 19);
 }
@@ -107,16 +107,14 @@ int AlphaBetaThreading::_o_o_Pattern(Goban & g, unsigned int x, unsigned int y, 
 }
 int AlphaBetaThreading::_oxPattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
 {
-	return 0;
 	unsigned int lx = GobanIterator::direction[dir][0] + x;
 	unsigned int ly = GobanIterator::direction[dir][1] + y;
 	if ((g[ly][lx] & Goban::PIONMASK) == pion)
-		return -10;
-	return 30;
+		return 0;
+	return 15;
 }
 int AlphaBetaThreading::_ooPattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
 {
-	return 0;
 	unsigned int lx = GobanIterator::direction[dir][0] + x;
 	unsigned int ly = GobanIterator::direction[dir][1] + y;
 	if ((g[ly][lx] & Goban::PIONMASK) == pion)
@@ -133,12 +131,11 @@ int AlphaBetaThreading::_ooPattern(Goban & g, unsigned int x, unsigned int y, in
 }
 int AlphaBetaThreading::_ooxPattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
 {
-	return 0;
 	unsigned int lx = GobanIterator::direction[dir][0] + x;
 	unsigned int ly = GobanIterator::direction[dir][1] + y;
 	if ((g[ly][lx] & Goban::PIONMASK) == pion)
-		return -15;
-	return 35;
+		return 0;
+	return 50;
 }
 int AlphaBetaThreading::_oooPattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
 {
@@ -214,13 +211,13 @@ int AlphaBetaThreading::eval(Goban & g, Goban::PION_TYPE pion)
 				value = this->_scoreTable[y * 19 + x];
 				currentPion = (Goban::PION_TYPE)(current & Goban::PIONMASK);
 				current >>= Goban::HEADERSIZE;
-				if (!value ||1)
+				if (!value)
 				{
 					if (currentPion == 0 && current)
 						for (unsigned int d = 0; d < 8; ++d, current >>= Goban::PATTERNSIZE)
 						{
 							int pattern = (current & Goban::PATTERNMASK);
-							if (pattern == Patterns::oo_)
+							if (pattern == Patterns::oox || pattern == Patterns::ox)
 								value += (this->*scorings[current & Goban::PATTERNMASK])(g, x, y, d, pion);
 						}
 					this->_scoreTable[y * 19 + x] = value;
@@ -229,6 +226,9 @@ int AlphaBetaThreading::eval(Goban & g, Goban::PION_TYPE pion)
 			}
 		}
     }
+	Goban::PION_TYPE other = Goban::Other(pion);
+	int captures = g.deletedStone(other) - this->_goban.deletedStone(other);
+	score += captures * 1000;
     return score;
 }
 
@@ -244,14 +244,14 @@ std::list<Goban::Move> AlphaBetaThreading::GetTurns(Goban & g,Goban::Move & last
 
 void AlphaBetaThreading::run()
 {
-	if (this->_referrer(this->_goban, this->_pion, this->_move.first, this->_move.second))
+	Goban s = this->_goban;
+	if (this->_referrer(s, this->_pion, this->_move.first, this->_move.second))
 	{
-		print_goban(this->_goban);
 		this->_moveList.push_front(std::make_pair(this->_move.first , this->_move.second));
-		this->eval(this->_goban, this->_pion);
-		this->_score = this->alphabeta(this->_goban, 0,
+		this->eval(s, this->_pion);
+		this->_score = this->alphabeta(s, 8,
 			                           std::numeric_limits<int>::min() + 1, std::numeric_limits<int>::max(),
-				                       (this->_pion == Goban::BLACK) ? Goban::RED: Goban::BLACK);
+									   Goban::Other(this->_pion));
 	}
 	else
 		this->_score = -std::numeric_limits<int>::max();
@@ -275,12 +275,11 @@ int AlphaBetaThreading::alphabeta(Goban & g, int depth, int alpha, int beta, Gob
 {
 	if (g.gameFinished())
 	{
-		return g.getWinner() == pion ? std::numeric_limits<int>::max() : -std::numeric_limits<int>::max();
+		return g.getWinner() ==  pion ? std::numeric_limits<int>::max() : -std::numeric_limits<int>::max();
 	}
-	qDebug() << "text";
     if (depth == 0) 
 	{
-		return eval(g, pion);
+		return this->_evaluator(g, Goban::Other(pion));
 	}
     int best = std::numeric_limits<int>::min() + 1;
     for (unsigned int x = 0; x < g.getWidth(); ++x)
@@ -295,7 +294,7 @@ int AlphaBetaThreading::alphabeta(Goban & g, int depth, int alpha, int beta, Gob
 			{
 				update(g, x, y);
 				this->_moveList.push_front(std::make_pair(x , y));
-				value = -alphabeta(s, depth - 1, -beta, -alpha, (pion == Goban::BLACK) ? Goban::RED: Goban::BLACK);
+				value = -alphabeta(s, depth - 1, -beta, -alpha, Goban::Other(pion));
 				update(g, x, y);
 				this->_moveList.pop_front();
 				if (value > best)

@@ -42,6 +42,7 @@ public:
     static const unsigned int HEADERSIZE = 2;
     static const unsigned int PATTERNSIZE = 4;
     static const unsigned int COLORSIZE = 2;
+
     static const unsigned int CONTENTSIZE = 4;
 	static const unsigned int SCOREINDEX = HEADERSIZE + PATTERNSIZE * 8;
 	static const long long int SCOREMASK = 0xFFFF;
@@ -51,6 +52,8 @@ public:
         BLACK = 0x1,
         RED = 0x2
     };
+
+	inline static PION_TYPE Other(PION_TYPE pion) { return (pion == BLACK) ? RED : BLACK; }
 
 	struct Turn
 	{
@@ -68,6 +71,7 @@ public:
 
     void Putin(PION_TYPE, unsigned int, unsigned int);
     void subIn(unsigned int, unsigned int);
+	void clear();
 
 	inline bool gameFinished(void)								const { return this->_gameFinished; }
 	inline unsigned int getWidth()								const { return this->_width; }
