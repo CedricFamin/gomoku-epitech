@@ -63,6 +63,59 @@ inline bool MatchPattern(unsigned int pattern)
 	return false;
 }
 
+inline void SetInfluence(Goban & g, unsigned int x, unsigned int y, Goban::Case pattern, int dist)
+{
+	Goban::PION_TYPE color = Goban::EMPTY;
+	Goban::Case tmp;
+	int otherScore = 0, i;
+	char score = 0;
+
+	for (i = 0; i < dist; ++i) {
+		if ((pattern & 0x3) == Goban::BLACK || (pattern & 0x3) == Goban::RED) {
+			if (color == Goban::EMPTY) {
+				color = static_cast<Goban::PION_TYPE>(pattern & 0x3);
+				score++;
+			}
+			else if (color == (pattern & 0x3)) score++;
+			else  {
+				pattern >>= 2;
+				break;
+			}
+		}
+		pattern >>= 2;
+	}
+	if (i++ < dist) return ;
+	if (color == Goban::EMPTY || color == static_cast<Goban::PION_TYPE>(pattern & 0x3)) {
+		int shift = (Goban::BLACKINFLUENCEINDEX + ((static_cast<Goban::PION_TYPE>(pattern & 0x3) == Goban::RED)?8:0));
+		Goban::Case lastScore = (g[y][x] >> shift) & Goban::INFLUENCEMASK;
+		lastScore++;
+		tmp = g[y][x] & ~(Goban::INFLUENCEMASK << shift);
+		tmp |= lastScore << shift;
+		g[y][x] = tmp;
+		if (color == Goban::EMPTY) color = static_cast<Goban::PION_TYPE>(pattern & 0x3);
+		else  return;
+	}
+	for (; i < 4; ++i)
+	{
+		pattern >>= 2;
+		if ((pattern & 0x3) == color)
+			break;
+		if ((pattern & 0x3) == Goban::Other(color))
+		{
+			Goban::Case lastScore = (g[y][x] >> (Goban::BLACKINFLUENCEINDEX + ((color == Goban::BLACK)?8:0))) & Goban::INFLUENCEMASK;
+			lastScore--;
+			if (lastScore >= 0)
+			{
+				tmp = g[y][x] & ~(Goban::INFLUENCEMASK << (Goban::BLACKINFLUENCEINDEX + ((color == Goban::BLACK)?8:0)));
+				tmp |= lastScore << (Goban::BLACKINFLUENCEINDEX + ((color == Goban::BLACK)?8:0));
+				g[y][x] = tmp;
+			}
+		}
+	
+
+	}
+}
+
 template<int direction>
 inline void updatePattern(Goban & g, unsigned int x, unsigned int y)
 {
@@ -96,6 +149,7 @@ inline void updatePattern(Goban & g, unsigned int x, unsigned int y)
 
         pattern = cases >> decal;
         g[ly][lx] &= ~(Goban::PATTERNMASK << shift);
+
 		if      (MatchPattern<Patterns::o_o_>(pattern)) g[ly][lx] |= (Goban::Case)Patterns::o_o_ << shift;
 		else if (MatchPattern<Patterns::oooo>(pattern)) g[ly][lx] |= (Goban::Case)Patterns::oooo << shift;
 		else if (MatchPattern<Patterns::ooox>(pattern)) g[ly][lx] |= (Goban::Case)Patterns::ooox << shift;
@@ -111,7 +165,7 @@ inline void updatePattern(Goban & g, unsigned int x, unsigned int y)
 		else if (MatchPattern<Patterns::oo>(pattern))   g[ly][lx] |= (Goban::Case)Patterns::oo << shift;
 		else if (MatchPattern<Patterns::o_>(pattern))   g[ly][lx] |= (Goban::Case)Patterns::o_ << shift;
 		else if (MatchPattern<Patterns::ox>(pattern))   g[ly][lx] |= (Goban::Case)Patterns::ox << shift;
-
+		SetInfluence(g, lx, ly, pattern, i);
         decal -= 2;
     }
 }

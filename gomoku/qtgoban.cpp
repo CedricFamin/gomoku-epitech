@@ -37,8 +37,8 @@ GobanQt::GobanQt(QMainWindow *parent, QPixmap Image) :
         x = 1;
         y += 19;
     }
-    //this->_players[0] = new AIPlayer(Goban::BLACK);
-    //this->_players[1] = new AIPlayer(Goban::RED);
+    this->_players[0] = new AIPlayer(Goban::BLACK);
+    this->_players[1] = new AIPlayer(Goban::RED);
     this->_players[0] = new RealPlayer(Goban::BLACK, *this);
     this->_players[1] = new RealPlayer(Goban::RED, *this);
     move.first = -1;
@@ -74,6 +74,29 @@ void GobanQt::PlayAt(Goban::PION_TYPE color, unsigned int x, unsigned int y)
     playerTurn = !playerTurn;
     emit clicked();
     this->afterPlayer();
+}
+
+void GobanQt::showInfluence(Goban &g)
+{
+	int index;
+	Goban::Case ccase;
+	for (unsigned int y = 0; y < g.getHeight(); ++y)
+	{
+		for (unsigned int x = 0; x < g.getWidth(); ++x)
+		{
+			index = x + 19 * y;
+			this->square[x + 19 * y].image->setAutoFillBackground(true);
+
+			QPalette Pal(this->square[index].image->palette());
+			Goban::Case blackInfluence = ((g[y][x]>>Goban::BLACKINFLUENCEINDEX) & Goban::INFLUENCEMASK);
+			Goban::Case whiteInfluence = ((g[y][x]>>Goban::WHITEINFLUENCEINDEX) & Goban::INFLUENCEMASK);
+			Pal.setColor(QPalette::Window, QColor(255 - std::min<int>(blackInfluence * 0x1A, 255), 
+				255 - std::min<int>(whiteInfluence * 0x1A, 255),
+				255 - std::min<int>(blackInfluence * 0x1A, 255), 255));
+			this->square[index].image->setPalette(Pal);
+			this->square[index].image->move(this->square[index].x, this->square[index].y);
+		}
+	}
 }
 
 void GobanQt::mousePressEvent(QMouseEvent* e)

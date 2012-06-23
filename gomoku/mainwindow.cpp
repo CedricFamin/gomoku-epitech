@@ -39,7 +39,7 @@ void MainWindow::newGame()
 
 void MainWindow::checkTurn()
 {
-    (this->playerTurn = this->label->getPlayerTurn()) ? ui->label_11->setText(QString("Player 2")) : ui->label_11->setText(QString("Player 1"));
+    ui->label_11->setText((this->playerTurn = this->label->getPlayerTurn()) ? "Player 2" : "Player 1");
 }
 
 void MainWindow::capturedStone()

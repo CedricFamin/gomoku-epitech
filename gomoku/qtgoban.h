@@ -43,6 +43,7 @@ public:
     unsigned short getCapturedStoneBlack() const;
     unsigned short getCapturedStoneWhite() const;
     void newGame();
+	void showInfluence(Goban &g);
     ~GobanQt();
 protected:
     void mousePressEvent (QMouseEvent* e);

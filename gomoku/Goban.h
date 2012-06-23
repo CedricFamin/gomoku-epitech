@@ -2,6 +2,7 @@
 # define _GOBAN_H_
 
 #include <stdio.h>
+#include <assert.h>
 
 #ifndef WIN32
 #include <tr1/functional>
@@ -42,10 +43,11 @@ public:
     static const unsigned int HEADERSIZE = 2;
     static const unsigned int PATTERNSIZE = 4;
     static const unsigned int COLORSIZE = 2;
-
     static const unsigned int CONTENTSIZE = 4;
-	static const unsigned int SCOREINDEX = HEADERSIZE + PATTERNSIZE * 8;
-	static const long long int SCOREMASK = 0xFFFF;
+	static const unsigned int INFLUENCESIZE = 8;
+	static const unsigned int BLACKINFLUENCEINDEX = HEADERSIZE + PATTERNSIZE * 8;
+	static const unsigned int WHITEINFLUENCEINDEX = HEADERSIZE + PATTERNSIZE * 8 + INFLUENCESIZE;
+	static const long long int INFLUENCEMASK = 0xFF;
     enum PION_TYPE
     {
         EMPTY,
@@ -53,7 +55,31 @@ public:
         RED = 0x2
     };
 
-	inline static PION_TYPE Other(PION_TYPE pion) { return (pion == BLACK) ? RED : BLACK; }
+	union CaseStruct
+	{
+		inline CaseStruct(Goban::Case data) : raw(data) {}
+		Goban::Case raw;
+		struct
+		{
+			int pion:2;
+			int padding:6;
+			int pattern0:4;
+			int pattern1:4;
+			int pattern2:4;
+			int pattern3:4;
+			int pattern4:4;
+			int pattern5:4;
+			int pattern6:4;
+			int pattern7:4;
+			char blackInfluence;
+			char whiteInfluence;
+		};
+	};
+
+	inline static PION_TYPE Other(PION_TYPE pion) {
+		assert(pion == BLACK ||pion == RED);
+		return (pion == BLACK) ? RED : BLACK; 
+	}
 
 	struct Turn
 	{

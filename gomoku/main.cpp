@@ -85,12 +85,14 @@ int main(int argc, char *argv[])
 	Goban goban;
 	MainWindow win;
     GobanQt & uiGoban = win.getGoban();
+    bool affWon = false;
+
 	connect(&win, SIGNAL(newGameSignal()), std::tr1::bind(&Goban::clear, &goban));
+	connect(&win, SIGNAL(newGameSignal()), [&affWon]{affWon = false;});
 
     Referrer referrer;
     Rules::TakingRules * tkrule = new Rules::TakingRules();
     IPlayer * currentPlayer;
-    bool affWon = false;
     referrer.addPrePlayRule(*(new Rules::EachInTurnRule()));
     referrer.addPrePlayRule(*(new Rules::DoubleThree()));
     referrer.addPrePlayRule(*(new Rules::NotEmptyRule()));
@@ -101,9 +103,8 @@ int main(int argc, char *argv[])
     win.show();
     while (!win.IsClosed())
     {
+		if (app.hasPendingEvents()) app.processEvents();
 		currentPlayer = uiGoban.currentPlayer(goban.Turns().size());
-        if (app.hasPendingEvents())
-            app.processEvents();
 		if (goban.gameFinished() == false)
             currentPlayer->play(referrer, goban, std::tr1::bind(&GobanQt::PlayAt, &uiGoban, std::tr1::placeholders::_1, std::tr1::placeholders::_2, std::tr1::placeholders::_3));
 
@@ -122,6 +123,9 @@ int main(int argc, char *argv[])
             finish.exec();
             affWon = true;
         }
+#if _DEBUG
+		uiGoban.showInfluence(goban);
+#endif
 #ifdef _WIN32
         Sleep(100);
 #else
