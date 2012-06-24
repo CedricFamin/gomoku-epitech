@@ -121,16 +121,16 @@ bool VictoryAlignment::execute(Goban & g, Goban::PION_TYPE pion, unsigned int x,
     Goban::Case pattern1, pattern2;
 	unsigned int lx, ly;
 
-	/*this->_aligments.remove_if([&r](Align & align)->bool
+	g.alignments.remove_if([&g](Goban::Align & align)->bool
 	{
 		bool breaked = false;
-		if (winningAlignment(r.getGoban(), align.size, align.dir, align.x, align.y, align.pion, std::forward<bool>(breaked)))
+		if (winningAlignment(g, align.size, align.dir, align.x, align.y, align.pion, std::forward<bool>(breaked)))
 		{
-			r.setGameFinished(true);
-			r.setWinner(align.pion);
+			g.setGameFinished(true);
+			g.setWinner(align.pion);
 		}
 		return breaked;
-	});*/
+	});
 	if (g.gameFinished()) return true;
     for (int i = 0; i < 4; ++i)
     {
@@ -151,13 +151,13 @@ bool VictoryAlignment::execute(Goban & g, Goban::PION_TYPE pion, unsigned int x,
 			}
 			else
 			{
-				Align align;
+				Goban::Align align;
 				align.x = lx;
 				align.y = ly;
 				align.dir = i;
 				align.size = maxAlign;
 				align.pion = pion;
-				this->_aligments.push_back(align);
+				g.alignments.push_back(align);
 			}
         }
         cCase >>= Goban::PATTERNSIZE;

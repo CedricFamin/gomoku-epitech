@@ -53,7 +53,7 @@ void AlphaBetaThreading::run()
 	Goban s = this->_goban;
 	if (this->_referrer(s, this->_pion, this->_move.first, this->_move.second))
 	{
-		this->_score = this->alphabeta(s, 8,
+		this->_score = this->alphabeta(s, 14,
 			                           std::numeric_limits<int>::min() + 1, std::numeric_limits<int>::max(),
 									   Goban::Other(this->_pion));
 	}
@@ -79,7 +79,7 @@ int AlphaBetaThreading::alphabeta(Goban & g, int depth, int alpha, int beta, Gob
 {
 	if (g.gameFinished())
 	{
-		return g.getWinner() == pion ? std::numeric_limits<int>::max() : -std::numeric_limits<int>::max();
+		return g.getWinner() == Goban::Other(pion) ? -std::numeric_limits<int>::max() : std::numeric_limits<int>::max();
 	}
     if (depth == 0) 
 	{

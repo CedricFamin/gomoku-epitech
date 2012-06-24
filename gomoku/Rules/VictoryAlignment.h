@@ -21,17 +21,8 @@ namespace Rules
 
 	private:
         int GetAlign(Goban & g, unsigned int x, unsigned int y, Goban::Case pattern, Goban::PION_TYPE pion);
-		struct Align
-		{
-			unsigned int x;
-			unsigned int y;
-			unsigned int dir;
-			unsigned int size;
-			Goban::PION_TYPE pion;
-		};
 		bool _enable;
 		bool _enableOptionalRule;
-		std::list<Align> _aligments;
 	};
 }
 

@@ -70,7 +70,7 @@ const PatternInfos * GetPatternInfos(Goban::Case pattern)
 		{ Patterns::ooo, 3, 1, true, 75},
 		{ Patterns::ooo_, 3, 1, false, 80},
 		{ Patterns::ooox, 3, 1, true, 70},
-		{ Patterns::oooo, 4, 1, true, 100}
+		{ Patterns::oooo, 4, 1, true, 200}
 	};
 
 	for (unsigned int i = 0; i < 15; ++i)
@@ -100,9 +100,7 @@ int Evaluator::alignments(Goban & g, unsigned int x, unsigned int y, Goban::PION
 			{
 				score += pi->score;
 			}
-			//score += value;
 		}
 	}
-	//qDebug() << "local:" << score;
 	return score;
 }

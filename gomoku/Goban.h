@@ -55,27 +55,6 @@ public:
         RED = 0x2
     };
 
-	union CaseStruct
-	{
-		inline CaseStruct(Goban::Case data) : raw(data) {}
-		Goban::Case raw;
-		struct
-		{
-			int pion:2;
-			int padding:6;
-			int pattern0:4;
-			int pattern1:4;
-			int pattern2:4;
-			int pattern3:4;
-			int pattern4:4;
-			int pattern5:4;
-			int pattern6:4;
-			int pattern7:4;
-			char blackInfluence;
-			char whiteInfluence;
-		};
-	};
-
 	inline static PION_TYPE Other(PION_TYPE pion) {
 		assert(pion == BLACK || pion == RED);
 		return (pion == BLACK) ? RED : BLACK; 
@@ -104,6 +83,15 @@ public:
         std::list<std::pair<unsigned int, unsigned int> > captures;
 	};
 
+	struct Align
+	{
+		unsigned int x;
+		unsigned int y;
+		unsigned int dir;
+		unsigned int size;
+		PION_TYPE pion;
+	};
+
     Goban();
     Goban(Goban const &);
     ~Goban(void);
@@ -121,6 +109,8 @@ public:
 	inline void setGameFinished(bool value)							  { this->_gameFinished = value; }
 	inline void setWinner(Goban::PION_TYPE pion)					  { this->_winner = pion; }
 	inline std::list<Turn> & Turns()								  { return this->_turnList; }
+
+	std::list<Align> alignments;
 
 	Case * operator[](unsigned int);
 
