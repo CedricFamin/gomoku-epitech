@@ -63,21 +63,17 @@ inline bool MatchPattern(unsigned int pattern)
 	return false;
 }
 
-inline void SetInfluence(Goban & g, unsigned int x, unsigned int y, Goban::Case pattern, int dist)
+inline void SetInfluence(Goban & g, unsigned int x, unsigned int y, Goban::Case pattern, int dist, Goban::PION_TYPE pion)
 {
 	Goban::PION_TYPE color = Goban::EMPTY;
-	Goban::Case tmp;
-	int otherScore = 0, i;
-	char score = 0;
+	int i, shift = 0;
+	bool add=true;
 
 	for (i = 0; i < dist; ++i) {
 		if ((pattern & 0x3) == Goban::BLACK || (pattern & 0x3) == Goban::RED) {
-			if (color == Goban::EMPTY) {
+			if (color == Goban::EMPTY)
 				color = static_cast<Goban::PION_TYPE>(pattern & 0x3);
-				score++;
-			}
-			else if (color == (pattern & 0x3)) score++;
-			else  {
+			else if (color != (pattern & 0x3))  {
 				pattern >>= 2;
 				break;
 			}
@@ -85,14 +81,12 @@ inline void SetInfluence(Goban & g, unsigned int x, unsigned int y, Goban::Case 
 		pattern >>= 2;
 	}
 	if (i++ < dist) return ;
-	if (color == Goban::EMPTY || color == static_cast<Goban::PION_TYPE>(pattern & 0x3)) {
-		int shift = (Goban::BLACKINFLUENCEINDEX + ((static_cast<Goban::PION_TYPE>(pattern & 0x3) == Goban::RED)?8:0));
-		Goban::Case lastScore = (g[y][x] >> shift) & Goban::INFLUENCEMASK;
-		lastScore++;
-		tmp = g[y][x] & ~(Goban::INFLUENCEMASK << shift);
-		tmp |= lastScore << shift;
-		g[y][x] = tmp;
-		if (color == Goban::EMPTY) color = static_cast<Goban::PION_TYPE>(pattern & 0x3);
+	if (color == Goban::EMPTY || color == pion) {
+		if ((pattern & 0x3)!= pion) add = false; 
+		shift = (Goban::BLACKINFLUENCEINDEX + ((pion == Goban::RED)?8:0));
+		Goban::Case lastScore = ((g[y][x] >> shift) & Goban::INFLUENCEMASK) + (add?1:-1);
+		g[y][x] = g[y][x] & ~(Goban::INFLUENCEMASK << shift) | lastScore << shift;
+		if (color == Goban::EMPTY) color = pion;
 		else  return;
 	}
 	for (; i < 4; ++i)
@@ -102,22 +96,18 @@ inline void SetInfluence(Goban & g, unsigned int x, unsigned int y, Goban::Case 
 			break;
 		if ((pattern & 0x3) == Goban::Other(color))
 		{
-			Goban::Case lastScore = (g[y][x] >> (Goban::BLACKINFLUENCEINDEX + ((color == Goban::BLACK)?8:0))) & Goban::INFLUENCEMASK;
-			lastScore--;
+			shift = Goban::BLACKINFLUENCEINDEX + ((color == Goban::BLACK)?8:0);
+			Goban::Case lastScore = ((g[y][x] >> shift) & Goban::INFLUENCEMASK) - (add?1:-1);
 			if (lastScore >= 0)
 			{
-				tmp = g[y][x] & ~(Goban::INFLUENCEMASK << (Goban::BLACKINFLUENCEINDEX + ((color == Goban::BLACK)?8:0)));
-				tmp |= lastScore << (Goban::BLACKINFLUENCEINDEX + ((color == Goban::BLACK)?8:0));
-				g[y][x] = tmp;
+				g[y][x] = g[y][x] & ~(Goban::INFLUENCEMASK << shift) | lastScore << shift;
 			}
 		}
-	
-
 	}
 }
 
 template<int direction>
-inline void updatePattern(Goban & g, unsigned int x, unsigned int y)
+inline void updatePattern(Goban & g, unsigned int x, unsigned int y, Goban::PION_TYPE pion)
 {
     unsigned int shift = ((direction+4) % 8) * Goban::PATTERNSIZE + Goban::HEADERSIZE;
     Goban::Case cases = 0;
@@ -136,7 +126,7 @@ inline void updatePattern(Goban & g, unsigned int x, unsigned int y)
         ly += Padding<direction,1>::y;
 	}
     lx = x;
-    ly = y;
+	ly = y;
     for (int i = 0; i < 4; ++i)
 	{
         lx += Padding<direction,1>::x;
@@ -165,7 +155,7 @@ inline void updatePattern(Goban & g, unsigned int x, unsigned int y)
 		else if (MatchPattern<Patterns::oo>(pattern))   g[ly][lx] |= (Goban::Case)Patterns::oo << shift;
 		else if (MatchPattern<Patterns::o_>(pattern))   g[ly][lx] |= (Goban::Case)Patterns::o_ << shift;
 		else if (MatchPattern<Patterns::ox>(pattern))   g[ly][lx] |= (Goban::Case)Patterns::ox << shift;
-		SetInfluence(g, lx, ly, pattern, i);
+		SetInfluence(g, lx, ly, pattern, i, pion);
         decal -= 2;
     }
 }
@@ -175,14 +165,14 @@ void Goban::Putin(PION_TYPE type, unsigned int i, unsigned int j)
     Case & cCase = this->_map[j * 19 + i];
     cCase = (cCase & ~PIONMASK) | type;
 
-	updatePattern<0>(*this, i, j);
-	updatePattern<1>(*this, i, j);
-	updatePattern<2>(*this, i, j);
-	updatePattern<3>(*this, i, j);
-	updatePattern<4>(*this, i, j);
-	updatePattern<5>(*this, i, j);
-	updatePattern<6>(*this, i, j);
-	updatePattern<7>(*this, i, j);
+	updatePattern<0>(*this, i, j, type);
+	updatePattern<1>(*this, i, j, type);
+	updatePattern<2>(*this, i, j, type);
+	updatePattern<3>(*this, i, j, type);
+	updatePattern<4>(*this, i, j, type);
+	updatePattern<5>(*this, i, j, type);
+	updatePattern<6>(*this, i, j, type);
+	updatePattern<7>(*this, i, j, type);
 }
 
 void Goban::subIn(unsigned int i, unsigned int j)
@@ -191,15 +181,16 @@ void Goban::subIn(unsigned int i, unsigned int j)
 	if (cCase & PIONMASK)
 	{
 		++this->_deletedStone[(cCase & PIONMASK) >> 1];
+		PION_TYPE pion = static_cast<Goban::PION_TYPE>(cCase & PIONMASK);
 		cCase = (cCase & ~PIONMASK);
-		updatePattern<0>(*this, i, j);
-		updatePattern<1>(*this, i, j);
-		updatePattern<2>(*this, i, j);
-		updatePattern<3>(*this, i, j);
-		updatePattern<4>(*this, i, j);
-		updatePattern<5>(*this, i, j);
-		updatePattern<6>(*this, i, j);
-		updatePattern<7>(*this, i, j);
+		updatePattern<0>(*this, i, j, pion);
+		updatePattern<1>(*this, i, j, pion);
+		updatePattern<2>(*this, i, j, pion);
+		updatePattern<3>(*this, i, j, pion);
+		updatePattern<4>(*this, i, j, pion);
+		updatePattern<5>(*this, i, j, pion);
+		updatePattern<6>(*this, i, j, pion);
+		updatePattern<7>(*this, i, j, pion);
 	}
 }
 

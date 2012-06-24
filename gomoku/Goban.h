@@ -77,8 +77,21 @@ public:
 	};
 
 	inline static PION_TYPE Other(PION_TYPE pion) {
-		assert(pion == BLACK ||pion == RED);
+		assert(pion == BLACK || pion == RED);
 		return (pion == BLACK) ? RED : BLACK; 
+	}
+
+	inline static int GetInfluenceIndex(PION_TYPE pion) {
+		assert(pion == BLACK || pion == RED);
+		return BLACKINFLUENCEINDEX + ((pion==BLACK)?0:8);
+	}
+
+	inline static int GetInfluence(Case c, PION_TYPE p) {
+		return (c >> GetInfluenceIndex(p)) & INFLUENCEMASK;
+	}
+
+	inline static Case GetPattern(Case c, int d) {
+		return (c >> (HEADERSIZE + PATTERNSIZE * d)) & PATTERNMASK;
 	}
 
 	struct Turn

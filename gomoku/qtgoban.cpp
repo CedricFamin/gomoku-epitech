@@ -39,8 +39,8 @@ GobanQt::GobanQt(QMainWindow *parent, QPixmap Image) :
     }
     this->_players[0] = new AIPlayer(Goban::BLACK);
     this->_players[1] = new AIPlayer(Goban::RED);
-    this->_players[0] = new RealPlayer(Goban::BLACK, *this);
-    this->_players[1] = new RealPlayer(Goban::RED, *this);
+    //this->_players[0] = new RealPlayer(Goban::BLACK, *this);
+    //this->_players[1] = new RealPlayer(Goban::RED, *this);
     move.first = -1;
     move.second = -1;
 }
@@ -79,7 +79,6 @@ void GobanQt::PlayAt(Goban::PION_TYPE color, unsigned int x, unsigned int y)
 void GobanQt::showInfluence(Goban &g)
 {
 	int index;
-	Goban::Case ccase;
 	for (unsigned int y = 0; y < g.getHeight(); ++y)
 	{
 		for (unsigned int x = 0; x < g.getWidth(); ++x)

@@ -19,181 +19,90 @@ int Evaluator::operator()(Goban & g, Goban::PION_TYPE p)
 	Goban::PION_TYPE other = Goban::Other(p);
 	int score = 0;
 	int captures = g.deletedStone(other) - this->_base->deletedStone(p);
-	int value;
-	typedef int (Evaluator::*ScoringMethod)(Goban &, unsigned int, unsigned int, int, Goban::PION_TYPE);
-	ScoringMethod scorings[] = {
-		&Evaluator::_emptyPattern,
-		&Evaluator::__o_Pattern,
-		&Evaluator::__ooPattern,
-		&Evaluator::__oo_Pattern,
-		&Evaluator::__ooxPattern,
-		&Evaluator::__oooPattern,
-		&Evaluator::_o_Pattern,
-		&Evaluator::_o_o_Pattern,
-		&Evaluator::_oxPattern,
-		&Evaluator::_ooPattern,
-		&Evaluator::_oo_Pattern,
-		&Evaluator::_ooxPattern,
-		&Evaluator::_oooPattern,
-		&Evaluator::_ooo_Pattern,
-		&Evaluator::_oooxPattern,
-		&Evaluator::_ooooPattern,
-	};
 	for (unsigned int y = 0; y < 19; ++y)
 	{
 		for (unsigned int x = 0; x < 19; ++x)
 		{
-			if (!g.InBound(x, y))
-				continue;
 			current = g[y][x];
-			value = 0;
 			currentPion = (Goban::PION_TYPE)(current & Goban::PIONMASK);
 			current >>= Goban::HEADERSIZE;
-			if (currentPion == 0 && current)
-				for (unsigned int d = 0; d < 8; ++d, current >>= Goban::PATTERNSIZE)
-				{
-					int pattern = (current & Goban::PATTERNMASK);
-					if (pattern == Patterns::oox || pattern == Patterns::ox)
-						value += (this->*scorings[current & Goban::PATTERNMASK])(g, x, y, d, p);
-				}
-			score += value;
+			if (currentPion == 0)
+			{
+				score += influence(g, x, y, p) * 2;
+				score -= influence(g, x, y, Goban::Other(p));
+				score += alignments(g, x, y, p) * 2;
+				score -= alignments(g, x, y, Goban::Other(p));
+			}
 		}
 	}
-	score += captures * 1000;
+	score += captures * 10;
 	return score;
 }
 
-int Evaluator::_emptyPattern(Goban &, unsigned int, unsigned int,int, Goban::PION_TYPE)
+int Evaluator::influence(Goban & g, unsigned int x, unsigned int y, Goban::PION_TYPE p)
 {
+	return Goban::GetInfluence(g[y][x], p) * 5;
+}
+
+struct PatternInfos
+{
+	Patterns::Patterns pattern;
+	unsigned int align;
+	int firstCaseIndex;
+	bool blocked;
+	int score;
+};
+
+const PatternInfos * GetPatternInfos(Goban::Case pattern)
+{
+	static const PatternInfos patternInfos[15] = {
+		{ Patterns::_o_, 1, 2, false, 20},
+		{ Patterns::_oo, 2, 2, true, 50},
+		{ Patterns::_oo_, 2, 2, false, 60},
+		{ Patterns::_oox, 2, 2, true, -100},
+		{ Patterns::_ooo, 3, 2, true, 80},
+		{ Patterns::o_, 1, 1, false, 20},
+		{ Patterns::o_o_, 2, 1, false, 40},
+		{ Patterns::ox, 1, 1, true, -20},
+		{ Patterns::oo, 1, 1, true, 40},
+		{ Patterns::oo_, 2, 1, false, 50},
+		{ Patterns::oox, 2, 1, true, -100},
+		{ Patterns::ooo, 3, 1, true, 75},
+		{ Patterns::ooo_, 3, 1, false, 80},
+		{ Patterns::ooox, 3, 1, true, 70},
+		{ Patterns::oooo, 4, 1, true, 100}
+	};
+
+	for (unsigned int i = 0; i < 15; ++i)
+	{
+		if (patternInfos[i].pattern == pattern)
+		{
+			return patternInfos + i;
+		}
+	}
 	return 0;
 }
 
-int Evaluator::__o_Pattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
+int Evaluator::alignments(Goban & g, unsigned int x, unsigned int y, Goban::PION_TYPE p)
 {
-	return 0;
-	unsigned int lx = GobanIterator::direction[dir][0] * 2 + x;
-	unsigned int ly = GobanIterator::direction[dir][1] * 2 + y;
-	if ((g[ly][lx] & Goban::PIONMASK) == pion)
-		return 20;
-	return 0;
-}
-int Evaluator::__ooPattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
-{
-	return 0;
-	unsigned int lx = GobanIterator::direction[dir][0] * 2 + x;
-	unsigned int ly = GobanIterator::direction[dir][1] * 2 + y;
-	if ((g[ly][lx] & Goban::PIONMASK) == pion)
-		return 45;
-	return -25;
-}
-int Evaluator::__oo_Pattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
-{
-	return 0;
-	unsigned int lx = GobanIterator::direction[dir][0] * 2 + x;
-	unsigned int ly = GobanIterator::direction[dir][1] * 2 + y;
-	if ((g[ly][lx] & Goban::PIONMASK) == pion)
-		return 30;
-	return -10;
-}
-int Evaluator::__ooxPattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
-{
-	return 0;
-	unsigned int lx = GobanIterator::direction[dir][0] * 2 + x;
-	unsigned int ly = GobanIterator::direction[dir][1] * 2 + y;
-	if ((g[ly][lx] & Goban::PIONMASK) == pion)
-		return -25;
-	return 45;
-}
-int Evaluator::__oooPattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
-{
-	return 0;
-	unsigned int lx = GobanIterator::direction[dir][0] * 2 + x;
-	unsigned int ly = GobanIterator::direction[dir][1] * 2 + y;
-	if ((g[ly][lx] & Goban::PIONMASK) == pion)
-		return 35;
-	return -15;
-}
-int Evaluator::_o_Pattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
-{
-	unsigned int lx = GobanIterator::direction[dir][0] * 2 + x;
-	unsigned int ly = GobanIterator::direction[dir][1] * 2 + y;
-	if ((g[ly][lx] & Goban::PIONMASK) == pion)
-		return 20;
-	return 0;
-}
-int Evaluator::_o_o_Pattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
-{
-	return 0;
-	unsigned int lx = GobanIterator::direction[dir][0] * 2 + x;
-	unsigned int ly = GobanIterator::direction[dir][1] * 2 + y;
-	if ((g[ly][lx] & Goban::PIONMASK) == pion)
-		return 30;
-	return -10;
-}
-int Evaluator::_oxPattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
-{
-	unsigned int lx = GobanIterator::direction[dir][0] + x;
-	unsigned int ly = GobanIterator::direction[dir][1] + y;
-	if ((g[ly][lx] & Goban::PIONMASK) == pion)
-		return -10;
-	return 30;
-}
-int Evaluator::_ooPattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
-{
-	unsigned int lx = GobanIterator::direction[dir][0] + x;
-	unsigned int ly = GobanIterator::direction[dir][1] + y;
-	if ((g[ly][lx] & Goban::PIONMASK) == pion)
-		return 25;
-	return 5;
-}
- int Evaluator::_oo_Pattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
-{
-	unsigned int lx = GobanIterator::direction[dir][0] + x;
-	unsigned int ly = GobanIterator::direction[dir][1] + y;
-	if ((g[ly][lx] & Goban::PIONMASK) == pion)
-		return 30;
-	return -10;
-}
-int Evaluator::_ooxPattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
-{
-	return 0;
-	unsigned int lx = GobanIterator::direction[dir][0] + x;
-	unsigned int ly = GobanIterator::direction[dir][1] + y;
-	if ((g[ly][lx] & Goban::PIONMASK) == pion)
-		return -15;
-	return 35;
-}
-int Evaluator::_oooPattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
-{
-	unsigned int lx = GobanIterator::direction[dir][0] + x;
-	unsigned int ly = GobanIterator::direction[dir][1] + y;
-	if ((g[ly][lx] & Goban::PIONMASK) == pion)
-		return 40;
-	return -20;
-}
-int Evaluator::_ooo_Pattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
-{
-	unsigned int lx = GobanIterator::direction[dir][0] + x;
-	unsigned int ly = GobanIterator::direction[dir][1] + y;
-	if ((g[ly][lx] & Goban::PIONMASK) == pion)
-		return 50;
-	return -30;
-}
-int Evaluator::_oooxPattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
-{
-	unsigned int lx = GobanIterator::direction[dir][0] + x;
-	unsigned int ly = GobanIterator::direction[dir][1] + y;
-	if ((g[ly][lx] & Goban::PIONMASK) == pion)
-		return 45;
-	return -25;
-}
-int Evaluator::_ooooPattern(Goban & g, unsigned int x, unsigned int y, int dir, Goban::PION_TYPE pion)
-{
-	
-	unsigned int lx = GobanIterator::direction[dir][0] + x;
-	unsigned int ly = GobanIterator::direction[dir][1] + y;
-	if ((g[ly][lx] & Goban::PIONMASK) == pion)
-		return 60;
-	return -35;
-}
+	int score = 0;
+	unsigned int lx, ly;
 
+	for (int d = 0; d < 8; ++d)
+	{
+		Goban::Case pattern = Goban::GetPattern(g[y][x], d);
+		const PatternInfos *pi = GetPatternInfos(pattern);
+		if (pi)
+		{
+			lx = x + GobanIterator::direction[d][0] * pi->firstCaseIndex;
+			ly = y + GobanIterator::direction[d][1] * pi->firstCaseIndex;
+			if (p == (g[ly][lx] & Goban::PIONMASK))
+			{
+				score += pi->score;
+			}
+			//score += value;
+		}
+	}
+	//qDebug() << "local:" << score;
+	return score;
+}

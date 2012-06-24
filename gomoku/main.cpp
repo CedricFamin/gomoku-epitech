@@ -123,9 +123,9 @@ int main(int argc, char *argv[])
             finish.exec();
             affWon = true;
         }
-#if _DEBUG
+//#if _DEBUG
 		uiGoban.showInfluence(goban);
-#endif
+//#endif
 #ifdef _WIN32
         Sleep(100);
 #else
