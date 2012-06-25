@@ -4,5 +4,6 @@
         <file>pionNoir.png</file>
         <file>pionBlanc.png</file>
         <file>creation.png</file>
+        <file>win.jpg</file>
     </qresource>
 </RCC>

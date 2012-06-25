@@ -15,6 +15,7 @@ public:
 
 private:
     Ui_Finished *ui;
+    QPixmap* pixmap;
 
 };
 
