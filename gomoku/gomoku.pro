@@ -28,7 +28,8 @@ SOURCES +=\
     realplayer.cpp \
     AI/aiplayer.cpp \
     connect_functor_helper.cpp \
-    AI/alphabetathreading.cpp
+    AI/alphabetathreading.cpp \
+    Evaluator.cpp
 
 HEADERS  += mainwindow.h \
     Referrer.h \
@@ -49,7 +50,8 @@ HEADERS  += mainwindow.h \
     AI/aiplayer.h \
     connect_functor_helper.h \
     AI/alphabetathreading.h \
-    PatternIdentifier.h
+    PatternIdentifier.h \
+    Evaluator.h
 
 FORMS    += mainwindow.ui \
     Finished.ui

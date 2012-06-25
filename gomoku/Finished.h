@@ -3,7 +3,7 @@
 
 #include <QtGui/QDialog>
 
-class Ui_Dialog;
+class Ui_Finished;
 
 class Finished: public QDialog
 {
@@ -14,7 +14,7 @@ public:
     ~Finished();
 
 private:
-    Ui_Dialog *ui;
+    Ui_Finished *ui;
 
 };
 

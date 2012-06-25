@@ -3,7 +3,7 @@
 
 Finished::Finished(QWidget *parent) :
     QDialog(parent),
-    ui(new Ui_Dialog)
+    ui(new Ui_Finished)
 {
     ui->setupUi(this);
 }
