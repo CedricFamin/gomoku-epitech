@@ -56,9 +56,9 @@ AIPlayer::Move AIPlayer::alphabeta(Move & last, Goban & g, Referrer & r)
         int score;
         worker->wait();
         score = worker->getScore();
-        if (score > bestScore)
+        if (-score > bestScore)
         {
-            bestScore = score;
+            bestScore = -score;
             bestMove.first = worker->getMove().first;
             bestMove.second = worker->getMove().second;
         }

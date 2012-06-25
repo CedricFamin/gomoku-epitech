@@ -85,7 +85,7 @@ inline void SetInfluence(Goban & g, unsigned int x, unsigned int y, Goban::Case 
 		if ((pattern & 0x3)!= pion) add = false; 
 		shift = (Goban::BLACKINFLUENCEINDEX + ((pion == Goban::RED)?8:0));
 		Goban::Case lastScore = ((g[y][x] >> shift) & Goban::INFLUENCEMASK) + (add?1:-1);
-		g[y][x] = g[y][x] & ~(Goban::INFLUENCEMASK << shift) | lastScore << shift;
+		if (lastScore >= 0) g[y][x] = g[y][x] & ~(Goban::INFLUENCEMASK << shift) | lastScore << shift;
 		if (color == Goban::EMPTY) color = pion;
 		else  return;
 	}
@@ -175,12 +175,13 @@ void Goban::Putin(PION_TYPE type, unsigned int i, unsigned int j)
 	updatePattern<7>(*this, i, j, type);
 }
 
-void Goban::subIn(unsigned int i, unsigned int j)
+void Goban::subIn(unsigned int i, unsigned int j, bool count)
 {
     Case & cCase = this->_map[j * 19 + i];
 	if (cCase & PIONMASK)
 	{
-		++this->_deletedStone[(cCase & PIONMASK) >> 1];
+		if (count)
+			++this->_deletedStone[(cCase & PIONMASK) >> 1];
 		PION_TYPE pion = static_cast<Goban::PION_TYPE>(cCase & PIONMASK);
 		cCase = (cCase & ~PIONMASK);
 		updatePattern<0>(*this, i, j, pion);

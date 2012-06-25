@@ -24,29 +24,28 @@ bool Referrer::operator()(Goban & g, Goban::PION_TYPE pion, unsigned int x, unsi
 
 	if (g.gameFinished()) return false;
 	if (!g.InBound(x, y)) return false;
-	std::for_each(this->_prePlayRules.begin(), this->_prePlayRules.end(),
-	[&g, pion, x, y, &canPlay](Rules::IRule * rule)
 	{
-		if (rule->isEnable() && canPlay)
-			if (!rule->execute(g, pion, x, y))
-				canPlay = false;
-	});
+		auto begin = this->_prePlayRules.begin(), end = this->_prePlayRules.end();
+		for(;begin != end;++begin)
+		{
+			if ((*begin)->isEnable() && canPlay)
+				if (!(*begin)->execute(g, pion, x, y))
+					canPlay = false;
+		}
+	}
 	if (!canPlay) return false;
-
 	g.Turns().push_back(Goban::Turn(pion, x, y));
 	g.Putin(pion, x, y);
-	std::for_each(this->_playRules.begin(), this->_playRules.end(),
-	[&g, pion, x, y](Rules::IRule * rule)
 	{
-		if (rule->isEnable())
-			rule->execute(g, pion, x, y);
-	});
-
-	std::for_each(this->_postPlayRules.begin(), this->_postPlayRules.end(),
-	[&g, &finished, pion, x, y](Rules::IRule * rule)
+		auto begin = this->_playRules.begin(), end = this->_playRules.end();
+		for(;begin != end;++begin)
+			if ((*begin)->isEnable()) (*begin)->execute(g, pion, x, y);
+	}
 	{
-		if (rule->isEnable()) finished |= rule->execute(g, pion, x, y);
-	});
+		auto begin = this->_postPlayRules.begin(), end = this->_postPlayRules.end();
+		for(;begin != end;++begin)
+			if ((*begin)->isEnable()) finished |= (*begin)->execute(g, pion, x, y);
+	}
 	return true;
 }
 

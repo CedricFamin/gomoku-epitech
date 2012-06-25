@@ -28,10 +28,10 @@ int Evaluator::operator()(Goban & g, Goban::PION_TYPE p)
 			current >>= Goban::HEADERSIZE;
 			if (currentPion == 0)
 			{
-				score += influence(g, x, y, p) * 2;
-				score -= influence(g, x, y, Goban::Other(p));
-				score += alignments(g, x, y, p) * 2;
-				score -= alignments(g, x, y, Goban::Other(p));
+				score += influence(g, x, y, p);
+				//score -= influence(g, x, y, Goban::Other(p));
+				score += alignments(g, x, y, p);
+				//score -= alignments(g, x, y, Goban::Other(p));
 			}
 		}
 	}
@@ -41,7 +41,7 @@ int Evaluator::operator()(Goban & g, Goban::PION_TYPE p)
 
 int Evaluator::influence(Goban & g, unsigned int x, unsigned int y, Goban::PION_TYPE p)
 {
-	return Goban::GetInfluence(g[y][x], p) * 5;
+	return Goban::GetInfluence(g[y][x], p) * Goban::GetInfluence(g[y][x], p) * Goban::GetInfluence(g[y][x], p);
 }
 
 struct PatternInfos
@@ -56,12 +56,12 @@ struct PatternInfos
 const PatternInfos * GetPatternInfos(Goban::Case pattern)
 {
 	static const PatternInfos patternInfos[15] = {
-		{ Patterns::_o_, 1, 2, false, 20},
+		{ Patterns::_o_, 1, 2, false, 0},
 		{ Patterns::_oo, 2, 2, true, 50},
 		{ Patterns::_oo_, 2, 2, false, 60},
 		{ Patterns::_oox, 2, 2, true, -100},
 		{ Patterns::_ooo, 3, 2, true, 80},
-		{ Patterns::o_, 1, 1, false, 20},
+		{ Patterns::o_, 1, 1, false, 0},
 		{ Patterns::o_o_, 2, 1, false, 40},
 		{ Patterns::ox, 1, 1, true, -20},
 		{ Patterns::oo, 1, 1, true, 40},
@@ -72,6 +72,7 @@ const PatternInfos * GetPatternInfos(Goban::Case pattern)
 		{ Patterns::ooox, 3, 1, true, 70},
 		{ Patterns::oooo, 4, 1, true, 200}
 	};
+	if (pattern == 0) return 0;
 
 	for (unsigned int i = 0; i < 15; ++i)
 	{
@@ -87,11 +88,12 @@ int Evaluator::alignments(Goban & g, unsigned int x, unsigned int y, Goban::PION
 {
 	int score = 0;
 	unsigned int lx, ly;
+	Goban::Case current = g[y][x] >> Goban::HEADERSIZE;
+	const PatternInfos *pi;
 
 	for (int d = 0; d < 8; ++d)
 	{
-		Goban::Case pattern = Goban::GetPattern(g[y][x], d);
-		const PatternInfos *pi = GetPatternInfos(pattern);
+		pi = GetPatternInfos(current & Goban::PATTERNMASK);
 		if (pi)
 		{
 			lx = x + GobanIterator::direction[d][0] * pi->firstCaseIndex;
@@ -100,7 +102,10 @@ int Evaluator::alignments(Goban & g, unsigned int x, unsigned int y, Goban::PION
 			{
 				score += pi->score;
 			}
+			else
+				score -= pi->score;
 		}
+		current >>= Goban::PATTERNSIZE;
 	}
 	return score;
 }

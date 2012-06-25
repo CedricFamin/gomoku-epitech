@@ -93,7 +93,7 @@ int main(int argc, char *argv[])
     Referrer referrer;
     Rules::TakingRules * tkrule = new Rules::TakingRules();
     IPlayer * currentPlayer;
-    referrer.addPrePlayRule(*(new Rules::EachInTurnRule()));
+    //referrer.addPrePlayRule(*(new Rules::EachInTurnRule()));
     referrer.addPrePlayRule(*(new Rules::DoubleThree()));
     referrer.addPrePlayRule(*(new Rules::NotEmptyRule()));
     referrer.addPlayRule(*tkrule);
@@ -104,7 +104,7 @@ int main(int argc, char *argv[])
     while (!win.IsClosed())
     {
 		if (app.hasPendingEvents()) app.processEvents();
-		currentPlayer = uiGoban.currentPlayer(goban.Turns().size());
+			currentPlayer = uiGoban.currentPlayer(goban.Turns().size());
 		if (goban.gameFinished() == false)
             currentPlayer->play(referrer, goban, std::tr1::bind(&GobanQt::PlayAt, &uiGoban, std::tr1::placeholders::_1, std::tr1::placeholders::_2, std::tr1::placeholders::_3));
 

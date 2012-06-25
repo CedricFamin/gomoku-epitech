@@ -97,7 +97,7 @@ public:
     ~Goban(void);
 
     void Putin(PION_TYPE, unsigned int, unsigned int);
-    void subIn(unsigned int, unsigned int);
+    void subIn(unsigned int, unsigned int, bool = true);
 	void clear();
 
 	inline bool gameFinished(void)								const { return this->_gameFinished; }
