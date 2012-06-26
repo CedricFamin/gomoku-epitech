@@ -156,7 +156,7 @@ inline void updatePattern(Goban & g, unsigned int x, unsigned int y, Goban::PION
 		else if (MatchPattern<Patterns::oo>(pattern))   g[ly][lx] |= (Goban::Case)Patterns::oo << shift;
 		else if (MatchPattern<Patterns::o_>(pattern))   g[ly][lx] |= (Goban::Case)Patterns::o_ << shift;
 		else if (MatchPattern<Patterns::ox>(pattern))   g[ly][lx] |= (Goban::Case)Patterns::ox << shift;
-		SetInfluence(g, lx, ly, pattern, i, pion);
+		//SetInfluence(g, lx, ly, pattern, i, pion);
         decal -= 2;
     }
 }

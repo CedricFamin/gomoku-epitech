@@ -77,38 +77,34 @@ void AlphaBetaThreading::update(Goban & g, int x, int y)
 
 int AlphaBetaThreading::alphabeta(Goban & g, int depth, int alpha, int beta, Goban::PION_TYPE pion)
 {
-  if (g.gameFinished())
-    {
-      return g.getWinner() == Goban::Other(pion) ? std::numeric_limits<int>::max() : -std::numeric_limits<int>::max();
-    }
-  if (depth == 0) 
-    {
-      return this->_evaluator(g, Goban::Other(pion));
-    }
+  if (g.gameFinished()) return g.getWinner() == Goban::Other(pion) ? std::numeric_limits<int>::max() : -std::numeric_limits<int>::max();
+  if (depth == 0) return this->_evaluator(g, Goban::Other(pion));
   int best = std::numeric_limits<int>::min() + 1;
+  int beam = 0;
   for (unsigned int x = 0; x < g.getWidth(); ++x)
-    {
+  {
       for (unsigned int y = 0; y < g.getHeight(); ++y)
-        {
-	  if (!((g[y][x] & ~Goban::PIONMASK))) continue;
-          
-	  int value = 0;
-	  if (this->_referrer(g, pion, x, y, false))
-	    {
-	      value = -alphabeta(g, depth - 1, -beta, -alpha, Goban::Other(pion));
-	      g.subIn(x, y, false);
-	      if (value > best)
-		{
-		  best = value;
-		  if (best > alpha)
-		    {
-		      alpha = best;
-		      if (alpha > beta) return best;
-		    }
-		}
-	    }
-        }
-    }
+	  {
+		  /*if (beam == 30)
+		  {
+			  x = 40;
+			  break;
+		  }*/
+		  if (!((g[y][x] & ~Goban::PIONMASK))) continue;
+		  int value = 0;
+		  if (this->_referrer(g, pion, x, y, false))
+		  {
+			  value = -alphabeta(g, depth - 1, -beta, -alpha, Goban::Other(pion));
+			  g.subIn(x, y, false);
+			  ++beam;
+			  if (value > best)
+			  {
+				  best = value;
+				  if (best > alpha && (alpha = best) > beta) return best;
+			  }
+		  }
+	  }
+  }
   return best;
 }
 

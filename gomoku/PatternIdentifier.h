@@ -29,6 +29,7 @@ namespace Patterns
     static const int align_2 = oo;
     static const int align_3 = ooo;
     static const int align_4 = oooo;
+	
 }
 
 template<int direction>

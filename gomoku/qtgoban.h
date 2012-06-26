@@ -44,6 +44,7 @@ public:
     unsigned short getCapturedStoneWhite() const;
     void newGame();
 	void showInfluence(Goban &g);
+	void affPlayable(Goban &g, Referrer &r, Goban::PION_TYPE color);
     ~GobanQt();
 protected:
     void mousePressEvent (QMouseEvent* e);

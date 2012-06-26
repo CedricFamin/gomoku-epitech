@@ -65,6 +65,7 @@ bool winningAlignment(Goban & g, int size, int dir, int x, int y, Goban::PION_TY
 		aCase = g[y][x];
 		if ((aCase & Goban::PIONMASK) != pion)
 		{
+			align = -1;
 			if (size - i < 4)
 			{
 				breaked = true;
@@ -86,15 +87,11 @@ bool winningAlignment(Goban & g, int size, int dir, int x, int y, Goban::PION_TY
 					unsigned int dy = y + moves[j][1];
 					Goban::Case upCase   = (g.InBound(ux, uy)) ? g[uy][ux] & Goban::PIONMASK : -1;
 					Goban::Case downCase = (g.InBound(dx, dy)) ? g[dy][dx] & Goban::PIONMASK : -1;
-                    if ((pattern1 == Patterns::ox && upCase == 0 && downCase == pion) ||
-                        (pattern2 == Patterns::ox && downCase == 0 && upCase == pion))
-					{
-						align = -1;
-						break;
-					}
-					if (upCase > 0 && downCase > 0 &&
+                    if (((pattern1 == Patterns::ox && upCase == 0 && downCase == pion) ||
+                        (pattern2 == Patterns::ox && downCase == 0 && upCase == pion)) ||
+						(upCase > 0 && downCase > 0 &&
 						((upCase == pion && (pattern2 == Patterns::o_ || pattern2 == Patterns::o_o_) && downCase != pion) ||
-						(upCase != pion && (pattern1 == Patterns::o_ || pattern1 == Patterns::o_o_) && downCase == pion)))
+						(upCase != pion && (pattern1 == Patterns::o_ || pattern1 == Patterns::o_o_) && downCase == pion))))
 					{
 						align = -1;
 						break;
