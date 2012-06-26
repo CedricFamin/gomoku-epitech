@@ -17,7 +17,7 @@ Referrer::~Referrer(void)
 {
 }
 
-bool Referrer::operator()(Goban & g, Goban::PION_TYPE pion, unsigned int x, unsigned int y)
+bool Referrer::operator()(Goban & g, Goban::PION_TYPE pion, unsigned int x, unsigned int y, bool useHistory)
 {
 	bool canPlay = true;
 	bool finished = false;
@@ -34,7 +34,7 @@ bool Referrer::operator()(Goban & g, Goban::PION_TYPE pion, unsigned int x, unsi
 		}
 	}
 	if (!canPlay) return false;
-	g.Turns().push_back(Goban::Turn(pion, x, y));
+	if (useHistory) g.Turns().push_back(Goban::Turn(pion, x, y));
 	g.Putin(pion, x, y);
 	{
 		auto begin = this->_playRules.begin(), end = this->_playRules.end();

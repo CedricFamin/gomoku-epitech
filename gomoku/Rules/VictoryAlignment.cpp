@@ -93,8 +93,8 @@ bool winningAlignment(Goban & g, int size, int dir, int x, int y, Goban::PION_TY
 						break;
 					}
 					if (upCase > 0 && downCase > 0 &&
-						((upCase == pion && downCase != pion) ||
-						(upCase != pion && downCase == pion)))
+						((upCase == pion && (pattern2 == Patterns::o_ || pattern2 == Patterns::o_o_) && downCase != pion) ||
+						(upCase != pion && (pattern1 == Patterns::o_ || pattern1 == Patterns::o_o_) && downCase == pion)))
 					{
 						align = -1;
 						break;

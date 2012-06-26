@@ -80,12 +80,13 @@ inline void SetInfluence(Goban & g, unsigned int x, unsigned int y, Goban::Case 
 		}
 		pattern >>= 2;
 	}
-	if (i++ < dist) return ;
+	if (++i < dist) return ;
 	if (color == Goban::EMPTY || color == pion) {
 		if ((pattern & 0x3)!= pion) add = false; 
 		shift = (Goban::BLACKINFLUENCEINDEX + ((pion == Goban::RED)?8:0));
-		Goban::Case lastScore = ((g[y][x] >> shift) & Goban::INFLUENCEMASK) + (add?1:-1);
-        if (lastScore >= 0) g[y][x] = (g[y][x] & ~(Goban::INFLUENCEMASK << shift)) | lastScore << shift;
+		Goban::Case current = g[y][x];
+		Goban::Case lastScore = ((current >> shift) & Goban::INFLUENCEMASK) + (add?1:-1);
+        if (lastScore >= 0) g[y][x] = (current & ~(Goban::INFLUENCEMASK << shift)) | lastScore << shift;
 		if (color == Goban::EMPTY) color = pion;
 		else  return;
 	}

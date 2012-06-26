@@ -93,7 +93,7 @@ int AlphaBetaThreading::alphabeta(Goban & g, int depth, int alpha, int beta, Gob
 	  if (!((g[y][x] & ~Goban::PIONMASK))) continue;
           
 	  int value = 0;
-	  if (this->_referrer(g, pion, x, y))
+	  if (this->_referrer(g, pion, x, y, false))
 	    {
 	      value = -alphabeta(g, depth - 1, -beta, -alpha, Goban::Other(pion));
 	      g.subIn(x, y, false);

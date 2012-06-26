@@ -3,6 +3,7 @@
 #include "DoubleThree.h"
 
 #include "PatternIdentifier.h"
+#include "GobanIterator.h"
 
 using namespace Rules;
 
@@ -32,17 +33,13 @@ bool DoubleThree::isEnable() const
 
 bool Check(Goban & g, unsigned int x, unsigned int y, int dir, Goban::Case pattern, Goban::Case double3, int caseIndex, Goban::PION_TYPE pion)
 {
-    const int moves[8][2] = {
-        { 0,-1}, { 1, -1}, { 1, 0}, { 1, 1},
-        {0, 1}, {-1, 1}, { -1,0}, { -1,-1}
-    };
     unsigned int lx, ly;
     if (double3 && double3 != pattern)
         return false;
     else if (!double3)
     {
-        lx = x + moves[dir][0];
-        ly = y + moves[dir][1];
+        lx = x + GobanIterator::direction[dir][0];
+        ly = y + GobanIterator::direction[dir][1];
         if (!g.InBound(lx, ly))
             return false;
         if (g[ly][lx] & Goban::PIONMASK)
@@ -50,8 +47,8 @@ bool Check(Goban & g, unsigned int x, unsigned int y, int dir, Goban::Case patte
     }
     else
     {
-        lx = x + moves[dir][0] * caseIndex;
-        ly = y + moves[dir][1] * caseIndex;
+        lx = x + GobanIterator::direction[dir][0] * caseIndex;
+        ly = y + GobanIterator::direction[dir][1] * caseIndex;
         if ((g[ly][lx] & Goban::PIONMASK) != pion)
             return false;
     }
@@ -61,9 +58,9 @@ bool Check(Goban & g, unsigned int x, unsigned int y, int dir, Goban::Case patte
 Goban::Case Double3(Goban & g, unsigned int x, unsigned int y, int dir, Goban::Case pattern1, Goban::Case pattern2, const Goban::Case patterns[9][2], Goban::PION_TYPE pion)
 {
     int doubleThree = -1;
-	static const int caseIndex[9][2] = {{ 1,1}, { 1, 2}, {1,2}, { 1, 3}, {-1,3}, { 2, 3}, {2,3}, { 1,2}, {2, 1}};
+	static const int caseIndex[12][2] = {{ 1,1}, { 1,1}, { 1,1}, { 1,1}, { 1, 2}, {1,2}, { 1, 3}, {-1,3}, { 2, 3}, {2,3}, { 1,2}, {2, 1}};
 
-    for (int j = 0; j < 9; ++j)
+    for (int j = 0; j < 12; ++j)
     {
         if (Check(g, x, y, dir, pattern1, patterns[j][0], caseIndex[j][0], pion) &&
             Check(g, x, y, dir + 4, pattern2, patterns[j][1], caseIndex[j][1], pion))
@@ -79,8 +76,11 @@ bool DoubleThree::execute(Goban & g, Goban::PION_TYPE pion, unsigned int x, unsi
 {
     int doublethree = 0, result, subresult;
 	Goban::Case cCase = g[y][x] >> Goban::HEADERSIZE, subCase;
-    static const Goban::Case double3[9][2] = {
+    static const Goban::Case double3[12][2] = {
         {Patterns::o_, Patterns::o_},
+		{Patterns::o_, Patterns::o_o_},
+		{Patterns::o_o_, Patterns::o_},
+		{Patterns::o_o_, Patterns::o_o_},
         {Patterns::oo_, 0},
         {0, Patterns::oo_},
         {Patterns::o_o_, 0},
@@ -90,7 +90,7 @@ bool DoubleThree::execute(Goban & g, Goban::PION_TYPE pion, unsigned int x, unsi
         {Patterns::o_, Patterns::_o_},
         {Patterns::_o_, Patterns::o_}
 	};
-    static const int caseIndex[9][2] = {{ 1,-1}, { 1, 2}, {-1,-2}, { 1, 3}, {-1,-3}, { 2, 3}, {-2,-3}, { 1,-2}, {2, -1}};
+    static const int caseIndex[12][2] = {{ 1,-1}, { 1,-1}, { 1,-1}, { 1,-1}, { 1, 2}, {-1,-2}, { 1, 3}, {-1,-3}, { 2, 3}, {-2,-3}, { 1,-2}, {2, -1}};
     const int moves[4][2]            = {{ 0,-1}, { 1,-1}, { 1, 0}, { 1, 1}};
     Goban::Case pattern1, pattern2;
     unsigned int lx, ly;
@@ -108,8 +108,8 @@ bool DoubleThree::execute(Goban & g, Goban::PION_TYPE pion, unsigned int x, unsi
             if (++doublethree == 2) return false;
             for (int iCase = 0; iCase < 2; ++iCase)
             {
-                lx = x + moves[dir][0] * caseIndex[result][iCase];
-                ly = y + moves[dir][1] * caseIndex[result][iCase];
+                lx = x + GobanIterator::direction[dir][0] * caseIndex[result][iCase];
+                ly = y + GobanIterator::direction[dir][1] * caseIndex[result][iCase];
                 subCase = g[ly][lx] >> Goban::HEADERSIZE;
                 for (int subDir = 0; subDir < 4; ++subDir)
                 {

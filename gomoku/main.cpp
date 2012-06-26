@@ -78,6 +78,28 @@ private:
 
 };*/
 
+void generate_pattern()
+{
+	int nb[4] = {0};
+	int value;
+
+	qDebug() << "struct PatternInfluence\n \
+{\n\
+int pattern;\n\
+int influence[4];\n\
+};\n\
+PatternInfluence patternInfluence[81] = {\n";
+	for (int i = 0; i < 81; ++i)
+	{
+		value = nb[0] | (nb[1] << 2) | (nb[2] << 4) | (nb[3] << 6);
+		qDebug() << "{ 0X" << value << ", {}},";
+		nb[0]++;
+		if (nb[0] > 2){nb[0] = 0; nb[1]++;}
+		if (nb[1] > 2){nb[1] = 0; nb[2]++;}
+		if (nb[2] > 2){nb[2] = 0; nb[3]++;}
+	}
+	qDebug() << "};";
+}
 
 int main(int argc, char *argv[])
 {
