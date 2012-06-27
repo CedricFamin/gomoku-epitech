@@ -21,11 +21,19 @@ Evaluator::~Evaluator(void)
 
 inline int fiveInRow(Goban::PION_TYPE p, Goban::Case pattern1, Goban::Case pattern2, Goban & g, unsigned int x, unsigned int y, int d)
 {
+	unsigned int lx = x + GobanIterator::direction[d][0];
+	unsigned int ly = y + GobanIterator::direction[d][1];
+	if (pattern1 == Patterns::oooo && (g[ly][lx] & Goban::PIONMASK) == p)
+		return 1;
 	return 0;
 }
 
 inline int straightFour(Goban::PION_TYPE p, Goban::Case pattern1, Goban::Case pattern2, Goban & g, unsigned int x, unsigned int y, int d)
 {
+	unsigned int lx = x + GobanIterator::direction[d][0];
+	unsigned int ly = y + GobanIterator::direction[d][1];
+	if (pattern1 == Patterns::ooox && (g[ly][lx] & Goban::PIONMASK) == p)
+		return 1;
 	return 0;
 }
 
@@ -66,29 +74,19 @@ inline int twoInRow(Goban::PION_TYPE p, Goban::Case pattern1, Goban::Case patter
 	return 0;
 }
 
-inline int singleMark(Goban::PION_TYPE, Goban::Case, Goban::Case, Goban &, unsigned int, unsigned int, int d)
+inline int singleMark(Goban::PION_TYPE, Goban::Case, Goban::Case, Goban &, unsigned int, unsigned int, int)
 {
 	return 1;
 }
-
-const int FIVEINROW = 200;
-const int STRAIGHTFOUR = 175;
-const int FOURINTROW = 150;
-const int THREEINROW = 125;
-const int BROKENTHREE = 100;
-const int TOWINROW = 75;
-const int SINGLEMARK = 50;
-
-ThreatSearch FiveInRow = { 5, 2000, fiveInRow };
 
 const ThreatSearch threatSearchs[7] = {
 	{0, 1000, fiveInRow},
 	{0, 400, straightFour},
 	{0, 250, fourInRow},
-	{0, 150, threeInRow},
-	{5, 100, brokenThree},
+	{0, 200, threeInRow},
+	{5, 150, brokenThree},
 	{3, 20, twoInRow},
-	{2, 10, singleMark},
+	{2, 0, singleMark},
 };
 
 int Evaluator::operator()(Goban & g, Goban::PION_TYPE p)
@@ -97,7 +95,7 @@ int Evaluator::operator()(Goban & g, Goban::PION_TYPE p)
 	Goban::PION_TYPE other = Goban::Other(p);
 	int score = 0;
 	int captures = g.deletedStone(other) - this->_base->deletedStone(p);
-	int threat[5] = {0};
+	int threat[7][2] = {0};
 	Goban::Case * current = g[0];
 	Goban::Case toEval;
 
@@ -106,21 +104,20 @@ int Evaluator::operator()(Goban & g, Goban::PION_TYPE p)
 		toEval = *current;
 		currentPion = (Goban::PION_TYPE)(toEval & Goban::PIONMASK);
 		toEval >>= Goban::HEADERSIZE;
-		if (currentPion != p && currentPion)
+		if (currentPion)
 		{
-			for (int d = 0; d < 4; d++)
+			for (int d = 0, i = 0; d < 8;)
 			{
-				for (int i = 0; i < 7; ++i)
+				if (threatSearchs[i].evaluator(currentPion, toEval & Goban::PATTERNMASK, 0, g, x, y, d))
 				{
-					if (threatSearchs[i].evaluator(currentPion, toEval & Goban::PATTERNMASK, 0, g, x, y, d))
-					{
-						if (currentPion == p) score += threatSearchs[i].score;
-						else score -= threatSearchs[i].score;
-						break;
-					}
+					if (currentPion == p) score += threatSearchs[i].score;
+					else score -= threatSearchs[i].score;
+					i = 0;
+					++d;
+					toEval >>= Goban::PATTERNSIZE;
 				}
+				else ++i;
 			}
-			toEval >>= Goban::PATTERNSIZE;
 		}
 		if (++x >= 19)
 		{
@@ -128,11 +125,11 @@ int Evaluator::operator()(Goban & g, Goban::PION_TYPE p)
 			++y;
 		}
 	}
-	score += captures * 10;
+	//score += captures * 10;
 	return score;
 }
 
-inline int Evaluator::influence(Goban::Case c, Goban & g, unsigned int x, unsigned int y, Goban::PION_TYPE p)
+inline int Evaluator::influence(Goban::Case c, Goban &, unsigned int, unsigned int, Goban::PION_TYPE p)
 {
 	return Goban::GetInfluence(c, p) * Goban::GetInfluence(c, p) * Goban::GetInfluence(c, p);
 }

@@ -72,10 +72,10 @@ Goban::Case Double3(Goban & g, unsigned int x, unsigned int y, int dir, Goban::C
     return doubleThree;
 }
 
-bool DoubleThree::execute(Goban & g, Goban::PION_TYPE pion, unsigned int x, unsigned int y)
+bool DoubleThree::execute(Goban & g, Goban::Turn & turn)
 {
     int doublethree = 0, result, subresult;
-	Goban::Case cCase = g[y][x] >> Goban::HEADERSIZE, subCase;
+	Goban::Case cCase = g[turn.y][turn.x] >> Goban::HEADERSIZE, subCase;
     static const Goban::Case double3[12][2] = {
         {Patterns::o_, Patterns::o_},
 		{Patterns::o_, Patterns::o_o_},
@@ -99,7 +99,7 @@ bool DoubleThree::execute(Goban & g, Goban::PION_TYPE pion, unsigned int x, unsi
 	{
         pattern1 = cCase & Goban::PATTERNMASK;
         pattern2 = (cCase >> (Goban::PATTERNSIZE * 4)) & Goban::PATTERNMASK;
-        result = Double3(g, x, y, dir, pattern1, pattern2, double3, pion);
+        result = Double3(g, turn.x, turn.y, dir, pattern1, pattern2, double3, turn.pion);
         switch(result)
         {
         case -2: return false;
@@ -108,8 +108,8 @@ bool DoubleThree::execute(Goban & g, Goban::PION_TYPE pion, unsigned int x, unsi
             if (++doublethree == 2) return false;
             for (int iCase = 0; iCase < 2; ++iCase)
             {
-                lx = x + GobanIterator::direction[dir][0] * caseIndex[result][iCase];
-                ly = y + GobanIterator::direction[dir][1] * caseIndex[result][iCase];
+                lx = turn.x + GobanIterator::direction[dir][0] * caseIndex[result][iCase];
+                ly = turn.y + GobanIterator::direction[dir][1] * caseIndex[result][iCase];
                 subCase = g[ly][lx] >> Goban::HEADERSIZE;
                 for (int subDir = 0; subDir < 4; ++subDir)
                 {
@@ -117,7 +117,7 @@ bool DoubleThree::execute(Goban & g, Goban::PION_TYPE pion, unsigned int x, unsi
                     {
                         pattern1 = subCase & Goban::PATTERNMASK;
                         pattern2 = (subCase >> (Goban::PATTERNSIZE * 4)) & Goban::PATTERNMASK;
-                        subresult = Double3(g, lx, ly, subDir, pattern1, pattern2, double3, pion);
+                        subresult = Double3(g, lx, ly, subDir, pattern1, pattern2, double3, turn.pion);
                         if (subresult != -1) return false;
                     }
                     subCase >>= Goban::PATTERNSIZE;

@@ -18,7 +18,7 @@ namespace Rules
 		virtual void enable() = 0;
 		virtual void disable() = 0;
 		virtual bool isEnable() const = 0;
-		virtual bool execute(Goban &, Goban::PION_TYPE, unsigned int, unsigned int) = 0;
+		virtual bool execute(Goban &, Goban::Turn &) = 0;
 	};
 }
 

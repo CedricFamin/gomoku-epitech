@@ -26,7 +26,7 @@ bool NotEmptyRule::isEnable() const
 	return this->_enable;
 }
 
-bool NotEmptyRule::execute(Goban & g, Goban::PION_TYPE, unsigned int x, unsigned int y)
+bool NotEmptyRule::execute(Goban & g, Goban::Turn & turn)
 {
-    return ((g[y][x] & Goban::PIONMASK) == 0);
+    return ((g[turn.y][turn.x] & Goban::PIONMASK) == 0);
 }
