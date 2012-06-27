@@ -54,7 +54,7 @@ void AlphaBetaThreading::run()
   Goban s = this->_goban;
   if (this->_referrer(s, this->_pion, this->_move.first, this->_move.second))
     {
-      this->_score = this->alphabeta(s, 2,
+      this->_score = this->alphabeta(s, 4,
 				      std::numeric_limits<int>::min() + 1, std::numeric_limits<int>::max(),
 				      Goban::Other(this->_pion));
     }

@@ -146,6 +146,7 @@ int main(int argc, char *argv[])
             affWon = true;
         }
 //#if _DEBUG
+		
 		uiGoban.affPlayable(goban, referrer, currentPlayer->getColor());
 		//uiGoban.showInfluence(goban);
 //#endif

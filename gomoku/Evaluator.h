@@ -12,7 +12,6 @@ public:
 	int operator()(Goban & g, Goban::PION_TYPE p);
 private:
 	int influence(Goban::Case c, Goban &, unsigned int, unsigned int, Goban::PION_TYPE);
-	int alignments(Goban::Case c, Goban &, unsigned int, unsigned int, Goban::PION_TYPE);
 
 	struct Eval
 	{
