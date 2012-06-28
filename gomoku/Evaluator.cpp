@@ -163,7 +163,7 @@ int Evaluator::operator()(Goban & g, Goban::PION_TYPE p)
 	Goban::PION_TYPE other = Goban::Other(p);
 	int score = 0;
 	int captures = g.deletedStone(other) - this->_base->deletedStone(p);
-	int threat[7][2] = {0};
+    //int threat[7][2] = {0, 0};
 	Goban::Case * current = g[0];
 	Goban::Case toEval;
 
