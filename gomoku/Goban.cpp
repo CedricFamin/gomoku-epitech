@@ -110,8 +110,8 @@ inline void SetInfluence(Goban & g, unsigned int x, unsigned int y, Goban::Case 
 template<int direction>
 inline void updatePattern(Goban & g, unsigned int x, unsigned int y, Goban::PION_TYPE pion)
 {
-    unsigned int shift = ((direction+4) % 8) * Goban::PATTERNSIZE + Goban::HEADERSIZE;
-	unsigned int rshift = ((direction) % 8) * Goban::PATTERNSIZE + Goban::HEADERSIZE;
+    unsigned int shift = (direction + 4) * Goban::PATTERNSIZE + Goban::HEADERSIZE;
+	unsigned int rshift = direction * Goban::PATTERNSIZE + Goban::HEADERSIZE;
     Goban::Case cases = 0, rcase = 0;
     unsigned int decal = 6;
     Goban::Case pattern;
@@ -177,7 +177,7 @@ inline void updatePattern(Goban & g, unsigned int x, unsigned int y, Goban::PION
 			else if (MatchPattern<Patterns::oo>(pattern))   g[rly][rlx] |= (Goban::Case)Patterns::oo << rshift;
 			else if (MatchPattern<Patterns::o_>(pattern))   g[rly][rlx] |= (Goban::Case)Patterns::o_ << rshift;
 			else if (MatchPattern<Patterns::ox>(pattern))   g[rly][rlx] |= (Goban::Case)Patterns::ox << rshift;
-			//SetInfluence(g, lx, ly, pattern, i, pion);
+			//SetInfluence(g, rlx, rly, pattern, i, pion);
 		}
         decal -= 2;
     }
@@ -192,10 +192,6 @@ void Goban::Putin(PION_TYPE type, unsigned int i, unsigned int j)
 	updatePattern<1>(*this, i, j, type);
 	updatePattern<2>(*this, i, j, type);
 	updatePattern<3>(*this, i, j, type);
-	/*updatePattern<4>(*this, i, j, type);
-	updatePattern<5>(*this, i, j, type);
-	updatePattern<6>(*this, i, j, type);
-	updatePattern<7>(*this, i, j, type);*/
 }
 
 void Goban::subIn(unsigned int i, unsigned int j, bool count)
@@ -211,10 +207,6 @@ void Goban::subIn(unsigned int i, unsigned int j, bool count)
 		updatePattern<1>(*this, i, j, pion);
 		updatePattern<2>(*this, i, j, pion);
 		updatePattern<3>(*this, i, j, pion);
-		/*updatePattern<4>(*this, i, j, pion);
-		updatePattern<5>(*this, i, j, pion);
-		updatePattern<6>(*this, i, j, pion);
-		updatePattern<7>(*this, i, j, pion);*/
 	}
 }
 

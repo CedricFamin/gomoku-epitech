@@ -157,6 +157,18 @@ const ThreatSearch threatSearchs[8] = {
 	{2, 1, singleMark},
 };
 
+inline int GetThreatScore(Goban::PION_TYPE p, Goban::Case c, Goban & g, unsigned int x, unsigned int y, int d)
+{
+	if (fiveInRow(p, c, g, x, y, d)) return 5000;
+	if (straightFour(p, c, g, x, y, d)) return 2000;
+	if (fourInRow(p, c, g, x, y, d)) return 1500;
+	if (canBeCaptured(p, c, g, x, y, d)) return -1000;
+	if (threeInRow(p, c, g, x, y, d)) return 750;
+	if (brokenThree(p, c, g, x, y, d)) return 500;
+	if (twoInRow(p, c, g, x, y, d)) return 50;
+	return 1;
+}
+
 int Evaluator::operator()(Goban & g, Goban::PION_TYPE p)
 {   
 	Goban::PION_TYPE currentPion;
@@ -169,23 +181,13 @@ int Evaluator::operator()(Goban & g, Goban::PION_TYPE p)
 
 	for (unsigned int x = 0, y = 0; y < 19; ++current)
 	{
-		toEval = *current;
-		currentPion = (Goban::PION_TYPE)(toEval & Goban::PIONMASK);
-		toEval >>= Goban::HEADERSIZE;
+		currentPion = (Goban::PION_TYPE)(*current & Goban::PIONMASK);
 		if (currentPion)
 		{
-			for (unsigned int d = 0, i = 0; d < 4;)
+			for (unsigned int d = 0, i = 0; d < 4; ++d)
 			{
-				if (threatSearchs[i].evaluator(currentPion, *current, g, x, y, d))
-				{
-					if (currentPion == p) score += threatSearchs[i].score;
-					else score -= threatSearchs[i].score;
-					i = 0;
-					++d;
-					toEval >>= Goban::PATTERNSIZE;
-				}
-				else ++i;
-				if (i >= (sizeof(threatSearchs) / sizeof(*threatSearchs))) i = 0;
+				score += (currentPion == p) ? GetThreatScore(currentPion, *current, g, x, y, d) * 1.5 :
+					-GetThreatScore(currentPion, *current, g, x, y, d);
 			}
 		}
 		if (++x >= 19)
@@ -194,7 +196,7 @@ int Evaluator::operator()(Goban & g, Goban::PION_TYPE p)
 			++y;
 		}
 	}
-	score += captures * 750;
+	score += captures * 1000;
 	return score;
 }
 

@@ -54,7 +54,7 @@ void AlphaBetaThreading::run()
   Goban s = this->_goban;
   if (this->_referrer(s, this->_pion, this->_move.first, this->_move.second))
     {
-      this->_score = this->alphabeta(s, 4,
+      this->_score = this->alphabeta(s, 2,
 				      std::numeric_limits<int>::min() + 1, std::numeric_limits<int>::max(),
 				      Goban::Other(this->_pion));
     }
@@ -87,9 +87,9 @@ struct InfluenceCompare
 int AlphaBetaThreading::alphabeta(Goban & g, int depth, int alpha, int beta, Goban::PION_TYPE pion)
 {
 	if (g.gameFinished()) return g.getWinner() == pion ? std::numeric_limits<int>::max() : -std::numeric_limits<int>::max();
-	if (depth == 0) return this->_evaluator(g, Goban::Other(pion));
+	if (depth == 0) return this->_evaluator(g, pion);
 
-	for (unsigned int x = 0,y = 0; y < 19; ++x)
+	for (unsigned int x = 0,y = 0; y < 19  && beta > alpha; ++x)
 	{
 		if ((g[y][x] & ~Goban::PIONMASK) && this->_referrer(g, pion, x, y, false))
 		{
@@ -98,7 +98,6 @@ int AlphaBetaThreading::alphabeta(Goban & g, int depth, int alpha, int beta, Gob
 			else
 				beta = std::min(beta, alphabeta(g, depth - 1, alpha, beta, Goban::Other(pion)));
 			g.subIn(x, y, false);
-			if (beta <= alpha) break;
 		}
 		if (++x >= 19)
 		{

@@ -53,9 +53,8 @@ AIPlayer::Move AIPlayer::alphabeta(Move & last, Goban & g, Referrer & r)
     std::for_each(workers.begin(), workers.end(),
     [&bestMove, &bestScore](AlphaBetaThreading* worker)
     {
-        int score;
         worker->wait();
-        score = worker->getScore();
+        int score = worker->getScore();
         if (score > bestScore)
         {
             bestScore = score;
