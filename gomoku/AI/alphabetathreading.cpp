@@ -9,6 +9,8 @@
 #include <sstream>
 #include <queue>
 
+int AlphaBetaThreading::GlobalAlpha = 0;
+
 void print_goban(Goban & g)
 {
   std::stringstream buffer;  
@@ -54,7 +56,7 @@ void AlphaBetaThreading::run()
   Goban s = this->_goban;
   if (this->_referrer(s, this->_pion, this->_move.first, this->_move.second))
     {
-      this->_score = this->alphabeta(s, 2,
+      this->_score = this->alphabeta(s, 3,
 				      std::numeric_limits<int>::min() + 1, std::numeric_limits<int>::max(),
 				      Goban::Other(this->_pion));
     }
@@ -91,6 +93,7 @@ int AlphaBetaThreading::alphabeta(Goban & g, int depth, int alpha, int beta, Gob
 
 	for (unsigned int x = 0,y = 0; y < 19  && beta > alpha; ++x)
 	{
+		alpha = std::max(alpha, AlphaBetaThreading::GlobalAlpha);
 		if ((g[y][x] & ~Goban::PIONMASK) && this->_referrer(g, pion, x, y, false))
 		{
 			if (pion == this->_pion)

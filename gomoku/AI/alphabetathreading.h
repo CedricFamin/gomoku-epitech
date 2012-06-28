@@ -9,6 +9,7 @@
 class AlphaBetaThreading : public QThread
 {
 public:
+	static int GlobalAlpha;
     AlphaBetaThreading(Goban &, Goban::Move const &, Goban::PION_TYPE, Referrer & r);
     int getScore() const;
     Goban::Move const & getMove() const;
