@@ -7,6 +7,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <queue>
 
 void print_goban(Goban & g)
 {
@@ -53,12 +54,12 @@ void AlphaBetaThreading::run()
   Goban s = this->_goban;
   if (this->_referrer(s, this->_pion, this->_move.first, this->_move.second))
     {
-      this->_score = -this->alphabeta(s, 3,
+      this->_score = this->alphabeta(s, 4,
 				      std::numeric_limits<int>::min() + 1, std::numeric_limits<int>::max(),
 				      Goban::Other(this->_pion));
     }
   else
-    this->_score = std::numeric_limits<int>::max();
+    this->_score = -std::numeric_limits<int>::max();
 }
 
 void AlphaBetaThreading::update(Goban & g, int x, int y)
@@ -75,41 +76,37 @@ void AlphaBetaThreading::update(Goban & g, int x, int y)
     }
 }
 
+struct InfluenceCompare
+{
+	bool operator()(std::pair<int, Goban::Move> const & i1, std::pair<int, Goban::Move> const & i2)
+	{
+		return i1.first > i2.first;
+	}
+};
+
 int AlphaBetaThreading::alphabeta(Goban & g, int depth, int alpha, int beta, Goban::PION_TYPE pion)
 {
-  if (g.gameFinished())
-    {
-      return g.getWinner() == Goban::Other(pion) ? std::numeric_limits<int>::max() : -std::numeric_limits<int>::max();
-    }
-  if (depth == 0) 
-    {
-      return this->_evaluator(g, Goban::Other(pion));
-    }
-  int best = std::numeric_limits<int>::min() + 1;
-  for (unsigned int x = 0; x < g.getWidth(); ++x)
-    {
-      for (unsigned int y = 0; y < g.getHeight(); ++y)
-        {
-	  if (!((g[y][x] & ~Goban::PIONMASK))) continue;
-          
-	  int value = 0;
-	  if (this->_referrer(g, pion, x, y))
-	    {
-	      value = -alphabeta(g, depth - 1, -beta, -alpha, Goban::Other(pion));
-	      g.subIn(x, y, false);
-	      if (value > best)
+	if (g.gameFinished()) return g.getWinner() == pion ? std::numeric_limits<int>::max() : -std::numeric_limits<int>::max();
+	if (depth == 0) return this->_evaluator(g, Goban::Other(pion));
+
+	for (unsigned int x = 0,y = 0; y < 19; ++x)
+	{
+		if ((g[y][x] & ~Goban::PIONMASK) && this->_referrer(g, pion, x, y, false))
 		{
-		  best = value;
-		  if (best > alpha)
-		    {
-		      alpha = best;
-		      if (alpha > beta) return best;
-		    }
+			if (pion == this->_pion)
+				alpha = std::max(alpha, alphabeta(g, depth - 1, alpha, beta, Goban::Other(pion)));
+			else
+				beta = std::min(beta, alphabeta(g, depth - 1, alpha, beta, Goban::Other(pion)));
+			g.subIn(x, y, false);
+			if (beta <= alpha) break;
 		}
-	    }
-        }
-    }
-  return best;
+		if (++x >= 19)
+		{
+			x = 0;
+			y++;
+		}
+	}
+	return pion == this->_pion ? alpha : beta;
 }
 
 Goban::Move const & AlphaBetaThreading::getMove() const

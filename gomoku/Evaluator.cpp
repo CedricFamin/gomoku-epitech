@@ -2,6 +2,13 @@
 #include "GobanIterator.h"
 #include "PatternIdentifier.h"
 
+struct ThreatSearch
+{
+	int nextEval;
+	int score;
+	bool (*evaluator)(Goban::PION_TYPE p,Goban::Case,Goban&,unsigned int,unsigned int,int);
+};
+
 
 Evaluator::Evaluator(Goban const * g) : _base(g)
 {
@@ -12,100 +19,186 @@ Evaluator::~Evaluator(void)
 {
 }
 
+bool deadLine(Goban::PION_TYPE p, Goban &g, unsigned int x, unsigned int y, int d, int needed)
+{
+	return true;
+	int free = 1;
+	unsigned int lx = x + GobanIterator::direction[d][0];
+	unsigned int ly = y + GobanIterator::direction[d][1];
+		
+	while (g.InBound(lx, ly))
+	{
+		if ((g[ly][lx] & Goban::PIONMASK) == p
+			|| (g[ly][lx] & Goban::PIONMASK) == 0)
+			free++;
+		else break;
+		if (free >= 5) return true;
+		lx = x + GobanIterator::direction[d][0];
+		ly = y + GobanIterator::direction[d][1];
+	}
+	lx = x - GobanIterator::direction[d][0];
+	ly = y - GobanIterator::direction[d][1];
+	while (g.InBound(lx, ly))
+	{
+		if ((g[ly][lx] & Goban::PIONMASK) == p
+			|| (g[ly][lx] & Goban::PIONMASK) == 0)
+			free++;
+		else break;
+		if (free >= 5) return true;
+		lx = x - GobanIterator::direction[d][0];
+		ly = y - GobanIterator::direction[d][1];
+	}
+	return free >= 5;
+
+}
+
+inline bool fiveInRow(Goban::PION_TYPE p, Goban::Case c, Goban & g, unsigned int x, unsigned int y, int d)
+{
+	Goban::Case pattern = (c >> Goban::HEADERSIZE >> (Goban::PATTERNSIZE * d)) & Goban::PATTERNMASK;
+	unsigned int lx = x + GobanIterator::direction[d][0];
+	unsigned int ly = y + GobanIterator::direction[d][1];
+	if (pattern == Patterns::oooo && (g[ly][lx] & Goban::PIONMASK) == p)
+		return true;
+	return false;
+}
+
+inline bool straightFour(Goban::PION_TYPE p, Goban::Case c, Goban & g, unsigned int x, unsigned int y, int d)
+{
+	Goban::Case pattern = (c >> Goban::HEADERSIZE >> (Goban::PATTERNSIZE * d)) & Goban::PATTERNMASK;
+	unsigned int lx = x + GobanIterator::direction[d][0];
+	unsigned int ly = y + GobanIterator::direction[d][1];
+	if (pattern == Patterns::ooox && (g[ly][lx] & Goban::PIONMASK) == p)
+		return deadLine(p, g, x, y, d, 5);
+	return false;
+}
+
+inline bool fourInRow(Goban::PION_TYPE p, Goban::Case c, Goban & g, unsigned int x, unsigned int y, int d)
+{
+	Goban::Case pattern = (c >> Goban::HEADERSIZE >> (Goban::PATTERNSIZE * d)) & Goban::PATTERNMASK;
+	unsigned int lx = x + GobanIterator::direction[d][0];
+	unsigned int ly = y + GobanIterator::direction[d][1];
+	if (pattern == Patterns::ooo_ && (g[ly][lx] & Goban::PIONMASK) == p)
+		return deadLine(p, g, x, y, d, 5);
+	return false;
+}
+
+inline bool threeInRow(Goban::PION_TYPE p, Goban::Case c, Goban & g, unsigned int x, unsigned int y, int d)
+{
+	Goban::Case pattern = (c >> Goban::HEADERSIZE >> (Goban::PATTERNSIZE * d)) & Goban::PATTERNMASK;
+	unsigned int lx = x + GobanIterator::direction[d][0];
+	unsigned int ly = y + GobanIterator::direction[d][1];
+	if (pattern == Patterns::oo_ && (g[ly][lx] & Goban::PIONMASK) == p)
+		return deadLine(p, g, x, y, d, 5);
+	return false;
+}
+
+inline bool brokenThree(Goban::PION_TYPE p, Goban::Case c, Goban & g, unsigned int x, unsigned int y, int d)
+{
+	Goban::Case pattern = (c >> Goban::HEADERSIZE >> (Goban::PATTERNSIZE * d)) & Goban::PATTERNMASK;
+	unsigned int lx = x + GobanIterator::direction[d][0] * 3;
+	unsigned int ly = y + GobanIterator::direction[d][1] * 3;
+	if (!g.InBound(lx, ly)) return 0;
+	if ((pattern == Patterns::o_o_ || pattern == Patterns::_oo_) && (g[ly][lx] & Goban::PIONMASK) == p)
+		return deadLine(p, g, x, y, d, 5);
+	return false;
+}
+
+inline bool twoInRow(Goban::PION_TYPE p, Goban::Case c, Goban & g, unsigned int x, unsigned int y, int d)
+{
+	Goban::Case pattern = (c >> Goban::HEADERSIZE >> (Goban::PATTERNSIZE * d)) & Goban::PATTERNMASK;
+	unsigned int lx = x + GobanIterator::direction[d][0];
+	unsigned int ly = y + GobanIterator::direction[d][1];
+	if (pattern == Patterns::o_ && (g[ly][lx] & Goban::PIONMASK) == p)
+	{
+		return deadLine(p, g, x, y, d, 5);
+	}
+	return false;
+}
+
+inline bool singleMark(Goban::PION_TYPE p, Goban::Case, Goban & g, unsigned int x, unsigned int y, int d)
+{
+	return deadLine(p, g, x, y, d, 5);
+}
+
+inline bool canBeCaptured(Goban::PION_TYPE p, Goban::Case c, Goban & g, unsigned int x, unsigned int y, int d)
+{
+	Goban::Case pattern = (c >> Goban::HEADERSIZE >> (Goban::PATTERNSIZE * d)) & Goban::PATTERNMASK;
+	unsigned int lx = x + GobanIterator::direction[d][0];
+	unsigned int ly = y + GobanIterator::direction[d][1];
+	if (pattern == Patterns::ox && (g[ly][lx] & Goban::PIONMASK) == p)
+	{
+		lx = x - GobanIterator::direction[d][0];
+		ly = y - GobanIterator::direction[d][1];
+		if (g.InBound(lx, ly) && (g[ly][lx] & Goban::PIONMASK) == 0)
+			return deadLine(p, g, x, y, d, 5);
+	}
+	d+=4;
+	pattern = (c >> Goban::HEADERSIZE >> (Goban::PATTERNSIZE * d)) & Goban::PATTERNMASK;
+	lx = x + GobanIterator::direction[d][0];
+	ly = y + GobanIterator::direction[d][1];
+	if (pattern == Patterns::ox && (g[ly][lx] & Goban::PIONMASK) == p)
+	{
+		lx = x - GobanIterator::direction[d][0];
+		ly = y - GobanIterator::direction[d][1];
+		if (g.InBound(lx, ly) && (g[ly][lx] & Goban::PIONMASK) == 0)
+			return deadLine(p, g, x, y, d, 5);
+	}
+	return false;
+}
+
+const ThreatSearch threatSearchs[8] = {
+	{0, 5000, fiveInRow},
+	{0, 2000, straightFour},
+	{0, 1500, fourInRow},
+	{0, -1000, canBeCaptured},
+	{0, 750, threeInRow},
+	{5, 500, brokenThree},
+	{3, 50, twoInRow},
+	{2, 1, singleMark},
+};
+
 int Evaluator::operator()(Goban & g, Goban::PION_TYPE p)
 {   
 	Goban::PION_TYPE currentPion;
-    unsigned long long int current;
 	Goban::PION_TYPE other = Goban::Other(p);
 	int score = 0;
 	int captures = g.deletedStone(other) - this->_base->deletedStone(p);
-	for (unsigned int y = 0; y < 19; ++y)
+	int threat[7][2] = {0};
+	Goban::Case * current = g[0];
+	Goban::Case toEval;
+
+	for (unsigned int x = 0, y = 0; y < 19; ++current)
 	{
-		for (unsigned int x = 0; x < 19; ++x)
+		toEval = *current;
+		currentPion = (Goban::PION_TYPE)(toEval & Goban::PIONMASK);
+		toEval >>= Goban::HEADERSIZE;
+		if (currentPion)
 		{
-			current = g[y][x];
-			currentPion = (Goban::PION_TYPE)(current & Goban::PIONMASK);
-			current >>= Goban::HEADERSIZE;
-			if (currentPion == 0)
+			for (int d = 0, i = 0; d < 4;)
 			{
-				score += influence(g, x, y, p);
-				//score -= influence(g, x, y, Goban::Other(p));
-				score += alignments(g, x, y, p);
-				//score -= alignments(g, x, y, Goban::Other(p));
+				if (threatSearchs[i].evaluator(currentPion, *current, g, x, y, d))
+				{
+					if (currentPion == p) score += threatSearchs[i].score;
+					else score -= threatSearchs[i].score;
+					i = 0;
+					++d;
+					toEval >>= Goban::PATTERNSIZE;
+				}
+				else ++i;
+				if (i >= (sizeof(threatSearchs) / sizeof(*threatSearchs))) i = 0;
 			}
 		}
+		if (++x >= 19)
+		{
+			x = 0;
+			++y;
+		}
 	}
-	score += captures * 10;
+	score += captures * 750;
 	return score;
 }
 
-int Evaluator::influence(Goban & g, unsigned int x, unsigned int y, Goban::PION_TYPE p)
+inline int Evaluator::influence(Goban::Case c, Goban &, unsigned int, unsigned int, Goban::PION_TYPE p)
 {
-	return Goban::GetInfluence(g[y][x], p) * Goban::GetInfluence(g[y][x], p) * Goban::GetInfluence(g[y][x], p);
-}
-
-struct PatternInfos
-{
-	Patterns::Patterns pattern;
-	unsigned int align;
-	int firstCaseIndex;
-	bool blocked;
-	int score;
-};
-
-const PatternInfos * GetPatternInfos(Goban::Case pattern)
-{
-	static const PatternInfos patternInfos[15] = {
-		{ Patterns::_o_, 1, 2, false, 0},
-		{ Patterns::_oo, 2, 2, true, 50},
-		{ Patterns::_oo_, 2, 2, false, 60},
-		{ Patterns::_oox, 2, 2, true, -100},
-		{ Patterns::_ooo, 3, 2, true, 80},
-		{ Patterns::o_, 1, 1, false, 0},
-		{ Patterns::o_o_, 2, 1, false, 40},
-		{ Patterns::ox, 1, 1, true, -20},
-		{ Patterns::oo, 1, 1, true, 40},
-		{ Patterns::oo_, 2, 1, false, 50},
-		{ Patterns::oox, 2, 1, true, -100},
-		{ Patterns::ooo, 3, 1, true, 75},
-		{ Patterns::ooo_, 3, 1, false, 80},
-		{ Patterns::ooox, 3, 1, true, 70},
-		{ Patterns::oooo, 4, 1, true, 200}
-	};
-	if (pattern == 0) return 0;
-
-	for (unsigned int i = 0; i < 15; ++i)
-	{
-		if (patternInfos[i].pattern == pattern)
-		{
-			return patternInfos + i;
-		}
-	}
-	return 0;
-}
-
-int Evaluator::alignments(Goban & g, unsigned int x, unsigned int y, Goban::PION_TYPE p)
-{
-	int score = 0;
-	unsigned int lx, ly;
-	Goban::Case current = g[y][x] >> Goban::HEADERSIZE;
-	const PatternInfos *pi;
-
-	for (int d = 0; d < 8; ++d)
-	{
-		pi = GetPatternInfos(current & Goban::PATTERNMASK);
-		if (pi)
-		{
-			lx = x + GobanIterator::direction[d][0] * pi->firstCaseIndex;
-			ly = y + GobanIterator::direction[d][1] * pi->firstCaseIndex;
-			if (p == (g[ly][lx] & Goban::PIONMASK))
-			{
-				score += pi->score;
-			}
-			else
-				score -= pi->score;
-		}
-		current >>= Goban::PATTERNSIZE;
-	}
-	return score;
+	return Goban::GetInfluence(c, p) * Goban::GetInfluence(c, p) * Goban::GetInfluence(c, p);
 }

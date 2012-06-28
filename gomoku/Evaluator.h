@@ -11,8 +11,16 @@ public:
 
 	int operator()(Goban & g, Goban::PION_TYPE p);
 private:
-	int influence(Goban &, unsigned int, unsigned int, Goban::PION_TYPE);
-	int alignments(Goban &, unsigned int, unsigned int, Goban::PION_TYPE);
+	int influence(Goban::Case c, Goban &, unsigned int, unsigned int, Goban::PION_TYPE);
+
+	struct Eval
+	{
+		bool eval;
+		char counter:3;
+		char align:4;
+	};
+
+	Eval _eval[361][4];
 
 	Goban const * _base;
 };

@@ -17,35 +17,37 @@ Referrer::~Referrer(void)
 {
 }
 
-bool Referrer::operator()(Goban & g, Goban::PION_TYPE pion, unsigned int x, unsigned int y)
+bool Referrer::operator()(Goban & g, Goban::PION_TYPE pion, unsigned int x, unsigned int y, bool useHistory)
 {
 	bool canPlay = true;
 	bool finished = false;
 
 	if (g.gameFinished()) return false;
 	if (!g.InBound(x, y)) return false;
+	Goban::Turn turn = Goban::Turn(pion, x, y);
+
 	{
 		auto begin = this->_prePlayRules.begin(), end = this->_prePlayRules.end();
 		for(;begin != end;++begin)
 		{
 			if ((*begin)->isEnable() && canPlay)
-				if (!(*begin)->execute(g, pion, x, y))
+				if (!(*begin)->execute(g, turn))
 					canPlay = false;
 		}
 	}
 	if (!canPlay) return false;
-	g.Turns().push_back(Goban::Turn(pion, x, y));
 	g.Putin(pion, x, y);
 	{
 		auto begin = this->_playRules.begin(), end = this->_playRules.end();
 		for(;begin != end;++begin)
-			if ((*begin)->isEnable()) (*begin)->execute(g, pion, x, y);
+			if ((*begin)->isEnable()) (*begin)->execute(g, turn);
 	}
 	{
 		auto begin = this->_postPlayRules.begin(), end = this->_postPlayRules.end();
 		for(;begin != end;++begin)
-			if ((*begin)->isEnable()) finished |= (*begin)->execute(g, pion, x, y);
+			if ((*begin)->isEnable()) finished |= (*begin)->execute(g, turn);
 	}
+	if (useHistory) g.Turns().push_back(turn);
 	return true;
 }
 

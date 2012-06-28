@@ -26,7 +26,7 @@ bool VictoryCapturesRule::isEnable() const
 	return this->_enable;
 }
 
-bool VictoryCapturesRule::execute(Goban & g, Goban::PION_TYPE, unsigned int, unsigned int)
+bool VictoryCapturesRule::execute(Goban & g, Goban::Turn &)
 {
 	if (g.deletedStone(Goban::BLACK) >= 10 ||
 		g.deletedStone(Goban::RED) >= 10)

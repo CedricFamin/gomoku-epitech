@@ -26,7 +26,7 @@ bool LastTaking::isEnable() const
 	return this->_enable;
 }
 
-bool LastTaking::execute(Goban &, Goban::PION_TYPE, unsigned int, unsigned int)
+bool LastTaking::execute(Goban &, Goban::Turn & turn)
 {
 	return false;
 }
