@@ -11,6 +11,7 @@
 #endif
 
 #include <list>
+#include <stack>
 
 template<int direction> struct Moves { };
 template<> struct Moves<0> { enum Values {x = 0, y =-1 };};
@@ -80,7 +81,7 @@ public:
         unsigned int x;
 		unsigned int y;
 		bool validate;
-        std::list<std::pair<unsigned int, unsigned int> > captures;
+        //std::list<std::pair<unsigned int, unsigned int> > captures;
 	};
 
 	struct Align
@@ -111,6 +112,7 @@ public:
 	inline std::list<Turn> & Turns()								  { return this->_turnList; }
 
 	std::list<Align> alignments;
+	std::stack<std::pair<unsigned int, unsigned int>> toDelete;
 
 	Case * operator[](unsigned int);
 

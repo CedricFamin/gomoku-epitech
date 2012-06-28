@@ -130,14 +130,11 @@ int main(int argc, char *argv[])
 		if (goban.gameFinished() == false)
             currentPlayer->play(referrer, goban, std::tr1::bind(&GobanQt::PlayAt, &uiGoban, std::tr1::placeholders::_1, std::tr1::placeholders::_2, std::tr1::placeholders::_3));
 
-        if (goban.Turns().size())
+        while (!goban.toDelete.empty())
         {
-            auto coordinates = goban.Turns().back().captures;
-            std::for_each(coordinates.begin(), coordinates.end(),
-            [&uiGoban](std::pair<unsigned int, unsigned int> & p)
-            {
-                uiGoban.deleteStoneAt(p.first, p.second);
-            });
+			std::pair<unsigned int, unsigned int>  p = goban.toDelete.top();
+			goban.toDelete.pop();
+			uiGoban.deleteStoneAt(p.first, p.second);
         }
         if (goban.gameFinished() && !affWon)
         {

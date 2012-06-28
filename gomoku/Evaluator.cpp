@@ -174,7 +174,7 @@ int Evaluator::operator()(Goban & g, Goban::PION_TYPE p)
 		toEval >>= Goban::HEADERSIZE;
 		if (currentPion)
 		{
-			for (int d = 0, i = 0; d < 4;)
+			for (unsigned int d = 0, i = 0; d < 4;)
 			{
 				if (threatSearchs[i].evaluator(currentPion, *current, g, x, y, d))
 				{

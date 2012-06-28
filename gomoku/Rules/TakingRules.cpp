@@ -46,8 +46,8 @@ bool TakingRules::execute(Goban & g, Goban::Turn & turn)
 		{
 			g.subIn(turn.x + direction[i][0], turn.y + direction[i][1]);
 			g.subIn(turn.x + direction[i][0] * 2, turn.y + direction[i][1] * 2);
-            turn.captures.push_back(std::make_pair(turn.x + direction[i][0], turn.y + direction[i][1]));
-            turn.captures.push_back(std::make_pair(turn.x + direction[i][0] * 2, turn.y + direction[i][1] * 2));
+			g.toDelete.push(std::make_pair(turn.x + direction[i][0], turn.y + direction[i][1]));
+			g.toDelete.push(std::make_pair(turn.x + direction[i][0] * 2, turn.y + direction[i][1] * 2));
 		}
 		cCase >>= Goban::PATTERNSIZE;
 	}

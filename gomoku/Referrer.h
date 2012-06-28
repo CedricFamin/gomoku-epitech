@@ -24,6 +24,9 @@ private:
 	std::list<Rules::IRule*> _prePlayRules;
 	std::list<Rules::IRule*> _playRules;
 	std::list<Rules::IRule*> _postPlayRules;
+	std::list<Rules::IRule*>::iterator _beginPrePlay, _endPrePlay;
+	std::list<Rules::IRule*>::iterator _beginPlay, _endPlay;
+	std::list<Rules::IRule*>::iterator _beginPostPlay, _endPostPlay;
 };
 
 #endif
