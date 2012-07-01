@@ -40,25 +40,13 @@ bool VictoryAlignment::isEnable() const
 	return this->_enable;
 }
 
-int VictoryAlignment::GetAlign(Goban & g, unsigned int x, unsigned int y, Goban::Case pattern, Goban::PION_TYPE pion)
-{
-    int maxAlign = 0;
-
-    if (g.InBound(x, y) && (g[y][x] & Goban::PIONMASK) == pion)
-    {
-        maxAlign += 1;
-        maxAlign += (pattern >= Patterns::align_2) ? 1: 0;
-        maxAlign += (pattern >= Patterns::align_3) ? 1: 0;
-        maxAlign += (pattern >= Patterns::align_4) ? 1: 0;
-    }
-    return maxAlign;
-}
-
 bool winningAlignment(Goban & g, int size, int dir, int x, int y, Goban::PION_TYPE pion, bool && breaked = true)
 {
 	const int moves[4][2] = { { 0,-1}, { 1, -1}, { 1, 0}, { 1, 1} };
 	int align = 0;
 	Goban::Case aCase;
+	Patterns::PatternInfos pInfos1, pInfos2;
+
 
 	for (int i = 0; i <= size; ++i)
 	{
@@ -79,19 +67,19 @@ bool winningAlignment(Goban & g, int size, int dir, int x, int y, Goban::PION_TY
 			{
 				if (j != dir)
 				{
-					Goban::Case pattern1 = aCase & Goban::PATTERNMASK;
-					Goban::Case pattern2 = (aCase >> (Goban::PATTERNSIZE * 4)) & Goban::PATTERNMASK;
+					pInfos1 = Patterns::GetPatternInfos(aCase & Goban::PATTERNMASK);
+					pInfos2 = Patterns::GetPatternInfos((aCase >> (Goban::PATTERNSIZE * 4)) & Goban::PATTERNMASK);
 					unsigned int ux = x - moves[j][0];
 					unsigned int uy = y - moves[j][1];
 					unsigned int dx = x + moves[j][0];
 					unsigned int dy = y + moves[j][1];
 					Goban::Case upCase   = (g.InBound(ux, uy)) ? g[uy][ux] & Goban::PIONMASK : -1;
 					Goban::Case downCase = (g.InBound(dx, dy)) ? g[dy][dx] & Goban::PIONMASK : -1;
-                    if (((pattern1 == Patterns::ox && upCase == 0 && downCase == pion) ||
-                        (pattern2 == Patterns::ox && downCase == 0 && upCase == pion)) ||
+					if (((pInfos1.pattern == Patterns::ox && upCase == 0 && downCase == pion) ||
+                        (pInfos2.pattern == Patterns::ox && downCase == 0 && upCase == pion)) ||
 						(upCase > 0 && downCase > 0 &&
-						((upCase == pion && (pattern2 == Patterns::o_ || pattern2 == Patterns::o_o_) && downCase != pion) ||
-						(upCase != pion && (pattern1 == Patterns::o_ || pattern1 == Patterns::o_o_) && downCase == pion))))
+						((upCase == pion && pInfos2.expand > 0 && pInfos2.align == 1 && downCase != pion) ||
+						(upCase != pion && pInfos1.expand > 0 && pInfos1.align == 1 && downCase == pion))))
 					{
 						align = -1;
 						break;
@@ -117,6 +105,7 @@ bool VictoryAlignment::execute(Goban & g, Goban::Turn & turn)
     Goban::Case cCase = g[turn.y][turn.x] >> Goban::HEADERSIZE;
     Goban::Case pattern1, pattern2;
 	unsigned int lx, ly;
+	Patterns::PatternInfos pInfos;
 
 	g.alignments.remove_if([&g](Goban::Align & align)->bool
 	{
@@ -134,10 +123,12 @@ bool VictoryAlignment::execute(Goban & g, Goban::Turn & turn)
         int maxAlign = 0;
         pattern1 = cCase & Goban::PATTERNMASK;
         pattern2 = (cCase >> (Goban::PATTERNSIZE * 4)) & Goban::PATTERNMASK;
-        maxAlign += GetAlign(g, turn.x+direction[i][0], turn.y+direction[i][1], pattern1, turn.pion);
+		pInfos = Patterns::GetPatternInfos(pattern1);
+		maxAlign += pInfos.align;
 		lx = turn.x + direction[i][0] * maxAlign;
 		ly = turn.y + direction[i][1] * maxAlign;
-        maxAlign += GetAlign(g, turn.x-direction[i][0], turn.y-direction[i][1], pattern2, turn.pion);
+		pInfos = Patterns::GetPatternInfos(pattern2);
+		maxAlign += pInfos.align;
 		if (maxAlign >= 4)
         {
 			if (winningAlignment(g, maxAlign, i, lx, ly, turn.pion))

@@ -1,8 +1,13 @@
 #include "Goban.h"
 
 #include <iterator>
+#include <map>
 #include "GobanIterator.h"
 #include "PatternIdentifier.h"
+
+#define _SECURE_SCL 0
+#define _HAS_ITERATOR_DEBUGGING 0
+
 
 #define MIN(x, y) ((x < y) ? x : y)
 
@@ -31,36 +36,6 @@ Goban::~Goban(void)
 Goban::Case * Goban::operator[](unsigned int i)
 {
 	return this->_map + i * 19;
-}
-
-template<unsigned int p>
-struct ColorSuitToPattern { };
-template<> struct ColorSuitToPattern<Patterns::ox>   { enum values { pattern = Patterns::ox,   mask = 0xF,  v1 = 0x9,  v2 = 0x6 }; };
-template<> struct ColorSuitToPattern<Patterns::o_>   { enum values { pattern = Patterns::o_,   mask = 0xF,  v1 = 0x2,  v2 = 0x1 }; };
-
-template<> struct ColorSuitToPattern<Patterns::oo>   { enum values { pattern = Patterns::oo,   mask = 0x3F, v1 = 0x35, v2 = 0x3A }; };
-template<> struct ColorSuitToPattern<Patterns::oo_>  { enum values { pattern = Patterns::oo_,  mask = 0x3F, v1 = 0x5,  v2 = 0xA }; };
-template<> struct ColorSuitToPattern<Patterns::oox>  { enum values { pattern = Patterns::oox,  mask = 0x3F, v1 = 0x25, v2 = 0x1A }; };
-template<> struct ColorSuitToPattern<Patterns::_o_>  { enum values { pattern = Patterns::_o_,  mask = 0x3F, v1 = 0x4,  v2 = 0x8 }; };
-
-template<> struct ColorSuitToPattern<Patterns::_oo>  { enum values { pattern = Patterns::_oo,  mask = 0xFF, v1 = 0xD4, v2 = 0xE8 }; };
-template<> struct ColorSuitToPattern<Patterns::_oo_> { enum values { pattern = Patterns::_oo_, mask = 0xFF, v1 = 0x14, v2 = 0x28 }; };
-template<> struct ColorSuitToPattern<Patterns::_oox> { enum values { pattern = Patterns::_oox, mask = 0xFF, v1 = 0x94, v2 = 0x68 }; };
-template<> struct ColorSuitToPattern<Patterns::_ooo> { enum values { pattern = Patterns::_ooo, mask = 0xFF, v1 = 0x54, v2 = 0xA8 }; };
-template<> struct ColorSuitToPattern<Patterns::ooo>  { enum values { pattern = Patterns::ooo,  mask = 0xFF, v1 = 0xD5, v2 = 0xEA }; };
-template<> struct ColorSuitToPattern<Patterns::ooo_> { enum values { pattern = Patterns::ooo_, mask = 0xFF, v1 = 0x15, v2 = 0x2A }; };
-template<> struct ColorSuitToPattern<Patterns::ooox> { enum values { pattern = Patterns::ooox, mask = 0xFF, v1 = 0x95, v2 = 0x6A }; };
-template<> struct ColorSuitToPattern<Patterns::oooo> { enum values { pattern = Patterns::oooo, mask = 0xFF, v1 = 0x55, v2 = 0xAA }; };
-template<> struct ColorSuitToPattern<Patterns::o_o_> { enum values { pattern = Patterns::o_o_, mask = 0xFF, v1 = 0x22, v2 = 0x11 }; };
-
-template<unsigned int p>
-inline bool MatchPattern(unsigned int pattern)
-{
-	if ((ColorSuitToPattern<p>::mask & pattern) == ColorSuitToPattern<p>::v1)
-		return true;
-	if ((ColorSuitToPattern<p>::mask & pattern) == ColorSuitToPattern<p>::v2)
-		return true;
-	return false;
 }
 
 inline void SetInfluence(Goban & g, unsigned int x, unsigned int y, Goban::Case pattern, int dist, Goban::PION_TYPE pion)
@@ -107,23 +82,91 @@ inline void SetInfluence(Goban & g, unsigned int x, unsigned int y, Goban::Case 
 	}
 }
 
+template<int index>	
+inline Goban::Case SearchPattern(Goban::Case pattern) 
+{
+	Goban::Case p = pattern & Patterns::PatternsInfos<index>::mask;
+	if (Patterns::PatternsInfos<index>::black == p || Patterns::PatternsInfos<index>::white == p)
+		return index;
+	return  SearchPattern<index+-1>(pattern);
+}
+template<> inline Goban::Case SearchPattern<0>(Goban::Case) { return 0; }
+
 template<int direction>
 inline void updatePattern(Goban & g, unsigned int x, unsigned int y, Goban::PION_TYPE pion)
 {
+	static std::vector<unsigned int> PatternMap;
+	if (PatternMap.size() == 0)
+	{
+		PatternMap.resize(0xFF);
+		PatternMap[0x1 ] = Patterns::o___;
+		PatternMap[0x2 ] = Patterns::o___;
+		PatternMap[0x4 ] = Patterns::_o__;
+		PatternMap[0x8 ] = Patterns::_o__;
+		PatternMap[0x10] = Patterns::__o_;
+		PatternMap[0x20] = Patterns::__o_;
+		PatternMap[0x40] = Patterns::___o;
+		PatternMap[0x80] = Patterns::___o;
+		PatternMap[0x9 ] = Patterns::ox;
+		PatternMap[0x6 ] = Patterns::ox;
+		PatternMap[0x21] = Patterns::o_x;
+		PatternMap[0x12] = Patterns::o_x;
+		PatternMap[0x24] = Patterns::_ox;
+		PatternMap[0x18] = Patterns::_ox;
+		PatternMap[0x81] = Patterns::o__x;
+		PatternMap[0x42] = Patterns::o__x;
+		PatternMap[0x84] = Patterns::_o_x;
+		PatternMap[0x48] = Patterns::_o_x;
+		PatternMap[0x90] = Patterns::__ox;
+		PatternMap[0x60] = Patterns::__ox;
+		PatternMap[0x5 ] = Patterns::oo__;
+		PatternMap[0xA ] = Patterns::oo__;
+		PatternMap[0x14] = Patterns::_oo_;
+		PatternMap[0x28] = Patterns::_oo_;
+		PatternMap[0x50] = Patterns::__oo;
+		PatternMap[0xA0] = Patterns::__oo;
+		PatternMap[0x11] = Patterns::o_o_;
+		PatternMap[0x22] = Patterns::o_o_;
+		PatternMap[0x44] = Patterns::_o_o;
+		PatternMap[0x88] = Patterns::_o_o;
+		PatternMap[0x41] = Patterns::o__o;
+		PatternMap[0x82] = Patterns::o__o;
+		PatternMap[0x25] = Patterns::oox;
+		PatternMap[0x1A] = Patterns::oox;
+		PatternMap[0x85] = Patterns::oo_x;
+		PatternMap[0x4A] = Patterns::oo_x;
+		PatternMap[0x94] = Patterns::_oox;
+		PatternMap[0x68] = Patterns::_oox;
+		PatternMap[0x91] = Patterns::o_ox;
+		PatternMap[0x62] = Patterns::o_ox;
+		PatternMap[0x15] = Patterns::ooo_;
+		PatternMap[0x2A] = Patterns::ooo_;
+		PatternMap[0x54] = Patterns::_ooo;
+		PatternMap[0xA8] = Patterns::_ooo;
+		PatternMap[0x45] = Patterns::oo_o;
+		PatternMap[0x8A] = Patterns::oo_o;
+		PatternMap[0x51] = Patterns::o_oo;
+		PatternMap[0xA2] = Patterns::o_oo;
+		PatternMap[0x55] = Patterns::oooo;
+		PatternMap[0xAA] = Patterns::oooo;
+		PatternMap[0x95] = Patterns::ooox;
+		PatternMap[0x6A] = Patterns::ooox;
+	}
+
     unsigned int shift = (direction + 4) * Goban::PATTERNSIZE + Goban::HEADERSIZE;
 	unsigned int rshift = direction * Goban::PATTERNSIZE + Goban::HEADERSIZE;
     Goban::Case cases = 0, rcase = 0;
     unsigned int decal = 6;
     Goban::Case pattern;
     unsigned int lx  = x - Padding<direction,3>::x, ly  = y - Padding<direction,3>::y;
-	unsigned int rlx = x + Padding<direction,3>::x, rly = y + Padding<direction,3>::y;;
+	unsigned int rlx = x + Padding<direction,3>::x, rly = y + Padding<direction,3>::y;
 
     for (int i = 0; i < 7; ++i)
 	{
 		cases <<= 2;
 		rcase <<= 2;
-		cases |= g.InBound(lx, ly)   ? g[ly][lx] & Goban::PIONMASK   : 0x3;
-		rcase |= g.InBound(rlx, rly) ? g[rly][rlx] & Goban::PIONMASK : 0x3;
+		cases |= g.InBound(lx, ly)   ? g[ly][lx] & Goban::PIONMASK   : 0x0;
+		rcase |= g.InBound(rlx, rly) ? g[rly][rlx] & Goban::PIONMASK : 0x0;
         lx += Padding<direction,1>::x;
         ly += Padding<direction,1>::y;
 		rlx -= Padding<direction,1>::x;
@@ -137,48 +180,21 @@ inline void updatePattern(Goban & g, unsigned int x, unsigned int y, Goban::PION
         ly += Padding<direction,1>::y;
 		rlx -= Padding<direction,1>::x;
 		rly -= Padding<direction,1>::y;
-        if (g.InBound(lx, ly))
-        {
-			pattern = cases >> decal;
-			g[ly][lx] &= ~(Goban::PATTERNMASK << shift);
-			if      (MatchPattern<Patterns::o_o_>(pattern)) g[ly][lx] |= (Goban::Case)Patterns::o_o_ << shift;
-			else if (MatchPattern<Patterns::oooo>(pattern)) g[ly][lx] |= (Goban::Case)Patterns::oooo << shift;
-			else if (MatchPattern<Patterns::ooox>(pattern)) g[ly][lx] |= (Goban::Case)Patterns::ooox << shift;
-			else if (MatchPattern<Patterns::ooo_>(pattern)) g[ly][lx] |= (Goban::Case)Patterns::ooo_ << shift;
-			else if (MatchPattern<Patterns::ooo>(pattern))  g[ly][lx] |= (Goban::Case)Patterns::ooo << shift;
-			else if (MatchPattern<Patterns::_ooo>(pattern)) g[ly][lx] |= (Goban::Case)Patterns::_ooo << shift;
-			else if (MatchPattern<Patterns::_oox>(pattern)) g[ly][lx] |= (Goban::Case)Patterns::_oox << shift;
-			else if (MatchPattern<Patterns::_oo_>(pattern)) g[ly][lx] |= (Goban::Case)Patterns::_oo_ << shift;
-			else if (MatchPattern<Patterns::_oo>(pattern))  g[ly][lx] |= (Goban::Case)Patterns::_oo << shift;
-			else if (MatchPattern<Patterns::_o_>(pattern))  g[ly][lx] |= (Goban::Case)Patterns::_o_ << shift;
-			else if (MatchPattern<Patterns::oox>(pattern))  g[ly][lx] |= (Goban::Case)Patterns::oox << shift;
-			else if (MatchPattern<Patterns::oo_>(pattern))  g[ly][lx] |= (Goban::Case)Patterns::oo_ << shift;
-			else if (MatchPattern<Patterns::oo>(pattern))   g[ly][lx] |= (Goban::Case)Patterns::oo << shift;
-			else if (MatchPattern<Patterns::o_>(pattern))   g[ly][lx] |= (Goban::Case)Patterns::o_ << shift;
-			else if (MatchPattern<Patterns::ox>(pattern))   g[ly][lx] |= (Goban::Case)Patterns::ox << shift;
-			//SetInfluence(g, lx, ly, pattern, i, pion);
-		}
 		if (g.InBound(rlx, rly))
         {
 			pattern = rcase >> decal;
 			g[rly][rlx] &= ~(Goban::PATTERNMASK << rshift);
-			if      (MatchPattern<Patterns::o_o_>(pattern)) g[rly][rlx] |= (Goban::Case)Patterns::o_o_ << rshift;
-			else if (MatchPattern<Patterns::oooo>(pattern)) g[rly][rlx] |= (Goban::Case)Patterns::oooo << rshift;
-			else if (MatchPattern<Patterns::ooox>(pattern)) g[rly][rlx] |= (Goban::Case)Patterns::ooox << rshift;
-			else if (MatchPattern<Patterns::ooo_>(pattern)) g[rly][rlx] |= (Goban::Case)Patterns::ooo_ << rshift;
-			else if (MatchPattern<Patterns::ooo>(pattern))  g[rly][rlx] |= (Goban::Case)Patterns::ooo << rshift;
-			else if (MatchPattern<Patterns::_ooo>(pattern)) g[rly][rlx] |= (Goban::Case)Patterns::_ooo << rshift;
-			else if (MatchPattern<Patterns::_oox>(pattern)) g[rly][rlx] |= (Goban::Case)Patterns::_oox << rshift;
-			else if (MatchPattern<Patterns::_oo_>(pattern)) g[rly][rlx] |= (Goban::Case)Patterns::_oo_ << rshift;
-			else if (MatchPattern<Patterns::_oo>(pattern))  g[rly][rlx] |= (Goban::Case)Patterns::_oo << rshift;
-			else if (MatchPattern<Patterns::_o_>(pattern))  g[rly][rlx] |= (Goban::Case)Patterns::_o_ << rshift;
-			else if (MatchPattern<Patterns::oox>(pattern))  g[rly][rlx] |= (Goban::Case)Patterns::oox << rshift;
-			else if (MatchPattern<Patterns::oo_>(pattern))  g[rly][rlx] |= (Goban::Case)Patterns::oo_ << rshift;
-			else if (MatchPattern<Patterns::oo>(pattern))   g[rly][rlx] |= (Goban::Case)Patterns::oo << rshift;
-			else if (MatchPattern<Patterns::o_>(pattern))   g[rly][rlx] |= (Goban::Case)Patterns::o_ << rshift;
-			else if (MatchPattern<Patterns::ox>(pattern))   g[rly][rlx] |= (Goban::Case)Patterns::ox << rshift;
+			g[rly][rlx] |= /*PatternMap[pattern & 0xFF]*/ SearchPattern<Patterns::ooox>(pattern) << rshift;
 			//SetInfluence(g, rlx, rly, pattern, i, pion);
 		}
+        if (g.InBound(lx, ly))
+        {
+			pattern = cases >> decal;
+			g[ly][lx] &= ~(Goban::PATTERNMASK << shift);
+			g[ly][lx] |= /*PatternMap[pattern & 0xFF]*/ SearchPattern<Patterns::ooox>(pattern)  << shift;
+			//SetInfluence(g, lx, ly, pattern, i, pion);
+		}
+		
         decal -= 2;
     }
 }

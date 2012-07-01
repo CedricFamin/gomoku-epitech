@@ -20,7 +20,6 @@ namespace Rules
 		virtual bool execute(Goban &, Goban::Turn &);
 
 	private:
-        int GetAlign(Goban & g, unsigned int x, unsigned int y, Goban::Case pattern, Goban::PION_TYPE pion);
 		bool _enable;
 		bool _enableOptionalRule;
 	};

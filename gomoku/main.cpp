@@ -78,27 +78,33 @@ private:
 
 };*/
 
+
+#include <sstream>
 void generate_pattern()
 {
-	int nb[4] = {0};
-	int value;
+	char pattern[3] = { '_', 'o', 'x' };
+	int combin[4] = { 0, 0, 0, 0};
 
-	qDebug() << "struct PatternInfluence\n \
-{\n\
-int pattern;\n\
-int influence[4];\n\
-};\n\
-PatternInfluence patternInfluence[81] = {\n";
-	for (int i = 0; i < 81; ++i)
+	for (int i = 0; i <81; ++i)
 	{
-		value = nb[0] | (nb[1] << 2) | (nb[2] << 4) | (nb[3] << 6);
-		qDebug() << "{ 0X" << value << ", {}},";
-		nb[0]++;
-		if (nb[0] > 2){nb[0] = 0; nb[1]++;}
-		if (nb[1] > 2){nb[1] = 0; nb[2]++;}
-		if (nb[2] > 2){nb[2] = 0; nb[3]++;}
+		std::stringstream str;
+		str << pattern[combin[0]] << pattern[combin[1]] << pattern[combin[2]] << pattern[combin[3]];
+		qDebug() << str.str().c_str();
+		if (++combin[0] > 2)
+		{
+			combin[0] = 0;
+			if (++combin[1] > 2)
+			{
+				combin[1] = 0;
+				if (++combin[2] > 2)
+				{
+					combin[2] = 0;
+					++combin[3];
+				}
+			}
+
+		}
 	}
-	qDebug() << "};";
 }
 
 int main(int argc, char *argv[])

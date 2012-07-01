@@ -26,7 +26,7 @@ bool LastTaking::isEnable() const
 	return this->_enable;
 }
 
-bool LastTaking::execute(Goban &, Goban::Turn & turn)
+bool LastTaking::execute(Goban &, Goban::Turn &)
 {
 	return false;
 }

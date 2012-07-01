@@ -40,11 +40,11 @@ public:
     typedef long long int Case;
     typedef std::pair<unsigned int, unsigned int> Move;
     static const long long int PIONMASK = 0x3;
-    static const long long int PATTERNMASK = 0xF;
+    static const long long int PATTERNMASK = 0x1F;
     static const unsigned int HEADERSIZE = 2;
-    static const unsigned int PATTERNSIZE = 4;
+    static const unsigned int PATTERNSIZE = 5;
     static const unsigned int COLORSIZE = 2;
-    static const unsigned int CONTENTSIZE = 4;
+    static const unsigned int CONTENTSIZE = 5;
 	static const unsigned int INFLUENCESIZE = 8;
 	static const unsigned int BLACKINFLUENCEINDEX = HEADERSIZE + PATTERNSIZE * 8;
 	static const unsigned int WHITEINFLUENCEINDEX = HEADERSIZE + PATTERNSIZE * 8 + INFLUENCESIZE;
