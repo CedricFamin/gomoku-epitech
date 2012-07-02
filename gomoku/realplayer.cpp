@@ -1,4 +1,4 @@
-#include <qdebug>
+#include <QDebug>
 #include "realplayer.h"
 #include "Evaluator.h"
 

@@ -69,6 +69,11 @@ bool MainWindow::IsClosed() const
     return this->closed;
 }
 
+unsigned short MainWindow::getMode() const
+{
+    return this->mode;
+}
+
 GobanQt & MainWindow::getGoban()
 {
     return *this->label;

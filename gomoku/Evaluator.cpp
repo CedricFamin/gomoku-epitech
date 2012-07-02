@@ -57,9 +57,9 @@ const ThreatSearch threatSearchs[8] = {
 int Evaluator::operator()(Goban & g, Goban::PION_TYPE p)
 {   
 	Goban::PION_TYPE currentPion;
-	Goban::PION_TYPE other = Goban::Other(p);
+//	Goban::PION_TYPE other = Goban::Other(p);
 	int score = 0;
-	int captures = g.deletedStone(other) - this->_base->deletedStone(p);
+//	int captures = g.deletedStone(other) - this->_base->deletedStone(p);
     //int threat[7][2] = {0, 0};
 	Goban::Case * current = g[0];
 	Goban::Case toEval;
@@ -70,7 +70,7 @@ int Evaluator::operator()(Goban & g, Goban::PION_TYPE p)
 		currentPion = (Goban::PION_TYPE)(toEval & Goban::PIONMASK);
 		if (currentPion)
 		{
-			for (unsigned int d = 0, i = 0; d < 4; ++d)
+            for (unsigned int d = 0; d < 4; ++d)
 			{
 				score += (currentPion == p) ? GetThreatScore(currentPion, toEval, g, x, y, d) :
 					-GetThreatScore(currentPion, toEval, g, x, y, d);

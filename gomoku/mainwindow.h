@@ -20,6 +20,7 @@ public:
     ~MainWindow();
     bool IsClosed() const;
     GobanQt & getGoban();
+    unsigned short getMode() const;
 
 signals:
 	void newGameSignal();
@@ -32,6 +33,7 @@ private:
     GobanQt *label;
     bool playerTurn;
     bool closed;
+    unsigned short mode:2;
 
 private slots:
     void checkTurn();

@@ -21,6 +21,8 @@
 #include "AI/aiplayer.h"
 #include "qtgoban.h"
 #include "Finished.h"
+#include "selectgametype.h"
+#include "realplayer.h"
 
 /*class Game : public QThread
 {
@@ -111,8 +113,10 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 	Goban goban;
+    SelectGameType gametype;
 	MainWindow win;
     GobanQt & uiGoban = win.getGoban();
+
     bool affWon = false;
 
 	connect(&win, SIGNAL(newGameSignal()), std::tr1::bind(&Goban::clear, &goban));
@@ -121,18 +125,41 @@ int main(int argc, char *argv[])
     Referrer referrer;
     Rules::TakingRules * tkrule = new Rules::TakingRules();
     IPlayer * currentPlayer;
+    IPlayer* players[2];
     //referrer.addPrePlayRule(*(new Rules::EachInTurnRule()));
     referrer.addPrePlayRule(*(new Rules::DoubleThree()));
     referrer.addPrePlayRule(*(new Rules::NotEmptyRule()));
     referrer.addPlayRule(*tkrule);
     referrer.addPostPlayRule(*(new Rules::VictoryCapturesRule()));
     referrer.addPostPlayRule(*(new Rules::VictoryAlignment()));
-	
+
+    gametype.exec();
     win.show();
+    if (gametype.getMode() == 0)
+    {
+        players[0] = new AIPlayer(Goban::BLACK);
+        players[1] = new RealPlayer(Goban::RED, uiGoban);
+    }
+    else if (gametype.getMode() == 1)
+    {
+        players[0] = new AIPlayer(Goban::BLACK);
+        players[1] = new AIPlayer(Goban::RED);
+    }
+    else if (gametype.getMode() == 2)
+    {
+        players[0] = new RealPlayer(Goban::BLACK, uiGoban);
+        players[1] = new RealPlayer(Goban::RED, uiGoban);
+    }
+    else
+    {
+        players[0] = new AIPlayer(Goban::BLACK);
+        players[1] = new RealPlayer(Goban::RED, uiGoban);
+    }
+
     while (!win.IsClosed())
     {
 		if (app.hasPendingEvents()) app.processEvents();
-			currentPlayer = uiGoban.currentPlayer(goban.Turns().size());
+            currentPlayer = players[goban.Turns().size() & 1];
 		if (goban.gameFinished() == false)
             currentPlayer->play(referrer, goban, std::tr1::bind(&GobanQt::PlayAt, &uiGoban, std::tr1::placeholders::_1, std::tr1::placeholders::_2, std::tr1::placeholders::_3));
 
