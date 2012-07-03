@@ -18,6 +18,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->actionNew_game, SIGNAL(triggered()), this, SLOT(newGame()));
     connect(this->label, SIGNAL(clicked()), this, SLOT(displaySquareInformations()));
     connect(this->label, SIGNAL(captured()), this, SLOT(capturedStone()));
+    connect(ui->actionDouble_three_rule, SIGNAL(triggered()), this, SLOT(double_Three_Rule()));
+    connect(ui->actionEndgame_catch_rule, SIGNAL(triggered()), this, SLOT(endgame_Catch_Rule()));
     closed = false;
 }
 
@@ -34,7 +36,19 @@ void MainWindow::newGame()
     this->ui->label_19->setText(QString::number(0));
     this->ui->label_20->setText(QString::number(0));
     this->label->newGame();
-	emit this->newGameSignal();
+    emit this->newGameSignal();
+}
+
+void MainWindow::double_Three_Rule()
+{
+    this->ui->actionDouble_three_rule->setChecked(false);
+    emit this->doubleThreeRule();
+}
+
+void MainWindow::endgame_Catch_Rule()
+{
+    this->ui->actionEndgame_catch_rule->setChecked(false);
+    emit this->endgameCatchRule();
 }
 
 void MainWindow::checkTurn()
@@ -67,6 +81,11 @@ void MainWindow::closeEvent(QCloseEvent* event)
 bool MainWindow::IsClosed() const
 {
     return this->closed;
+}
+
+unsigned short MainWindow::getMode() const
+{
+    return this->mode;
 }
 
 GobanQt & MainWindow::getGoban()

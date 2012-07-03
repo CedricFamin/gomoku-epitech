@@ -42,7 +42,7 @@ const ThreatSearch threatSearchs[8] = {
 	int expand = 0;
 	if (g.InBound(lx, ly) && (g[ly][lx] & Goban::PIONMASK) == p)
 	{
-		align += pInfos1.size - pInfos.fr;
+		align += pInfos1.align;
 		expand += pInfos1.expand;
 	}
 	lx = x - pInfos2.caseIndex * GobanIterator::direction[d][0];

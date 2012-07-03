@@ -21,6 +21,8 @@
 #include "AI/aiplayer.h"
 #include "qtgoban.h"
 #include "Finished.h"
+#include "selectgametype.h"
+#include "realplayer.h"
 
 /*class Game : public QThread
 {
@@ -111,28 +113,58 @@ int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
 	Goban goban;
+    SelectGameType gametype;
 	MainWindow win;
     GobanQt & uiGoban = win.getGoban();
+
     bool affWon = false;
 
+    Rules::DoubleThree* doubleThree = new Rules::DoubleThree;
+    Rules::NotEmptyRule* notEmptyRule = new Rules::NotEmptyRule;
 	connect(&win, SIGNAL(newGameSignal()), std::tr1::bind(&Goban::clear, &goban));
 	connect(&win, SIGNAL(newGameSignal()), [&affWon]{affWon = false;});
 
     Referrer referrer;
     Rules::TakingRules * tkrule = new Rules::TakingRules();
     IPlayer * currentPlayer;
+    IPlayer* players[2];
     //referrer.addPrePlayRule(*(new Rules::EachInTurnRule()));
-    referrer.addPrePlayRule(*(new Rules::DoubleThree()));
-    referrer.addPrePlayRule(*(new Rules::NotEmptyRule()));
+    referrer.addPrePlayRule(*(doubleThree));
+    referrer.addPrePlayRule(*(notEmptyRule));
     referrer.addPlayRule(*tkrule);
     referrer.addPostPlayRule(*(new Rules::VictoryCapturesRule()));
     referrer.addPostPlayRule(*(new Rules::VictoryAlignment()));
-	
+
+    connect(&win, SIGNAL(doubleThreeRule()), std::tr1::bind(&Rules::DoubleThree::disable, doubleThree));
+    connect(&win, SIGNAL(endgameCatchRule()), std::tr1::bind(&Rules::NotEmptyRule::disable, notEmptyRule));
+
+    gametype.exec();
     win.show();
+    if (gametype.getMode() == 0)
+    {
+        players[0] = new AIPlayer(Goban::BLACK);
+        players[1] = new RealPlayer(Goban::RED, uiGoban);
+    }
+    else if (gametype.getMode() == 1)
+    {
+        players[0] = new AIPlayer(Goban::BLACK);
+        players[1] = new AIPlayer(Goban::RED);
+    }
+    else if (gametype.getMode() == 2)
+    {
+        players[0] = new RealPlayer(Goban::BLACK, uiGoban);
+        players[1] = new RealPlayer(Goban::RED, uiGoban);
+    }
+    else
+    {
+        players[0] = new AIPlayer(Goban::BLACK);
+        players[1] = new RealPlayer(Goban::RED, uiGoban);
+    }
+
     while (!win.IsClosed())
     {
 		if (app.hasPendingEvents()) app.processEvents();
-			currentPlayer = uiGoban.currentPlayer(goban.Turns().size());
+            currentPlayer = players[goban.Turns().size() & 1];
 		if (goban.gameFinished() == false)
             currentPlayer->play(referrer, goban, std::tr1::bind(&GobanQt::PlayAt, &uiGoban, std::tr1::placeholders::_1, std::tr1::placeholders::_2, std::tr1::placeholders::_3));
 
@@ -159,6 +191,8 @@ int main(int argc, char *argv[])
         //sleep(1);
 #endif
     }
+    delete doubleThree;
+    delete notEmptyRule;
     app.exit();
     return 0;
 }

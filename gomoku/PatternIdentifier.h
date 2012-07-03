@@ -6,7 +6,7 @@
 
 namespace Patterns
 {
-	enum Patterns
+    enum Patterns
 	{
 		____ = 0,
 		o___ = 1,
@@ -46,8 +46,8 @@ namespace Patterns
 		int align;
 		int expand;
 		int caseIndex;
-		int size;
-		bool free;
+        bool free;
+        int size;
 	};
 
 	extern PatternInfos patterns[PATTERNNUMBER];

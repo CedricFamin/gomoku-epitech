@@ -5,5 +5,8 @@
         <file>pionBlanc.png</file>
         <file>creation.png</file>
         <file>win.jpg</file>
+        <file>IaVsIa.jpg</file>
+        <file>PlayerVsIa.jpg</file>
+        <file>PlayerVsPlayer.png</file>
     </qresource>
 </RCC>

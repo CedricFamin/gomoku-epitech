@@ -29,7 +29,9 @@ SOURCES +=\
     AI/aiplayer.cpp \
     connect_functor_helper.cpp \
     AI/alphabetathreading.cpp \
-    Evaluator.cpp
+    Evaluator.cpp \
+    PatternIdentifier.cpp \
+    selectgametype.cpp
 
 HEADERS  += mainwindow.h \
     Referrer.h \
@@ -51,10 +53,12 @@ HEADERS  += mainwindow.h \
     connect_functor_helper.h \
     AI/alphabetathreading.h \
     PatternIdentifier.h \
-    Evaluator.h
+    Evaluator.h \
+    selectgametype.h
 
 FORMS    += mainwindow.ui \
-    Finished.ui
+    Finished.ui \
+    selectgametype.ui
 
 RESOURCES += \
     images.qrc
