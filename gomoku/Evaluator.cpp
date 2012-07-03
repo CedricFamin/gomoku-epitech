@@ -33,23 +33,35 @@ const ThreatSearch threatSearchs[8] = {
 
  int GetThreatScore(Goban::PION_TYPE p, Goban::Case c, Goban & g, unsigned int x, unsigned int y, int d)//, int & nextEval)
 {
-	Patterns::PatternInfos pInfos1 = Patterns::patterns[(c >> Goban::HEADERSIZE >> Goban::PATTERNSIZE * d) & Goban::PIONMASK];
-	Patterns::PatternInfos pInfos2 = Patterns::patterns[(c >> Goban::HEADERSIZE >> Goban::PATTERNSIZE * (d+4)) & Goban::PIONMASK];
+	Patterns::PatternInfos pInfos1 = Patterns::patterns[(c >> Goban::HEADERSIZE >> Goban::PATTERNSIZE * d) & Goban::PATTERNMASK];
+	Patterns::PatternInfos pInfos2 = Patterns::patterns[(c >> Goban::HEADERSIZE >> Goban::PATTERNSIZE * (d+4)) & Goban::PATTERNMASK];
+	
 	unsigned int lx = x + pInfos1.caseIndex * GobanIterator::direction[d][0];
-	unsigned int ly = y + pInfos1.caseIndex * GobanIterator::direction[d][0];
+	unsigned int ly = y + pInfos1.caseIndex * GobanIterator::direction[d][1];
 	int align = 0;
-	align += (g.InBound(lx, ly) && (g[ly][lx] & Goban::PIONMASK) == p) ? pInfos1.align : 0;
-	lx = x - pInfos2.caseIndex * GobanIterator::direction[d][0];
-	ly = y - pInfos2.caseIndex * GobanIterator::direction[d][0];
-	align += (g.InBound(lx, ly) && (g[ly][lx] & Goban::PIONMASK) == p) ? pInfos2.align : 0;
-	switch (align)
+	int expand = 0;
+	if (g.InBound(lx, ly) && (g[ly][lx] & Goban::PIONMASK) == p)
 	{
-	case 0: return 1;
-	case 1: return 50;
-	case 2: return 750;
-	case 3: return 2000;
-	case 4: return 5000;
-	default: return 6000;
+		align += pInfos1.size - pInfos.fr;
+		expand += pInfos1.expand;
+	}
+	lx = x - pInfos2.caseIndex * GobanIterator::direction[d][0];
+	ly = y - pInfos2.caseIndex * GobanIterator::direction[d][1];
+	if (g.InBound(lx, ly) && (g[ly][lx] & Goban::PIONMASK) == p)
+	{
+		align += pInfos2.align;
+		expand += pInfos2.expand;
+	}
+	if (align + expand >= 4)
+	{
+		switch (align)
+		{
+		case 0: return 5;
+		case 1: return 50;
+		case 2: return 500;
+		case 3: return 5000;
+		case 4: return 50000;
+		}
 	}
 	return 0;
 }
@@ -70,11 +82,14 @@ int Evaluator::operator()(Goban & g, Goban::PION_TYPE p)
 		currentPion = (Goban::PION_TYPE)(toEval & Goban::PIONMASK);
 		if (currentPion)
 		{
-			for (unsigned int d = 0, i = 0; d < 4; ++d)
-			{
-				score += (currentPion == p) ? GetThreatScore(currentPion, toEval, g, x, y, d) :
-					-GetThreatScore(currentPion, toEval, g, x, y, d);
-			}
+			score += (currentPion == p) ? GetThreatScore(currentPion, toEval, g, x, y, 0) :
+					-GetThreatScore(currentPion, toEval, g, x, y, 0);
+			score += (currentPion == p) ? GetThreatScore(currentPion, toEval, g, x, y, 1) :
+						-GetThreatScore(currentPion, toEval, g, x, y, 1);
+			score += (currentPion == p) ? GetThreatScore(currentPion, toEval, g, x, y, 2) :
+						-GetThreatScore(currentPion, toEval, g, x, y, 2);
+			score += (currentPion == p) ? GetThreatScore(currentPion, toEval, g, x, y, 3) :
+					-GetThreatScore(currentPion, toEval, g, x, y, 3);
 		}
 		if (++x >= 19)
 		{
@@ -82,7 +97,7 @@ int Evaluator::operator()(Goban & g, Goban::PION_TYPE p)
 			++y;
 		}
 	}
-	//score += captures * 1000;
+	score += captures * 1000;
 	return score;
 }
 

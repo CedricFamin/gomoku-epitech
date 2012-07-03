@@ -4,6 +4,7 @@
 
 #include <time.h>
 #include <QDebug>
+#include "GobanIterator.h"
 #include "alphabetathreading.h"
 
 #include "aiplayer.h"
@@ -26,6 +27,12 @@ void AIPlayer::play(Referrer & r, Goban & g, callback_type callback)
         move.first = 9;
         move.second = 9;
     }
+	else if (g.Turns().size() == 1)
+	{
+		srand((unsigned int)time(0));
+		move.first = g.Turns().front().x + GobanIterator::direction[rand() % 8][0];
+		move.second = g.Turns().front().y + GobanIterator::direction[rand() % 8][1];
+	}
     else
     {
         move.first = g.Turns().back().x;

@@ -151,7 +151,7 @@ int main(int argc, char *argv[])
 //#if _DEBUG
 		
 		uiGoban.affPlayable(goban, referrer, currentPlayer->getColor());
-		//uiGoban.showInfluence(goban);
+		uiGoban.showInfluence(goban);
 //#endif
 #ifdef _WIN32
         Sleep(100);

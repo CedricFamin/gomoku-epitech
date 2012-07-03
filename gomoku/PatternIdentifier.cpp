@@ -25,7 +25,7 @@ namespace Patterns
 		PatternInfos(oo_x, 2, 2, 1, 1, 4),
 		PatternInfos(_oox, 1, 1, 0, 2, 4),
 		PatternInfos(o_ox, 1, 1, 1, 1, 4),
-		PatternInfos(ooo_, 3, 0, 1, 1, 4),
+		PatternInfos(ooo_, 3, 1, 1, 1, 4),
 		PatternInfos(_ooo, 0, 1, 0, 2, 4),
 		PatternInfos(oo_o, 2, 1, 1, 1, 4),
 		PatternInfos(o_oo, 1, 1, 1, 1, 4),

@@ -5,10 +5,6 @@
 #include "GobanIterator.h"
 #include "PatternIdentifier.h"
 
-#define _SECURE_SCL 0
-#define _HAS_ITERATOR_DEBUGGING 0
-
-
 #define MIN(x, y) ((x < y) ? x : y)
 
 Goban::Goban() : _width(19), _height(19), _gameFinished(false)
