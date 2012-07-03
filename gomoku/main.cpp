@@ -119,6 +119,8 @@ int main(int argc, char *argv[])
 
     bool affWon = false;
 
+    Rules::DoubleThree* doubleThree = new Rules::DoubleThree;
+    Rules::NotEmptyRule* notEmptyRule = new Rules::NotEmptyRule;
 	connect(&win, SIGNAL(newGameSignal()), std::tr1::bind(&Goban::clear, &goban));
 	connect(&win, SIGNAL(newGameSignal()), [&affWon]{affWon = false;});
 
@@ -127,11 +129,14 @@ int main(int argc, char *argv[])
     IPlayer * currentPlayer;
     IPlayer* players[2];
     //referrer.addPrePlayRule(*(new Rules::EachInTurnRule()));
-    referrer.addPrePlayRule(*(new Rules::DoubleThree()));
-    referrer.addPrePlayRule(*(new Rules::NotEmptyRule()));
+    referrer.addPrePlayRule(*(doubleThree));
+    referrer.addPrePlayRule(*(notEmptyRule));
     referrer.addPlayRule(*tkrule);
     referrer.addPostPlayRule(*(new Rules::VictoryCapturesRule()));
     referrer.addPostPlayRule(*(new Rules::VictoryAlignment()));
+
+    connect(&win, SIGNAL(doubleThreeRule()), std::tr1::bind(&Rules::DoubleThree::disable, doubleThree));
+    connect(&win, SIGNAL(endgameCatchRule()), std::tr1::bind(&Rules::NotEmptyRule::disable, notEmptyRule));
 
     gametype.exec();
     win.show();
@@ -186,6 +191,8 @@ int main(int argc, char *argv[])
         //sleep(1);
 #endif
     }
+    delete doubleThree;
+    delete notEmptyRule;
     app.exit();
     return 0;
 }

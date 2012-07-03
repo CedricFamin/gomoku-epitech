@@ -24,6 +24,8 @@ public:
 
 signals:
 	void newGameSignal();
+    void doubleThreeRule();
+    void endgameCatchRule();
 
 protected:
     void closeEvent(QCloseEvent* event);
@@ -40,6 +42,8 @@ private slots:
     void displaySquareInformations();
     void capturedStone();
     void newGame();
+    void double_Three_Rule();
+    void endgame_Catch_Rule();
 };
 
 #endif // MAINWINDOW_H

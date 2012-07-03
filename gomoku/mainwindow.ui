@@ -360,6 +360,12 @@
    </property>
   </action>
   <action name="actionEndgame_catch_rule">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Endgame catch rule</string>
    </property>
@@ -368,6 +374,12 @@
    </property>
   </action>
   <action name="actionDouble_three_rule">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="checked">
+    <bool>true</bool>
+   </property>
    <property name="text">
     <string>Double-three rule</string>
    </property>
