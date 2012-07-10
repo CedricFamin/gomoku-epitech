@@ -41,13 +41,19 @@ void MainWindow::newGame()
 
 void MainWindow::double_Three_Rule()
 {
-    this->ui->actionDouble_three_rule->setChecked(false);
+    if (this->ui->actionDouble_three_rule->isChecked())
+        this->ui->actionDouble_three_rule->setChecked(true);
+    else
+        this->ui->actionDouble_three_rule->setChecked(false);
     emit this->doubleThreeRule();
 }
 
 void MainWindow::endgame_Catch_Rule()
 {
-    this->ui->actionEndgame_catch_rule->setChecked(false);
+    if (this->ui->actionEndgame_catch_rule->isChecked())
+        this->ui->actionEndgame_catch_rule->setChecked(true);
+    else
+        this->ui->actionEndgame_catch_rule->setChecked(false);
     emit this->endgameCatchRule();
 }
 
