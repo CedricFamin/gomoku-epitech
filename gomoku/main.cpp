@@ -135,8 +135,20 @@ int main(int argc, char *argv[])
     referrer.addPostPlayRule(*(new Rules::VictoryCapturesRule()));
     referrer.addPostPlayRule(*(new Rules::VictoryAlignment()));
 
-    connect(&win, SIGNAL(doubleThreeRule()), std::tr1::bind(&Rules::DoubleThree::disable, doubleThree));
-    connect(&win, SIGNAL(endgameCatchRule()), std::tr1::bind(&Rules::NotEmptyRule::disable, notEmptyRule));
+    connect(&win, SIGNAL(doubleThreeRule()), [&doubleThree]
+    {
+            if (doubleThree->isEnable())
+                doubleThree->disable();
+            else
+                doubleThree->enable();
+    });
+    connect(&win, SIGNAL(endgameCatchRule()), [&notEmptyRule]
+    {
+            if (notEmptyRule->isEnable())
+                notEmptyRule->disable();
+            else
+                notEmptyRule->enable();
+    });
 
     gametype.exec();
     win.show();
