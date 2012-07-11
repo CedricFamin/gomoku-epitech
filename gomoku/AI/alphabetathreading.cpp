@@ -44,10 +44,27 @@ AlphaBetaThreading::AlphaBetaThreading(Goban & g, const Goban::Move & m, Goban::
 std::list<Goban::Move> AlphaBetaThreading::GetTurns(Goban & g,Goban::Move & last , Goban::PION_TYPE)
 {
   std::list<Goban::Move> possiblesTurns;
+  Goban::Case toEval;
+
   for (unsigned int x = 0; x < g.getWidth(); ++x) 
     for (unsigned int y = 0; y < g.getHeight(); ++y)
-      if (!(g[y][x] & Goban::PIONMASK) && ((g[y][x] & ~Goban::PIONMASK)))
-	possiblesTurns.push_back(std::make_pair(x, y));
+	{
+		toEval = g[y][x];
+		if (!(toEval & Goban::PIONMASK))
+		{
+			toEval >>= Goban::HEADERSIZE;
+			for (int i = 0; i < 8; ++i)
+			{
+				Patterns::PatternInfos * p = Patterns::patterns + (toEval & Goban::PATTERNMASK);
+				if (p->caseIndex <= 2 && p->pattern)
+				{
+					possiblesTurns.push_back(std::make_pair(x, y));
+					i = 8;
+				}
+				toEval >>= Goban::PATTERNSIZE;
+			}
+		}
+	}
   return possiblesTurns;
 }
 
@@ -56,7 +73,7 @@ void AlphaBetaThreading::run()
   Goban s = this->_goban;
   if (this->_referrer(s, this->_pion, this->_move.first, this->_move.second))
     {
-      this->_score = this->alphabeta(s, 1,
+      this->_score = this->alphabeta(s, 3,
 				      std::numeric_limits<int>::min() + 1, std::numeric_limits<int>::max(),
 				      Goban::Other(this->_pion));
     }
@@ -91,17 +108,38 @@ int AlphaBetaThreading::alphabeta(Goban & g, int depth, int alpha, int beta, Gob
 	if (g.gameFinished()) return g.getWinner() == pion ? std::numeric_limits<int>::max() : -std::numeric_limits<int>::max();
 	if (depth == 0) return this->_evaluator(g,pion);
 
+	Goban::Case toEval;
+
 	for (unsigned int x = 0,y = 0; y < 19  && beta > alpha; ++x)
 	{
 		alpha = std::max(alpha, AlphaBetaThreading::GlobalAlpha);
 		if (alpha >= beta) break;
-		if ((g[y][x] & ~Goban::PIONMASK) && this->_referrer(g, pion, x, y, false))
+		toEval = g[y][x];
+		if ((toEval & ~Goban::PIONMASK))
 		{
-			if (pion == this->_pion)
-				alpha = std::max(alpha, alphabeta(g, depth - 1, alpha, beta, Goban::Other(pion)));
-			else
-				beta = std::min(beta, alphabeta(g, depth - 1, alpha, beta, Goban::Other(pion)));
-			g.subIn(x, y, false);
+			toEval >>= Goban::HEADERSIZE;
+			for (int i = 0; i < 8; ++i)
+			{
+				Patterns::PatternInfos * p = Patterns::patterns + (toEval & Goban::PATTERNMASK);
+				if (p->caseIndex <= 2 && p->pattern && this->_referrer(g, pion, x, y, false))
+				{
+					if (pion == this->_pion)
+						alpha = std::max(alpha, alphabeta(g, depth - 1, alpha, beta, Goban::Other(pion)));
+					else
+						beta = std::min(beta, alphabeta(g, depth - 1, alpha, beta, Goban::Other(pion)));
+					g.subIn(x, y, false);
+					i = 8;
+				}
+				toEval >>= Goban::PATTERNSIZE;
+			}
+			/*if (this->_referrer(g, pion, x, y, false))
+			{
+				if (pion == this->_pion)
+					alpha = std::max(alpha, alphabeta(g, depth - 1, alpha, beta, Goban::Other(pion)));
+				else
+					beta = std::min(beta, alphabeta(g, depth - 1, alpha, beta, Goban::Other(pion)));
+				g.subIn(x, y, false);
+			}*/
 		}
 		if (++x >= 19)
 		{
