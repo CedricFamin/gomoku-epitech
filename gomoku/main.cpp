@@ -194,9 +194,13 @@ int main(int argc, char *argv[])
         }
 //#if _DEBUG
 		
-		uiGoban.affPlayable(goban, referrer, currentPlayer->getColor());
+		//uiGoban.affPlayable(goban, referrer, currentPlayer->getColor());
 		//uiGoban.showInfluence(goban);
 		//uiGoban.affSelectedMove(goban);
+		//uiGoban.affEvalCase<0>(goban);
+		//uiGoban.affEvalCase<1>(goban);
+		//uiGoban.affEvalCase<2>(goban);
+		//uiGoban.affEvalCase<3>(goban);
 //#endif
 #ifdef _WIN32
         Sleep(100);

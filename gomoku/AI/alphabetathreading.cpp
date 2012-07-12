@@ -132,14 +132,6 @@ int AlphaBetaThreading::alphabeta(Goban & g, int depth, int alpha, int beta, Gob
 				}
 				toEval >>= Goban::PATTERNSIZE;
 			}
-			/*if (this->_referrer(g, pion, x, y, false))
-			{
-				if (pion == this->_pion)
-					alpha = std::max(alpha, alphabeta(g, depth - 1, alpha, beta, Goban::Other(pion)));
-				else
-					beta = std::min(beta, alphabeta(g, depth - 1, alpha, beta, Goban::Other(pion)));
-				g.subIn(x, y, false);
-			}*/
 		}
 		if (++x >= 19)
 		{

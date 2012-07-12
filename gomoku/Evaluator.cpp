@@ -13,11 +13,11 @@ Evaluator::~Evaluator(void)
 }
 
 int ThreatAlign[5][2][2] = {
-	{{2,3}, {3,5}},
-	{{15,20}, {20,25}},
-	{{170,200}, {200,250}},
-	{{750,900}, {900,1000}},
-	{{1500,2000}, {2000,2500}},
+	{{0,3}, {3,5}},
+	{{0,65}, {65,75}},
+	{{0,200}, {200,250}},
+	{{0,900}, {900,1000}},
+	{{0,2000}, {2000,2500}},
 };
 
 inline int GetThreatScore(Goban::PION_TYPE p, Goban::Case c, Goban & g, unsigned int x, unsigned int y, int d, int & nextEval)
@@ -85,8 +85,8 @@ int Evaluator::operator()(Goban & g, Goban::PION_TYPE p)
 	eval_case<1>(score, g, toEval, currentPion, p);
 	eval_case<2>(score, g, toEval, currentPion, p);
 	eval_case<3>(score, g, toEval, currentPion, p);
-	score += (g.deletedStone(p) - this->_base->deletedStone(p)) * 1000;
-	score -= (g.deletedStone(Goban::Other(p)) - this->_base->deletedStone(Goban::Other(p))) * 1000;
+	//score += (g.deletedStone(p) - this->_base->deletedStone(p)) * 1000;
+	//score -= (g.deletedStone(Goban::Other(p)) - this->_base->deletedStone(Goban::Other(p))) * 1000;
 	return score;
 }
 
