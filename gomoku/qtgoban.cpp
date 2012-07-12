@@ -9,6 +9,7 @@
 #include "AI/aiplayer.h"
 #include "Finished.h"
 #include "realplayer.h"
+#include "AI/alphabetathreading.h"
 
 GobanQt::GobanQt(QMainWindow *parent, QPixmap Image) :
     QLabel(parent)
@@ -96,6 +97,22 @@ void GobanQt::showInfluence(Goban &g)
 			this->square[index].image->move(this->square[index].x, this->square[index].y);
 		}
 	}
+}
+
+
+void GobanQt::affSelectedMove(Goban &g)
+{
+	auto moves = AlphaBetaThreading::GetTurns(g, Goban::Move(), Goban::BLACK);
+	std::for_each(moves.begin(), moves.end(),
+	[this, &g](Goban::Move & m)
+	{
+		int index = m.first + 19 * m.second;
+		this->square[index].image->setAutoFillBackground(true);
+		QPalette Pal(this->square[index].image->palette());
+		Pal.setColor(QPalette::Window, QColor(20, 20, 20, 25));
+		this->square[index].image->setPalette(Pal);
+		this->square[index].image->move(this->square[index].x, this->square[index].y);
+	});
 }
 
 void GobanQt::affPlayable(Goban &g, Referrer &r, Goban::PION_TYPE color)

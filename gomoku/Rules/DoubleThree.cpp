@@ -57,12 +57,14 @@ int isFree3(Patterns::PatternInfos & p1, Patterns::PatternInfos & p2, Goban & g,
 	const int direction[4][2] = {
 		{ 0,-1}, { 1, -1}, { 1, 0}, { 1, 1}
 	};
-	Goban::Case pion1 = g[y + direction[dir][1] * p1.caseIndex][x + direction[dir][0] * p1.caseIndex] & Goban::PIONMASK;
-	Goban::Case pion2 = g[y - direction[dir][1] * p2.caseIndex][x - direction[dir][0] * p2.caseIndex] & Goban::PIONMASK;
+	unsigned int x1 = x + direction[dir][0] * p1.caseIndex, x2 = x - direction[dir][0] * p2.caseIndex;
+	unsigned int y1 = y + direction[dir][1] * p1.caseIndex, y2 = y - direction[dir][1] * p2.caseIndex;
+	Goban::Case pion1 = g[y1][x1] & Goban::PIONMASK;
+	Goban::Case pion2 = g[y2][x2] & Goban::PIONMASK;
 
 	if (pion1 == p && pion2 == p && p1.free && p2.free)
 	{
-		if (p1.align == 1 && p2.align == 1) return 1;
+		if (p1.align == 1 && p2.align == 1) return 1 ;
 		if (p1.align == 1 && p2.caseIndex == 2 && p2.expand >= 2 && p2.pattern != Patterns::_oo_) return 1;
 		if (p2.align == 1 && p1.caseIndex == 2 && p1.expand >= 2 && p1.pattern != Patterns::_oo_) return 1;
 	}

@@ -55,7 +55,7 @@ std::list<Goban::Move> AlphaBetaThreading::GetTurns(Goban & g,Goban::Move & last
 			toEval >>= Goban::HEADERSIZE;
 			for (int i = 0; i < 8; ++i)
 			{
-				Patterns::PatternInfos * p = Patterns::patterns + (toEval & Goban::PATTERNMASK);
+				const Patterns::PatternInfos * p = Patterns::patterns + (toEval & Goban::PATTERNMASK);
 				if (p->caseIndex <= 2 && p->pattern)
 				{
 					possiblesTurns.push_back(std::make_pair(x, y));
@@ -120,7 +120,7 @@ int AlphaBetaThreading::alphabeta(Goban & g, int depth, int alpha, int beta, Gob
 			toEval >>= Goban::HEADERSIZE;
 			for (int i = 0; i < 8; ++i)
 			{
-				Patterns::PatternInfos * p = Patterns::patterns + (toEval & Goban::PATTERNMASK);
+				const Patterns::PatternInfos * p = Patterns::patterns + (toEval & Goban::PATTERNMASK);
 				if (p->caseIndex <= 2 && p->pattern && this->_referrer(g, pion, x, y, false))
 				{
 					if (pion == this->_pion)

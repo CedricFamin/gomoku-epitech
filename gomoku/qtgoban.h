@@ -45,6 +45,7 @@ public:
     void newGame();
 	void showInfluence(Goban &g);
 	void affPlayable(Goban &g, Referrer &r, Goban::PION_TYPE color);
+	void affSelectedMove(Goban &g);
     ~GobanQt();
 protected:
     void mousePressEvent (QMouseEvent* e);

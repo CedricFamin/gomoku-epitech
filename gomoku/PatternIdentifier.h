@@ -50,7 +50,7 @@ namespace Patterns
         int size;
 	};
 
-	extern PatternInfos patterns[PATTERNNUMBER];
+	extern const PatternInfos patterns[PATTERNNUMBER];
 
 	inline PatternInfos GetPatternInfos(unsigned int pattern) 
 	{

@@ -2,7 +2,7 @@
 
 namespace Patterns
 {
-	PatternInfos patterns[PATTERNNUMBER] = 
+	const PatternInfos patterns[PATTERNNUMBER] = 
 	{
 		PatternInfos(),
 		PatternInfos(o___, 1, 3, 1, 1, 4),

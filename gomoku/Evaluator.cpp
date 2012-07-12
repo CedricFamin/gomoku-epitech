@@ -15,12 +15,12 @@ Evaluator::~Evaluator(void)
 int ThreatAlign[5][2][2] = {
 	{{2,3}, {3,5}},
 	{{15,20}, {20,25}},
-	{{50,75}, {75,100}},
+	{{170,200}, {200,250}},
 	{{300,400}, {400,500}},
 	{{1500,2000}, {2000,2500}},
 };
 
-int GetThreatScore(Goban::PION_TYPE p, Goban::Case c, Goban & g, unsigned int x, unsigned int y, int d, int & nextEval)
+inline int GetThreatScore(Goban::PION_TYPE p, Goban::Case c, Goban & g, unsigned int x, unsigned int y, int d, int & nextEval)
 {
 	Patterns::PatternInfos pInfos1 = Patterns::patterns[(c >> Goban::HEADERSIZE >> Goban::PATTERNSIZE * d) & Goban::PATTERNMASK];
 	Patterns::PatternInfos pInfos2 = Patterns::patterns[(c >> Goban::HEADERSIZE >> Goban::PATTERNSIZE * (d+4)) & Goban::PATTERNMASK];
@@ -65,7 +65,12 @@ void eval_case(int &score, Goban &g, Goban::Case &toEval, Goban::PION_TYPE & cur
 		if (currentPion)
 			score += (currentPion == p) ? GetThreatScore(currentPion, toEval, g, x, y, dir, nextEval) :
 						-GetThreatScore(currentPion, toEval, g, x, y, dir, nextEval);
-		else nextEval = 0;
+		else
+		{
+			//score += pow(5.0, Goban::GetInfluence(toEval, p));
+			//score -= pow(5.0, Goban::GetInfluence(toEval, Goban::Other(p)));
+			nextEval = 4;
+		}
 		manager.incremente(x, y, ++nextEval);
 	}
 }
@@ -75,13 +80,13 @@ int Evaluator::operator()(Goban & g, Goban::PION_TYPE p)
 	Goban::PION_TYPE currentPion;
 	Goban::PION_TYPE other = Goban::Other(p);
 	int score = 0;
-	int captures = g.deletedStone(other) - this->_base->deletedStone(p);
 	Goban::Case toEval;
 	eval_case<0>(score, g, toEval, currentPion, p);
 	eval_case<1>(score, g, toEval, currentPion, p);
 	eval_case<2>(score, g, toEval, currentPion, p);
 	eval_case<3>(score, g, toEval, currentPion, p);
-	score += captures * 1000;
+	score += (g.deletedStone(p) - this->_base->deletedStone(p)) * 1000;
+	score -= (g.deletedStone(Goban::Other(p)) - this->_base->deletedStone(Goban::Other(p))) * 1000;
 	return score;
 }
 
