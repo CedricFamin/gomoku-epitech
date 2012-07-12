@@ -16,7 +16,7 @@ int ThreatAlign[5][2][2] = {
 	{{2,3}, {3,5}},
 	{{15,20}, {20,25}},
 	{{170,200}, {200,250}},
-	{{300,400}, {400,500}},
+	{{750,900}, {900,1000}},
 	{{1500,2000}, {2000,2500}},
 };
 
@@ -63,7 +63,7 @@ void eval_case(int &score, Goban &g, Goban::Case &toEval, Goban::PION_TYPE & cur
 		toEval = g[y][x];
 		currentPion = (Goban::PION_TYPE)(toEval & Goban::PIONMASK);
 		if (currentPion)
-			score += (currentPion == p) ? GetThreatScore(currentPion, toEval, g, x, y, dir, nextEval) :
+			score += (currentPion == p) ? GetThreatScore(currentPion, toEval, g, x, y, dir, nextEval) * 1.25 :
 						-GetThreatScore(currentPion, toEval, g, x, y, dir, nextEval);
 		else
 		{
