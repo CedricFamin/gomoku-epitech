@@ -32,7 +32,7 @@ template<> struct XYManager<1>
 		y = 0;
 		this->_line = 0;
 	}
-	inline bool ended(int &, int &) { return this->_line >= 37; }
+	inline bool ended(int &, int &) { return this->_line >= 36; }
 	inline void incremente(int &x, int &y, int & add)
 	{
 		y -= add;
@@ -43,7 +43,7 @@ template<> struct XYManager<1>
 			y = ++this->_line;
 			if (y >= 19)
 			{
-				x = y % 19;
+				x = y % 18;
 				y = 18;
 			}
 		}
@@ -79,7 +79,7 @@ template<> struct XYManager<3>
 		y = 18;
 		this->_line = 0;
 	}
-	inline bool ended(int &, int &) { return this->_line >= 37; }
+	inline bool ended(int &, int &) { return this->_line >= 36; }
 	inline void incremente(int &x, int &y, int & add)
 	{
 		y += add;

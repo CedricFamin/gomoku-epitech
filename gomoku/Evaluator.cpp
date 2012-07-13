@@ -22,30 +22,36 @@ int ThreatAlign[5][2][2] = {
 
 inline int GetThreatScore(Goban::PION_TYPE p, Goban::Case c, Goban & g, unsigned int x, unsigned int y, int d, int & nextEval)
 {
-	Patterns::PatternInfos pInfos1 = Patterns::patterns[(c >> Goban::HEADERSIZE >> Goban::PATTERNSIZE * d) & Goban::PATTERNMASK];
-	Patterns::PatternInfos pInfos2 = Patterns::patterns[(c >> Goban::HEADERSIZE >> Goban::PATTERNSIZE * (d+4)) & Goban::PATTERNMASK];
-	nextEval = pInfos1.size;
-	unsigned int lx = x + pInfos1.caseIndex * GobanIterator::direction[d][0];
-	unsigned int ly = y + pInfos1.caseIndex * GobanIterator::direction[d][1];
+	const Patterns::PatternInfos * pInfos1 = Patterns::patterns + ((c >> Goban::HEADERSIZE >> Goban::PATTERNSIZE * d) & Goban::PATTERNMASK);
+	const Patterns::PatternInfos * pInfos2 = Patterns::patterns + ((c >> Goban::HEADERSIZE >> Goban::PATTERNSIZE * (d+4)) & Goban::PATTERNMASK);
+	nextEval = pInfos1->size;
+	if (!p)
+	{
+		nextEval = (pInfos1->pattern) ? pInfos1->caseIndex - 1 : 4;
+		return 0;
+	}
+	unsigned int lx = x + pInfos1->caseIndex * GobanIterator::direction[d][0];
+	unsigned int ly = y + pInfos1->caseIndex * GobanIterator::direction[d][1];
 	int align = 0;
 	int expand = 0;
 	if (g.InBound(lx, ly) && (g[ly][lx] & Goban::PIONMASK) == p)
 	{
-		align += pInfos1.size - pInfos1.expand;
-		expand += pInfos1.expand;
+		align += pInfos1->size - pInfos1->expand;
+		expand += pInfos1->expand;
 	}
-	lx = x - pInfos2.caseIndex * GobanIterator::direction[d][0];
-	ly = y - pInfos2.caseIndex * GobanIterator::direction[d][1];
+	lx = x - pInfos2->caseIndex * GobanIterator::direction[d][0];
+	ly = y - pInfos2->caseIndex * GobanIterator::direction[d][1];
 	if (g.InBound(lx, ly) && (g[ly][lx] & Goban::PIONMASK) == p)
 	{
-		align += pInfos2.size - pInfos2.expand;
-		expand += pInfos2.expand;
+		align += pInfos2->size - pInfos2->expand;
+		expand += pInfos2->expand;
 	}
 
 	if (align + expand >= 4)
 	{
 		int maxalign = (align <= 4) ? align : 4;
-		return ThreatAlign[maxalign][pInfos1.free][pInfos2.free];
+		//qDebug() << "Align : "<< maxalign << " en " << "(" << x << "," << y << ") " << nextEval;
+		return ThreatAlign[maxalign][pInfos1->free][pInfos2->free];
 	}
 	return 0;
 }
@@ -62,9 +68,9 @@ void eval_case(int &score, Goban &g, Goban::Case &toEval, Goban::PION_TYPE & cur
 	{
 		toEval = g[y][x];
 		currentPion = (Goban::PION_TYPE)(toEval & Goban::PIONMASK);
-		if (currentPion)
-			score += (currentPion == p) ? GetThreatScore(currentPion, toEval, g, x, y, dir, nextEval) * 1.25 :
-						-GetThreatScore(currentPion, toEval, g, x, y, dir, nextEval);
+		if (currentPion || 1)
+			score += (currentPion == p) ? GetThreatScore(currentPion, toEval, g, x, y, dir, nextEval) :
+						-GetThreatScore(currentPion, toEval, g, x, y, dir, nextEval) * 1.25;
 		else
 		{
 			//score += pow(5.0, Goban::GetInfluence(toEval, p));

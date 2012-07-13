@@ -68,15 +68,11 @@ public:
 			this->square[index].image->setPalette(Pal);
 			this->square[index].image->move(this->square[index].x, this->square[index].y);
 			currentPion = (Goban::PION_TYPE)(toEval & Goban::PIONMASK);
+			Patterns::PatternInfos pInfos1 = Patterns::patterns[(toEval >> Goban::HEADERSIZE >> Goban::PATTERNSIZE * dir) & Goban::PATTERNMASK];
 			if (currentPion)
-			{
-				Patterns::PatternInfos pInfos1 = Patterns::patterns[(toEval >> Goban::HEADERSIZE >> Goban::PATTERNSIZE * dir) & Goban::PATTERNMASK];
 				nextEval = pInfos1.size;
-			}
 			else
-			{
-				nextEval = 4;
-			}
+				nextEval = (pInfos1.pattern) ? pInfos1.caseIndex - 1 : 4;
 			manager.incremente(x, y, ++nextEval);
 		}
 	}
