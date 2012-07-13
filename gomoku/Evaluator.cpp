@@ -34,6 +34,8 @@ inline int GetThreatScore(Goban::PION_TYPE p, Goban::Case c, Goban & g, unsigned
 	unsigned int ly = y + pInfos1->caseIndex * GobanIterator::direction[d][1];
 	int align = 0;
 	int expand = 0;
+	if ((g[ly][lx] & Goban::PIONMASK) != p)
+		nextEval = pInfos1->caseIndex - 1;
 	if (g.InBound(lx, ly) && (g[ly][lx] & Goban::PIONMASK) == p)
 	{
 		align += pInfos1->size - pInfos1->expand;
@@ -50,7 +52,7 @@ inline int GetThreatScore(Goban::PION_TYPE p, Goban::Case c, Goban & g, unsigned
 	if (align + expand >= 4)
 	{
 		int maxalign = (align <= 4) ? align : 4;
-		//qDebug() << "Align : "<< maxalign << " en " << "(" << x << "," << y << ") " << nextEval;
+		//qDebug() << maxalign  << x << y;
 		return ThreatAlign[maxalign][pInfos1->free][pInfos2->free];
 	}
 	return 0;
