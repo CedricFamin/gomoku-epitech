@@ -90,7 +90,7 @@ void AlphaBetaThreading::update(Goban & g, int x, int y)
 			unsigned int lx = x + GobanIterator::direction[dir][0] * dist;
 			unsigned int ly = y + GobanIterator::direction[dir][1] * dist;
 			if (g.InBound(lx, ly))
-			this->_scoreTable[ly * 19 + lx] = 0;
+				this->_scoreTable[ly * 19 + lx] = 0;
 		}
 	}
 }

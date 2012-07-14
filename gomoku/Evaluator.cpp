@@ -58,6 +58,22 @@ inline int GetThreatScore(Goban::PION_TYPE p, Goban::Case c, Goban & g, unsigned
 	return 0;
 }
 
+inline int canCreateCapture(Goban::PION_TYPE p, Goban::Case c, Goban & g, unsigned int x, unsigned int y, int d)
+{
+	const Patterns::PatternInfos * pInfos1 = Patterns::patterns + ((c >> Goban::HEADERSIZE >> Goban::PATTERNSIZE * d) & Goban::PATTERNMASK);
+	const Patterns::PatternInfos * pInfos2 = Patterns::patterns + ((c >> Goban::HEADERSIZE >> Goban::PATTERNSIZE * (d+4)) & Goban::PATTERNMASK);
+	int capture = 0;
+	unsigned int lx = x + pInfos1->caseIndex * GobanIterator::direction[d][0];
+	unsigned int ly = y + pInfos1->caseIndex * GobanIterator::direction[d][1];
+	if ((g[ly][lx] & Goban::PIONMASK) != p && pInfos1->align == 2 && pInfos1->free)
+		++capture;
+	lx = x + pInfos2->caseIndex * GobanIterator::direction[d][0];
+	ly = y + pInfos2->caseIndex * GobanIterator::direction[d][1];
+	if ((g[ly][lx] & Goban::PIONMASK) != p && pInfos2->align == 2 && pInfos2->free)
+		++capture;
+	return capture;
+}
+
 template<int dir>
 void eval_case(int &score, Goban &g, Goban::Case &toEval, Goban::PION_TYPE & currentPion, Goban::PION_TYPE &p)
 {
@@ -71,8 +87,12 @@ void eval_case(int &score, Goban &g, Goban::Case &toEval, Goban::PION_TYPE & cur
 		toEval = g[y][x];
 		currentPion = (Goban::PION_TYPE)(toEval & Goban::PIONMASK);
 		if (currentPion || 1)
+		{
 			score += (currentPion == p) ? GetThreatScore(currentPion, toEval, g, x, y, dir, nextEval) :
 						-GetThreatScore(currentPion, toEval, g, x, y, dir, nextEval) * 1.25;
+			if (currentPion)
+				score += ((currentPion == p) ? 100: -100) * canCreateCapture(currentPion, toEval, g, x, y, dir);
+		}
 		else
 		{
 			//score += pow(5.0, Goban::GetInfluence(toEval, p));
