@@ -64,6 +64,7 @@ AIPlayer::Move AIPlayer::alphabeta(Move & last, Goban & g, Referrer & r)
     {
         worker->wait();
         int score = worker->getScore();
+		qDebug() << worker->getMove().first << worker->getMove().second << score;
         if (score > bestScore)
         {
 			AlphaBetaThreading::GlobalAlpha = score;

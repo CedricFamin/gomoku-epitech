@@ -48,6 +48,7 @@ bool isPartOfFree3(Goban &g, unsigned int x, unsigned int y, Goban::PION_TYPE p,
 			p2 = Patterns::patterns + ((toEval >> Goban::PATTERNSIZE * 4) & Goban::PATTERNMASK);
 			if (isFree3(p1, p2, g, p, x, y, i, false)) return true;
 		}
+		toEval >>= Goban::PATTERNSIZE;
 	}
 	return false;
 }
@@ -71,12 +72,14 @@ int isFree3(const Patterns::PatternInfos * p1, const Patterns::PatternInfos * p2
 	}
 	if (pion1 == p && p1->free && (p1->size - p1->expand >= 2) && (p2->pattern == 0 || p2->caseIndex > 1))
 	{
+
 		if (p1->align == 2) coord = std::make_pair<int, int>(1, 2);
 		else if (p1->align == 1 && p1->expand == 2) coord = std::make_pair<int, int>(1, 3);
 		else if (p1->expand >= 2) coord = std::make_pair<int, int>(2, 3);
 	}
 	if (pion2 == p && p2->free && (p2->size - p2->expand >= 2) && (p1->pattern == 0 || p1->caseIndex > 1))
 	{
+		
 		if (p2->align == 2) coord = std::make_pair<int, int>(-1, -2);
 		else if (p2->align == 1 && p2->expand == 2) coord = std::make_pair<int, int>(-1, -3);
 		else if (p2->expand >= 2) coord = std::make_pair<int, int>(-2, -3);

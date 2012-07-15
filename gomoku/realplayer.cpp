@@ -20,8 +20,9 @@ void RealPlayer::play(Referrer & r, Goban & g, callback_type callback)
     {
 		qDebug() << this->_color << ":" << eval(g, this->_color);
         callback(this->getColor(), this->_ui.move.first, this->_ui.move.second);
-		this->_ui.move.first = -1;
-		this->_ui.move.second = -1;
+
     }
+	this->_ui.move.first = -1;
+	this->_ui.move.second = -1;
 }
 

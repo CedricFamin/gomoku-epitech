@@ -53,7 +53,7 @@ inline int GetThreatScore(Goban::PION_TYPE p, Goban::Case c, Goban & g, unsigned
 	{
 		int maxalign = (align <= 4) ? align : 4;
 		//qDebug() << maxalign  << x << y;
-		return ThreatAlign[maxalign][pInfos1->free][pInfos2->free];
+		return ThreatAlign[maxalign][pInfos1->free || pInfos1->expand][pInfos2->free || pInfos2->expand];
 	}
 	return 0;
 }
@@ -86,19 +86,10 @@ void eval_case(int &score, Goban &g, Goban::Case &toEval, Goban::PION_TYPE & cur
 	{
 		toEval = g[y][x];
 		currentPion = (Goban::PION_TYPE)(toEval & Goban::PIONMASK);
-		if (currentPion || 1)
-		{
-			score += (currentPion == p) ? GetThreatScore(currentPion, toEval, g, x, y, dir, nextEval) :
-						-GetThreatScore(currentPion, toEval, g, x, y, dir, nextEval) * 1.25;
-			if (currentPion)
-				score += ((currentPion == p) ? 100: -100) * canCreateCapture(currentPion, toEval, g, x, y, dir);
-		}
-		else
-		{
-			//score += pow(5.0, Goban::GetInfluence(toEval, p));
-			//score -= pow(5.0, Goban::GetInfluence(toEval, Goban::Other(p)));
-			nextEval = 4;
-		}
+		score += (currentPion == p) ? GetThreatScore(currentPion, toEval, g, x, y, dir, nextEval) :
+					-GetThreatScore(currentPion, toEval, g, x, y, dir, nextEval) * 1.25;
+		if (currentPion)
+			score += ((currentPion == p) ? 100: -100) * canCreateCapture(currentPion, toEval, g, x, y, dir);
 		manager.incremente(x, y, ++nextEval);
 	}
 }
