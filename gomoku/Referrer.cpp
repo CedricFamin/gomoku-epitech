@@ -8,7 +8,7 @@ Referrer::Referrer()
 
 }
 
-Referrer::Referrer(Referrer const & r) : _prePlayRules(r._prePlayRules), _playRules(r._playRules)
+Referrer::Referrer(Referrer const & r) : _prePlayRules(r._prePlayRules), _playRules(r._playRules), _postPlayRules(r._postPlayRules)
 {
 	this->_beginPrePlay = this->_prePlayRules.begin();
 	this->_endPrePlay = this->_prePlayRules.end();
@@ -43,6 +43,7 @@ bool Referrer::operator()(Goban & g, Goban::PION_TYPE pion, unsigned int x, unsi
 		if ((*begin)->isEnable()) (*begin)->execute(g, turn);
 	for(auto begin = this->_beginPostPlay;begin != this->_endPostPlay;++begin)
 		if ((*begin)->isEnable()) finished |= (*begin)->execute(g, turn);
+	if (finished) g.setGameFinished(true);
 	if (useHistory) g.Turns().push_back(turn);
 	return true;
 }

@@ -6,7 +6,7 @@
 
 using namespace Rules;
 
-VictoryAlignment::VictoryAlignment(void) : _enable(true), _enableOptionalRule(true)
+VictoryAlignment::VictoryAlignment(void) : _enable(true), _enableOptionalRule(false)
 {
 }
 

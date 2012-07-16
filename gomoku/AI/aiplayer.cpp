@@ -52,7 +52,6 @@ AIPlayer::Move AIPlayer::alphabeta(Move & last, Goban & g, Referrer & r)
 	AlphaBetaThreading::GlobalAlpha = bestScore;
 	std::list<Move> turns = AlphaBetaThreading::GetTurns(g, last, this->_color);
     std::list<AlphaBetaThreading*> workers;
-	qDebug() << turns.size();
     std::for_each(turns.begin(), turns.end(),
     [&g, &workers, this, &r](Move & m)
     {
@@ -64,7 +63,6 @@ AIPlayer::Move AIPlayer::alphabeta(Move & last, Goban & g, Referrer & r)
     {
         worker->wait();
         int score = worker->getScore();
-		qDebug() << worker->getMove().first << worker->getMove().second << score;
         if (score > bestScore)
         {
 			AlphaBetaThreading::GlobalAlpha = score;

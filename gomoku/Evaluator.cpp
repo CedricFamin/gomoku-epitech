@@ -67,8 +67,8 @@ inline int canCreateCapture(Goban::PION_TYPE p, Goban::Case c, Goban & g, unsign
 	unsigned int ly = y + pInfos1->caseIndex * GobanIterator::direction[d][1];
 	if ((g[ly][lx] & Goban::PIONMASK) != p && pInfos1->align == 2 && pInfos1->free)
 		++capture;
-	lx = x + pInfos2->caseIndex * GobanIterator::direction[d][0];
-	ly = y + pInfos2->caseIndex * GobanIterator::direction[d][1];
+	lx = x - pInfos2->caseIndex * GobanIterator::direction[d][0];
+	ly = y - pInfos2->caseIndex * GobanIterator::direction[d][1];
 	if ((g[ly][lx] & Goban::PIONMASK) != p && pInfos2->align == 2 && pInfos2->free)
 		++capture;
 	return capture;

@@ -19,6 +19,7 @@ Goban::Goban() : _width(19), _height(19), _gameFinished(false)
 
 Goban::Goban(Goban const & g) : _width(g._width), _height(g._height)
 {
+	_winner = g._winner;
 	_gameFinished = g._gameFinished;
 	_deletedStone[0] = g._deletedStone[0];
 	_deletedStone[1] = g._deletedStone[1];

@@ -72,27 +72,16 @@ void AlphaBetaThreading::run()
 {
   Goban s = this->_goban;
   if (this->_referrer(s, this->_pion, this->_move.first, this->_move.second))
-    {
-      this->_score = this->alphabeta(s, 1,
-				      -std::numeric_limits<int>::max(), std::numeric_limits<int>::max(),
-				      Goban::Other(this->_pion));
-    }
+  {
+	  if (s.gameFinished())
+		  this->_score = (s.getWinner() == this->_pion) ? std::numeric_limits<int>::max() : -std::numeric_limits<int>::max();
+	  else
+		  this->_score = this->alphabeta<1>(s,
+					-std::numeric_limits<int>::max(), std::numeric_limits<int>::max(),
+					Goban::Other(this->_pion));
+  }
   else
     this->_score = -std::numeric_limits<int>::max();
-}
-
-void AlphaBetaThreading::update(Goban & g, int x, int y)
-{
-	for (int dist = 1; dist <= 4; dist++)
-	{
-		for (int dir = 0; dir < 8; ++dir)
-		{
-			unsigned int lx = x + GobanIterator::direction[dir][0] * dist;
-			unsigned int ly = y + GobanIterator::direction[dir][1] * dist;
-			if (g.InBound(lx, ly))
-				this->_scoreTable[ly * 19 + lx] = 0;
-		}
-	}
 }
 
 struct InfluenceCompare
@@ -103,45 +92,6 @@ struct InfluenceCompare
 	}
 };
 
-int AlphaBetaThreading::alphabeta(Goban & g, int depth, int alpha, int beta, Goban::PION_TYPE pion)
-{
-	if (g.gameFinished()) return g.getWinner() == pion ? std::numeric_limits<int>::max() : -std::numeric_limits<int>::max();
-	if (depth == 0) return this->_evaluator(g,pion);
-
-	Goban::Case toEval;
-
-	for (unsigned int x = 0,y = 0; y < 19  && beta > alpha; ++x)
-	{
-		alpha = std::max(alpha, AlphaBetaThreading::GlobalAlpha);
-		if (alpha >= beta) break;
-		toEval = g[y][x];
-		if ((toEval & ~Goban::PIONMASK))
-		{
-			toEval >>= Goban::HEADERSIZE;
-			for (int i = 0; i < 8; ++i)
-			{
-				const Patterns::PatternInfos * p = Patterns::patterns + (toEval & Goban::PATTERNMASK);
-				if (p->caseIndex <= 2 && p->pattern && this->_referrer(g, pion, x, y, false))
-				{
-					if (pion == this->_pion)
-						alpha = std::max(alpha, alphabeta(g, depth - 1, alpha, beta, Goban::Other(pion)));
-					else
-						beta = std::min(beta, alphabeta(g, depth - 1, alpha, beta, Goban::Other(pion)));
-					g.subIn(x, y, false);
-					i = 8;
-				}
-				toEval >>= Goban::PATTERNSIZE;
-			}
-		}
-		if (++x >= 19)
-		{
-			x = 0;
-			y++;
-		}
-	}
-	return pion == this->_pion ? alpha : beta;
-}
-
 Goban::Move const & AlphaBetaThreading::getMove() const
 {
   return this->_move;
@@ -150,4 +100,10 @@ Goban::Move const & AlphaBetaThreading::getMove() const
 int AlphaBetaThreading::getScore() const
 {
   return this->_score;
+}
+
+template<>
+int AlphaBetaThreading::alphabeta<0>(Goban & g, int, int, Goban::PION_TYPE pion)
+{
+	return this->_evaluator(g,pion);
 }
