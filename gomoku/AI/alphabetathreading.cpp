@@ -41,7 +41,7 @@ AlphaBetaThreading::AlphaBetaThreading(Goban & g, const Goban::Move & m, Goban::
   //memset(this->_scoreTable, 0, sizeof(*_scoreTable) * 19 * 19);
 }
 
-std::list<Goban::Move> AlphaBetaThreading::GetTurns(Goban & g,Goban::Move & last , Goban::PION_TYPE)
+std::list<Goban::Move> AlphaBetaThreading::GetTurns(Goban & g)
 {
   std::list<Goban::Move> possiblesTurns;
   Goban::Case toEval;
@@ -81,7 +81,7 @@ void AlphaBetaThreading::run()
 					Goban::Other(this->_pion));
   }
   else
-    this->_score = -std::numeric_limits<int>::max();
+    this->_score = std::numeric_limits<int>::min();
 }
 
 struct InfluenceCompare

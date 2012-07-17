@@ -194,7 +194,7 @@ int main(int argc, char *argv[])
         }
 //#if _DEBUG
 		
-		//uiGoban.affPlayable(goban, referrer, currentPlayer->getColor());
+		uiGoban.affPlayable(goban, referrer, currentPlayer->getColor());
 		//uiGoban.showInfluence(goban);
 		//uiGoban.affSelectedMove(goban);
 		//uiGoban.affEvalCase<0>(goban);

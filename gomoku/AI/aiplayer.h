@@ -13,7 +13,7 @@ public:
     AIPlayer(Goban::PION_TYPE);
     virtual Goban::PION_TYPE getColor() const;
     virtual void play(Referrer & r, Goban & g, callback_type);
-    Move alphabeta(Move & last, Goban & g, Referrer & r);
+    Move alphabeta(Goban & g, Referrer & r);
 private:
     Goban::PION_TYPE _color;
 };

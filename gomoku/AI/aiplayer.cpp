@@ -33,24 +33,19 @@ void AIPlayer::play(Referrer & r, Goban & g, callback_type callback)
 		move.first = g.Turns().front().x + GobanIterator::direction[rand() % 8][0];
 		move.second = g.Turns().front().y + GobanIterator::direction[rand() % 8][1];
 	}
-    else
-    {
-        move.first = g.Turns().back().x;
-        move.second = g.Turns().back().y;
-        move = this->alphabeta(move, g, r);
-    }
+    else move = this->alphabeta(g, r);
     if (r(g, this->getColor(), move.first, move.second))
     {
         callback(this->getColor(), move.first, move.second);
     }
 }
 
-AIPlayer::Move AIPlayer::alphabeta(Move & last, Goban & g, Referrer & r)
+AIPlayer::Move AIPlayer::alphabeta(Goban & g, Referrer & r)
 {
     Move bestMove;
-    int bestScore = std::numeric_limits<int>::min() + 1;
+    int bestScore = -std::numeric_limits<int>::max(), score;
 	AlphaBetaThreading::GlobalAlpha = bestScore;
-	std::list<Move> turns = AlphaBetaThreading::GetTurns(g, last, this->_color);
+	std::list<Move> turns = AlphaBetaThreading::GetTurns(g);
     std::list<AlphaBetaThreading*> workers;
     std::for_each(turns.begin(), turns.end(),
     [&g, &workers, this, &r](Move & m)
@@ -59,10 +54,10 @@ AIPlayer::Move AIPlayer::alphabeta(Move & last, Goban & g, Referrer & r)
         workers.back()->start();
     });
     std::for_each(workers.begin(), workers.end(),
-    [&bestMove, &bestScore](AlphaBetaThreading* worker)
+    [&bestMove, &bestScore, &score](AlphaBetaThreading* worker)
     {
         worker->wait();
-        int score = worker->getScore();
+        score = worker->getScore();
         if (score > bestScore)
         {
 			AlphaBetaThreading::GlobalAlpha = score;
@@ -72,5 +67,6 @@ AIPlayer::Move AIPlayer::alphabeta(Move & last, Goban & g, Referrer & r)
         }
         delete worker;
     });
+	qDebug()<<score;
     return bestMove;
 }

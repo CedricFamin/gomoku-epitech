@@ -13,7 +13,7 @@ public:
     AlphaBetaThreading(Goban &, Goban::Move const &, Goban::PION_TYPE, Referrer & r);
     int getScore() const;
     Goban::Move const & getMove() const;
-	static std::list<Goban::Move> GetTurns(Goban & g,Goban::Move & last , Goban::PION_TYPE);
+	static std::list<Goban::Move> GetTurns(Goban & g);
 protected:
     virtual void run();
 private:
@@ -31,7 +31,6 @@ private:
 
 		if (g.gameFinished())
 		{
-			
 			return g.getWinner() == this->_pion ? std::numeric_limits<int>::max() : -std::numeric_limits<int>::max();
 		}
 		for (unsigned int x = 0,y = 0; y < 19  && beta > alpha; ++x)
@@ -52,7 +51,7 @@ private:
 						else
 							beta = std::min(beta, alphabeta<depth - 1>(g, alpha, beta, Goban::Other(pion)));
 						g.subIn(x, y, false);
-						//g.setGameFinished(false);
+						g.setGameFinished(false);
 						while (g.toDelete.size())
 						{
 							g.Putin(Goban::Other(pion), g.toDelete.top().first, g.toDelete.top().second);

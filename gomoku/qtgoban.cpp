@@ -102,7 +102,7 @@ void GobanQt::showInfluence(Goban &g)
 
 void GobanQt::affSelectedMove(Goban &g)
 {
-	auto moves = AlphaBetaThreading::GetTurns(g, Goban::Move(), Goban::BLACK);
+	auto moves = AlphaBetaThreading::GetTurns(g);
 	std::for_each(moves.begin(), moves.end(),
 	[this, &g](Goban::Move & m)
 	{
