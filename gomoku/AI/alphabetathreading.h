@@ -5,6 +5,7 @@
 #include "Goban.h"
 #include "Referrer.h"
 #include "Evaluator.h"
+#include "PatternIdentifier.h"
 
 class AlphaBetaThreading : public QThread
 {
