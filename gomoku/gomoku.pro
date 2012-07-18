@@ -32,7 +32,8 @@ SOURCES +=\
     Evaluator.cpp \
     PatternIdentifier.cpp \
     selectgametype.cpp \
-    XYManager.cpp
+    XYManager.cpp \
+    history.cpp
 
 HEADERS  += mainwindow.h \
     Referrer.h \
@@ -56,7 +57,8 @@ HEADERS  += mainwindow.h \
     PatternIdentifier.h \
     Evaluator.h \
     selectgametype.h \
-    XYManager.h
+    XYManager.h \
+    history.h
 
 FORMS    += mainwindow.ui \
     Finished.ui \

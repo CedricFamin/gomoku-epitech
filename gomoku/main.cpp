@@ -23,6 +23,7 @@
 #include "Finished.h"
 #include "selectgametype.h"
 #include "realplayer.h"
+#include "history.h"
 
 /*class Game : public QThread
 {
@@ -116,6 +117,7 @@ int main(int argc, char *argv[])
     SelectGameType gametype;
 	MainWindow win;
     GobanQt & uiGoban = win.getGoban();
+    History history;
 
     bool affWon = false;
 
@@ -191,6 +193,7 @@ int main(int argc, char *argv[])
             Finished finish;
             finish.exec();
             affWon = true;
+            win.setWin(affWon);
         }
 //#if _DEBUG
 		
