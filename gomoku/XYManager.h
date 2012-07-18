@@ -1,7 +1,7 @@
 #ifndef XYMANAGER_H_
 # define XYMANAGER_H_
 
-#include <qdebug>
+#include <QDebug>
 
 template<int dir> struct XYManager { };
 

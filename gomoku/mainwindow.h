@@ -21,6 +21,7 @@ public:
     bool IsClosed() const;
     GobanQt & getGoban();
     unsigned short getMode() const;
+    void setWin(bool&);
 
 signals:
 	void newGameSignal();
@@ -36,6 +37,7 @@ private:
     bool playerTurn;
     bool closed;
     unsigned short mode:2;
+    bool affWon;
 
 private slots:
     void checkTurn();

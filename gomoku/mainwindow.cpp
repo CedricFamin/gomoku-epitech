@@ -94,6 +94,12 @@ unsigned short MainWindow::getMode() const
     return this->mode;
 }
 
+void MainWindow::setWin(bool &affWon)
+{
+    this->affWon = affWon;
+    this->ui->actionReplay_Game->setEnabled(true);
+}
+
 GobanQt & MainWindow::getGoban()
 {
     return *this->label;

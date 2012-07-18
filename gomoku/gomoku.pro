@@ -31,7 +31,9 @@ SOURCES +=\
     AI/alphabetathreading.cpp \
     Evaluator.cpp \
     PatternIdentifier.cpp \
-    selectgametype.cpp
+    selectgametype.cpp \
+    XYManager.cpp \
+    history.cpp
 
 HEADERS  += mainwindow.h \
     Referrer.h \
@@ -54,7 +56,9 @@ HEADERS  += mainwindow.h \
     AI/alphabetathreading.h \
     PatternIdentifier.h \
     Evaluator.h \
-    selectgametype.h
+    selectgametype.h \
+    XYManager.h \
+    history.h
 
 FORMS    += mainwindow.ui \
     Finished.ui \
