@@ -33,6 +33,20 @@ struct Padding
 	};
 };
 
+template<int d, int dist>
+inline void ChangeCase(unsigned int &x, unsigned int &y)
+{
+	x += Padding<d,dist>::x;
+	y += Padding<d,dist>::y;
+}
+
+template<int d>
+inline void ChangeCase(unsigned int &x, unsigned int &y, int dist)
+{
+	x += Moves<d>::x * dist;
+	y += Moves<d>::y * dist;
+}
+
 
 class Goban
 {

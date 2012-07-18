@@ -11,34 +11,10 @@
 
 int AlphaBetaThreading::GlobalAlpha = 0;
 
-void print_goban(Goban & g)
-{
-  std::stringstream buffer;  
-  for (unsigned int y = 0; y < g.getHeight(); ++y)
-    {
-      for (unsigned int x = 0; x < g.getWidth(); ++x)
-	{
-	  switch (g[y][x] & Goban::PIONMASK)
-	    {
-	    case Goban::BLACK:
-	      buffer << "o";
-	      break;
-	    case Goban::RED:
-	      buffer << "x";
-	      break;
-	    default:
-	      buffer << ".";
-	    }
-	}
-      buffer << std::endl;
-    }
-  qDebug() << buffer.str().c_str();
-}
-
 AlphaBetaThreading::AlphaBetaThreading(Goban & g, const Goban::Move & m, Goban::PION_TYPE p, Referrer & r)
   : _move(m), _pion(p), _goban(g), _score(0), _referrer(r), _evaluator(&g)
 {
-  //memset(this->_scoreTable, 0, sizeof(*_scoreTable) * 19 * 19);
+
 }
 
 std::list<Goban::Move> AlphaBetaThreading::GetTurns(Goban & g)
@@ -83,14 +59,6 @@ void AlphaBetaThreading::run()
   else
     this->_score = std::numeric_limits<int>::min();
 }
-
-struct InfluenceCompare
-{
-	bool operator()(std::pair<int, Goban::Move> const & i1, std::pair<int, Goban::Move> const & i2)
-	{
-		return i1.first > i2.first;
-	}
-};
 
 Goban::Move const & AlphaBetaThreading::getMove() const
 {

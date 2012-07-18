@@ -42,8 +42,9 @@ void AIPlayer::play(Referrer & r, Goban & g, callback_type callback)
 
 AIPlayer::Move AIPlayer::alphabeta(Goban & g, Referrer & r)
 {
+	Evaluator eval(&g);
     Move bestMove;
-    int bestScore = -std::numeric_limits<int>::max(), score;
+	int bestScore = -std::numeric_limits<int>::max(), score = std::numeric_limits<int>::min();
 	AlphaBetaThreading::GlobalAlpha = bestScore;
 	std::list<Move> turns = AlphaBetaThreading::GetTurns(g);
     std::list<AlphaBetaThreading*> workers;
@@ -67,6 +68,8 @@ AIPlayer::Move AIPlayer::alphabeta(Goban & g, Referrer & r)
         }
         delete worker;
     });
-	qDebug()<<score;
+	
+	qDebug()<< eval(g, this->_color);
+	qDebug()<< eval(g, Goban::Other(this->_color));
     return bestMove;
 }

@@ -119,21 +119,22 @@ int main(int argc, char *argv[])
 
     bool affWon = false;
 
-    Rules::DoubleThree* doubleThree = new Rules::DoubleThree;
-    Rules::NotEmptyRule* notEmptyRule = new Rules::NotEmptyRule;
 	connect(&win, SIGNAL(newGameSignal()), std::tr1::bind(&Goban::clear, &goban));
 	connect(&win, SIGNAL(newGameSignal()), [&affWon]{affWon = false;});
 
     Referrer referrer;
     Rules::TakingRules * tkrule = new Rules::TakingRules();
+	Rules::DoubleThree* doubleThree = new Rules::DoubleThree;
+    Rules::NotEmptyRule* notEmptyRule = new Rules::NotEmptyRule;
+	Rules::VictoryAlignment * victoryAlignment = new Rules::VictoryAlignment;
     IPlayer * currentPlayer;
     IPlayer* players[2];
     //referrer.addPrePlayRule(*(new Rules::EachInTurnRule()));
     referrer.addPrePlayRule(*(doubleThree));
     referrer.addPrePlayRule(*(notEmptyRule));
     referrer.addPlayRule(*tkrule);
-    referrer.addPostPlayRule(*(new Rules::VictoryCapturesRule()));
-    referrer.addPostPlayRule(*(new Rules::VictoryAlignment()));
+	referrer.addPostPlayRule(*(new Rules::VictoryCapturesRule()));
+    referrer.addPostPlayRule(*victoryAlignment);
 
     connect(&win, SIGNAL(doubleThreeRule()), [&doubleThree]
     {
@@ -142,12 +143,14 @@ int main(int argc, char *argv[])
             else
                 doubleThree->enable();
     });
-    connect(&win, SIGNAL(endgameCatchRule()), [&notEmptyRule]
+    connect(&win, SIGNAL(endgameCatchRule()), [&victoryAlignment]
     {
-            if (notEmptyRule->isEnable())
-                notEmptyRule->disable();
+		static bool enable = true;
+            if (enable)
+				victoryAlignment->disableOptionalRule();
             else
-                notEmptyRule->enable();
+				victoryAlignment->enableOptionalRule();
+			enable = !enable;
     });
 
     gametype.exec();
@@ -195,7 +198,7 @@ int main(int argc, char *argv[])
 //#if _DEBUG
 		
 		uiGoban.affPlayable(goban, referrer, currentPlayer->getColor());
-		//uiGoban.showInfluence(goban);
+		uiGoban.showInfluence(goban);
 		//uiGoban.affSelectedMove(goban);
 		//uiGoban.affEvalCase<0>(goban);
 		//uiGoban.affEvalCase<1>(goban);
@@ -203,7 +206,7 @@ int main(int argc, char *argv[])
 		//uiGoban.affEvalCase<3>(goban);
 //#endif
 #ifdef _WIN32
-        Sleep(100);
+        //Sleep(100);
 #else
         //sleep(1);
 #endif
