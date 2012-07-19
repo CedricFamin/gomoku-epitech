@@ -36,7 +36,7 @@ private:
 		}
 		for (unsigned int x = 0,y = 0; y < 19  && beta > alpha; ++x)
 		{
-			alpha = std::max(alpha, AlphaBetaThreading::GlobalAlpha);
+			//alpha = std::max(alpha, AlphaBetaThreading::GlobalAlpha);
 			if (alpha >= beta) break;
 			toEval = g[y][x];
 			if ((toEval & ~Goban::PIONMASK))

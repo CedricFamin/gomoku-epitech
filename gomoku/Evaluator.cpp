@@ -12,6 +12,67 @@ Evaluator::~Evaluator(void)
 {
 }
 
+template<int a, int b>
+struct Min
+{
+	static const int v = (a > b) ? b : a;
+};
+
+template<int nb, int p>
+struct Pow
+{
+	static const int v = nb * Pow<nb, p - 1>::v;
+};
+
+template<int nb>
+struct Pow<nb, 0>
+{
+	static const int v = 1;
+};
+
+template<int a, int ex, bool de>
+struct Scoring
+{
+	static const int content = Pow<5, a + ex>::v;
+	static const int align = Pow<5, a>::v;
+	static const int doubleExpand = de * (content + align) / 10;
+	static const int score = content + align + doubleExpand;
+};
+
+int Scores[5][5][2] = {
+	{
+		{Scoring<1,0,0>::score, Scoring<1,0,1>::score},
+		{Scoring<1,1,0>::score, Scoring<1,1,1>::score},
+		{Scoring<1,2,0>::score, Scoring<1,2,1>::score},
+		{Scoring<1,3,0>::score, Scoring<1,3,1>::score},
+		{Scoring<1,4,0>::score, Scoring<1,4,1>::score},
+	}, {
+		{Scoring<2,0,0>::score, Scoring<2,0,1>::score},
+		{Scoring<2,1,0>::score, Scoring<2,1,1>::score},
+		{Scoring<2,2,0>::score, Scoring<2,2,1>::score},
+		{Scoring<2,3,0>::score, Scoring<2,3,1>::score},
+		{Scoring<2,4,0>::score, Scoring<2,4,1>::score},
+	}, {
+		{Scoring<3,0,0>::score, Scoring<3,0,1>::score},
+		{Scoring<3,1,0>::score, Scoring<3,1,1>::score},
+		{Scoring<3,2,0>::score, Scoring<3,2,1>::score},
+		{Scoring<3,3,0>::score, Scoring<3,3,1>::score},
+		{Scoring<3,4,0>::score, Scoring<3,4,1>::score},
+	}, {
+		{Scoring<4,0,0>::score, Scoring<4,0,1>::score},
+		{Scoring<4,1,0>::score, Scoring<4,1,1>::score},
+		{Scoring<4,2,0>::score, Scoring<4,2,1>::score},
+		{Scoring<4,3,0>::score, Scoring<4,3,1>::score},
+		{Scoring<4,4,0>::score, Scoring<4,4,1>::score},
+	}, {
+		{Scoring<5,0,0>::score, Scoring<5,0,1>::score},
+		{Scoring<5,1,0>::score, Scoring<5,1,1>::score},
+		{Scoring<5,3,0>::score, Scoring<5,2,1>::score},
+		{Scoring<5,4,0>::score, Scoring<5,3,1>::score},
+		{Scoring<5,4,0>::score, Scoring<5,4,1>::score},
+	}
+};
+
 int ThreatAlign[5][2][2] = {
 	{{0,3}, {3,5}},
 	{{0,15}, {15,25}},
@@ -21,12 +82,13 @@ int ThreatAlign[5][2][2] = {
 };
 
 template<int d>
-int AddAlignExpand(int &align, int &expand, bool & expandable, Goban & g, unsigned int x, unsigned int y, int const p, Patterns::PatternInfos const * pInfos)
+int AddAlignExpand(int & strictAlign, int &align, int &expand, bool & expandable, Goban & g, unsigned int x, unsigned int y, int const p, Patterns::PatternInfos const * pInfos)
 {
 	ChangeCase<d>(x, y, pInfos->caseIndex);
 	if (g.InBound(x, y) && (g[y][x] & Goban::PIONMASK) == p)
 	{
-		align += pInfos->size - pInfos->expand;
+		strictAlign += pInfos->align;
+		align += pInfos->size - pInfos->expand - pInfos->align;
 		expand += pInfos->expand;
 		expandable = pInfos->expand;
 		return pInfos->size + 1;
@@ -49,11 +111,15 @@ inline int GetThreatScore(Goban::PION_TYPE p, Goban::Case c, Goban & g, unsigned
 	}
 	int align = 0;
 	int expand = 0;
-	nextEval = AddAlignExpand<d>(align, expand, e1, g, x, y, p, pInfos1);
-	AddAlignExpand<d+4>(align, expand, e2, g, x, y, p, pInfos2);
-	if (align + expand >= 4)
+	int strictAlign = 0;
+	nextEval = AddAlignExpand<d>(strictAlign, align, expand, e1, g, x, y, p, pInfos1);
+	AddAlignExpand<d+4>(strictAlign, align, expand, e2, g, x, y, p, pInfos2);
+	if (strictAlign + align + expand >= 4)
 	{
 		int maxalign = (align <= 4) ? align : 4;
+		strictAlign = (strictAlign <= 4) ? strictAlign : 4;
+		align = (align <= 4) ? align : 4;
+		return Scores[strictAlign][align][e1 && e2];
 		return ThreatAlign[maxalign][e1][e2];
 	}
 	return 0;
@@ -86,8 +152,8 @@ void eval_case(int &score, Goban &g, Goban::Case &toEval, Goban::PION_TYPE & cur
 					-GetThreatScore<dir>(currentPion, toEval, g, x, y, nextEval);
 		if (currentPion)
 		{
-			score += ((currentPion == p) ? 250: -250) * canCreateCapture<dir>(currentPion, toEval, g, x, y);
-			score += ((currentPion == p) ? 250: -250) * canCreateCapture<dir+4>(currentPion, toEval, g, x, y);
+			//score += ((currentPion == p) ? 250: -250) * canCreateCapture<dir>(currentPion, toEval, g, x, y);
+			//score += ((currentPion == p) ? 250: -250) * canCreateCapture<dir+4>(currentPion, toEval, g, x, y);
 		}
 		manager.incremente(x, y, nextEval);
 	}
@@ -102,8 +168,8 @@ int Evaluator::operator()(Goban & g, Goban::PION_TYPE p)
 	eval_case<1>(score, g, toEval, currentPion, p);
 	eval_case<2>(score, g, toEval, currentPion, p);
 	eval_case<3>(score, g, toEval, currentPion, p);
-	score -= g.deletedStone(p) * 500;
-	score += g.deletedStone(Goban::Other(p)) * 500;
+	//score -= g.deletedStone(p) * 500;
+	//score += g.deletedStone(Goban::Other(p)) * 500;
 	return score;
 }
 

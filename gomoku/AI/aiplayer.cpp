@@ -20,7 +20,7 @@ Goban::PION_TYPE AIPlayer::getColor() const
 }
 
 void AIPlayer::play(Referrer & r, Goban & g, callback_type callback)
-{
+{	Evaluator eval(&g);
     Move move;
     if (g.Turns().size() == 0)
     {
@@ -37,12 +37,14 @@ void AIPlayer::play(Referrer & r, Goban & g, callback_type callback)
     if (r(g, this->getColor(), move.first, move.second))
     {
         callback(this->getColor(), move.first, move.second);
+		qDebug()<< eval(g, this->_color);
+		qDebug()<< eval(g, Goban::Other(this->_color));
     }
 }
 
 AIPlayer::Move AIPlayer::alphabeta(Goban & g, Referrer & r)
 {
-	Evaluator eval(&g);
+
     Move bestMove;
 	int bestScore = -std::numeric_limits<int>::max(), score = std::numeric_limits<int>::min();
 	AlphaBetaThreading::GlobalAlpha = bestScore;
@@ -59,6 +61,7 @@ AIPlayer::Move AIPlayer::alphabeta(Goban & g, Referrer & r)
     {
         worker->wait();
         score = worker->getScore();
+		qDebug() << worker->getMove().first << worker->getMove().second << score;
         if (score > bestScore)
         {
 			AlphaBetaThreading::GlobalAlpha = score;
@@ -68,8 +71,6 @@ AIPlayer::Move AIPlayer::alphabeta(Goban & g, Referrer & r)
         }
         delete worker;
     });
-	
-	qDebug()<< eval(g, this->_color);
-	qDebug()<< eval(g, Goban::Other(this->_color));
+	qDebug() << bestScore;
     return bestMove;
 }
