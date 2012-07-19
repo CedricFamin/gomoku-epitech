@@ -43,7 +43,7 @@ void AIPlayer::play(Referrer & r, Goban & g, callback_type callback)
 AIPlayer::Move AIPlayer::alphabeta(Goban & g, Referrer & r)
 {
     Move bestMove;
-    int bestScore = -std::numeric_limits<int>::max(), score;
+    int bestScore = -std::numeric_limits<int>::max(), score = 0;
 	AlphaBetaThreading::GlobalAlpha = bestScore;
 	std::list<Move> turns = AlphaBetaThreading::GetTurns(g);
     std::list<AlphaBetaThreading*> workers;

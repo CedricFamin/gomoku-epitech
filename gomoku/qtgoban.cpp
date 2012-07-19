@@ -74,7 +74,7 @@ void GobanQt::PlayAt(Goban::PION_TYPE color, unsigned int x, unsigned int y)
     this->square[index].image->move(this->square[index].x, this->square[index].y);
     playerTurn = !playerTurn;
     emit clicked();
-    this->afterPlayer();
+    //this->afterPlayer();
 }
 
 void GobanQt::showInfluence(Goban &g)
