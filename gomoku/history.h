@@ -17,7 +17,7 @@ public:
         bool capture;
         int heuristicScore;
     };
-    std::queue<Turn*> turnList;
+    std::queue<Turn> turnList;
 };
 
 #endif // HISTORY_H

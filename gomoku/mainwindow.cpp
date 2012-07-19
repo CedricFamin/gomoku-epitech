@@ -94,10 +94,38 @@ unsigned short MainWindow::getMode() const
     return this->mode;
 }
 
-void MainWindow::setWin(bool &affWon)
+void MainWindow::setWin(bool &affWon, History& history)
 {
     this->affWon = affWon;
     this->ui->actionReplay_Game->setEnabled(true);
+    connect(ui->actionReplay_Game, SIGNAL(triggered()), this, SLOT(replayGame()));
+}
+
+void MainWindow::displayTextEdit(History::Turn& turn)
+{
+    QString final;
+    if (turn.pion == Goban::BLACK)
+        final += QString("Black is ");
+    else if (turn.pion == Goban::RED)
+        final += QString("White is ");
+    if (!turn.capture)
+        final += QString("playing in ");
+    else
+        final += QString("captured in ");
+    final += QString::number(turn.x);
+    final += QString(", ");
+    final += QString::number(turn.y);
+    if (!turn.capture)
+    {
+        final += QString(" with an heuristic score of : ");
+        final += QString::number(turn.capture);
+    }
+    this->ui->textEdit->append(final);
+}
+
+void MainWindow::replayGame()
+{
+
 }
 
 GobanQt & MainWindow::getGoban()

@@ -16,30 +16,31 @@ AIPlayer::AIPlayer(Goban::PION_TYPE pion) : _color(pion)
 
 Goban::PION_TYPE AIPlayer::getColor() const
 {
-    return this->_color;
+  return this->_color;
 }
 
-void AIPlayer::play(Referrer & r, Goban & g, callback_type callback)
+Goban::Move AIPlayer::play(Referrer & r, Goban & g)
 {	Evaluator eval(&g);
-    Move move;
-    if (g.Turns().size() == 0)
+  Move move;
+  if (g.Turns().size() == 0)
     {
-        move.first = 9;
-        move.second = 9;
+      move.first = 9;
+      move.second = 9;
     }
-	else if (g.Turns().size() == 1)
-	{
-		srand((unsigned int)time(0));
-		move.first = g.Turns().front().x + GobanIterator::direction[rand() % 8][0];
-		move.second = g.Turns().front().y + GobanIterator::direction[rand() % 8][1];
-	}
-    else move = this->alphabeta(g, r);
-    if (r(g, this->getColor(), move.first, move.second))
+  else if (g.Turns().size() == 1)
     {
-        callback(this->getColor(), move.first, move.second);
+      srand((unsigned int)time(0));
+      move.first = g.Turns().front().x + GobanIterator::direction[rand() % 8][0];
+      move.second = g.Turns().front().y + GobanIterator::direction[rand() % 8][1];
 		qDebug()<< eval(g, this->_color);
 		qDebug()<< eval(g, Goban::Other(this->_color));
     }
+  else move = this->alphabeta(g, r);
+  if (r(g, this->getColor(), move.first, move.second))
+    {
+      return move;
+    }
+  return Goban::Move(-1, -1);
 }
 
 AIPlayer::Move AIPlayer::alphabeta(Goban & g, Referrer & r)

@@ -12,7 +12,7 @@ public:
     typedef std::pair<unsigned int, unsigned int> Move;
     AIPlayer(Goban::PION_TYPE);
     virtual Goban::PION_TYPE getColor() const;
-    virtual void play(Referrer & r, Goban & g, callback_type);
+    virtual Goban::Move play(Referrer & r, Goban & g);
     Move alphabeta(Goban & g, Referrer & r);
 private:
     Goban::PION_TYPE _color;

@@ -9,7 +9,7 @@ class IPlayer
 public:
     typedef std::tr1::function<void (Goban::PION_TYPE, int, int)> callback_type;
     virtual Goban::PION_TYPE getColor() const = 0;
-    virtual void play(Referrer & r, Goban & g, callback_type) = 0;
+    virtual Goban::Move play(Referrer & r, Goban & g) = 0;
 };
 
 #endif // IPLAYER_H

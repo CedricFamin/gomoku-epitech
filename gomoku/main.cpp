@@ -182,21 +182,46 @@ int main(int argc, char *argv[])
     {
 		if (app.hasPendingEvents()) app.processEvents();
             currentPlayer = players[goban.Turns().size() & 1];
-		if (goban.gameFinished() == false)
-            currentPlayer->play(referrer, goban, std::tr1::bind(&GobanQt::PlayAt, &uiGoban, std::tr1::placeholders::_1, std::tr1::placeholders::_2, std::tr1::placeholders::_3));
+        if (goban.gameFinished() == false)
+        {
+            Goban::Move move = currentPlayer->play(referrer, goban);
+			//Comment j'insere ce code en dessous? :D
+			// comme ça x)
+			if (goban.InBound(move.first, move.second))
+			{
+				uiGoban.PlayAt(currentPlayer->getColor(), move.first, move.second);
+				History::Turn tmpTurn;
+				tmpTurn.pion = currentPlayer->getColor();
+				tmpTurn.x = uiGoban.getX();
+				tmpTurn.y = uiGoban.getY();
+				tmpTurn.capture = false;
+				win.displayTextEdit(tmpTurn);
+				history.turnList.push(tmpTurn);
+			}
 
+        }
         while (!goban.toDelete.empty())
         {
+            History::Turn tmpTurn;
 			std::pair<unsigned int, unsigned int>  p = goban.toDelete.top();
 			goban.toDelete.pop();
 			uiGoban.deleteStoneAt(p.first, p.second);
+            if (currentPlayer->getColor() == Goban::BLACK)
+                tmpTurn.pion = Goban::RED;
+            else
+                tmpTurn.pion = Goban::BLACK;
+            tmpTurn.x = p.first;
+            tmpTurn.y = p.second;
+            tmpTurn.capture = true;
+            win.displayTextEdit(tmpTurn);
+            history.turnList.push(tmpTurn);
         }
         if (goban.gameFinished() && !affWon)
         {
             Finished finish;
             finish.exec();
             affWon = true;
-            win.setWin(affWon);
+            win.setWin(affWon, history);
         }
 //#if _DEBUG
 		

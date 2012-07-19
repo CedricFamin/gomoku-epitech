@@ -6,6 +6,7 @@
 #include <QPixmap>
 
 #include "qtgoban.h"
+#include "history.h"
 
 namespace Ui {
 class MainWindow;
@@ -21,7 +22,8 @@ public:
     bool IsClosed() const;
     GobanQt & getGoban();
     unsigned short getMode() const;
-    void setWin(bool&);
+    void setWin(bool&, History&);
+    void displayTextEdit(History::Turn &turn);
 
 signals:
 	void newGameSignal();
@@ -42,6 +44,8 @@ private:
 private slots:
     void checkTurn();
     void displaySquareInformations();
+    void replayGame();
+
     void capturedStone();
     void newGame();
     void double_Three_Rule();

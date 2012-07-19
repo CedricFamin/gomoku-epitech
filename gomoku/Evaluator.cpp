@@ -168,8 +168,8 @@ int Evaluator::operator()(Goban & g, Goban::PION_TYPE p)
 	eval_case<1>(score, g, toEval, currentPion, p);
 	eval_case<2>(score, g, toEval, currentPion, p);
 	eval_case<3>(score, g, toEval, currentPion, p);
-	//score -= g.deletedStone(p) * 500;
-	//score += g.deletedStone(Goban::Other(p)) * 500;
+	score -= g.deletedStone(p) * 500;
+	score += g.deletedStone(Goban::Other(p)) * 500;
 	return score;
 }
 
