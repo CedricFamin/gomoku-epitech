@@ -22,18 +22,10 @@ Goban::PION_TYPE AIPlayer::getColor() const
 Goban::Move AIPlayer::play(Referrer & r, Goban & g)
 {	Evaluator eval(&g);
   Move move;
-  if (g.Turns().size() == 0)
+  if (g.nbTurn == 0)
     {
       move.first = 9;
       move.second = 9;
-    }
-  else if (g.Turns().size() == 1)
-    {
-      srand((unsigned int)time(0));
-      move.first = g.Turns().front().x + GobanIterator::direction[rand() % 8][0];
-      move.second = g.Turns().front().y + GobanIterator::direction[rand() % 8][1];
-		qDebug()<< eval(g, this->_color);
-		qDebug()<< eval(g, Goban::Other(this->_color));
     }
   else move = this->alphabeta(g, r);
   if (r(g, this->getColor(), move.first, move.second))
@@ -62,7 +54,6 @@ AIPlayer::Move AIPlayer::alphabeta(Goban & g, Referrer & r)
     {
         worker->wait();
         score = worker->getScore();
-		qDebug() << worker->getMove().first << worker->getMove().second << score;
         if (score > bestScore)
         {
 			AlphaBetaThreading::GlobalAlpha = score;
@@ -72,6 +63,5 @@ AIPlayer::Move AIPlayer::alphabeta(Goban & g, Referrer & r)
         }
         delete worker;
     });
-	qDebug() << bestScore;
     return bestMove;
 }

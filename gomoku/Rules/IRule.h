@@ -19,6 +19,7 @@ namespace Rules
 		virtual void disable() = 0;
 		virtual bool isEnable() const = 0;
 		virtual bool execute(Goban &, Goban::Turn &) = 0;
+		virtual IRule* clone() const = 0;
 	};
 }
 

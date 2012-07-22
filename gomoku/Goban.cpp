@@ -15,6 +15,7 @@ Goban::Goban() : _width(19), _height(19), _gameFinished(false)
     }
 	_deletedStone[0] = 0;
 	_deletedStone[1] = 0;
+	nbTurn = 0;
 }
 
 Goban::Goban(Goban const & g) : _width(g._width), _height(g._height)
@@ -24,6 +25,7 @@ Goban::Goban(Goban const & g) : _width(g._width), _height(g._height)
 	_deletedStone[0] = g._deletedStone[0];
 	_deletedStone[1] = g._deletedStone[1];
 	memcpy(_map,g._map, sizeof(*_map) * 19 * 19);
+	nbTurn = g.nbTurn;
 }
 
 Goban::~Goban(void)
@@ -229,6 +231,6 @@ void Goban::clear()
 	this->_deletedStone[1] = 0;
 	this->_winner = EMPTY;
 	this->_gameFinished = false;
-	this->_turnList.clear();
+	nbTurn = 0;
 	memset(this->_map, 0, this->_height * this->_width * sizeof(*this->_map));
 }

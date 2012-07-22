@@ -25,91 +25,6 @@
 #include "realplayer.h"
 #include "history.h"
 
-/*class Game : public QThread
-{
-public:
-    Game(GobanQt & gobanUI) : _gobanUI(gobanUI), _referrer(_goban), _victoryCapture(_takingRule)
-    {
-        _referrer.addPrePlayRule(_notEmpty);
-        _referrer.addPrePlayRule(_eitr);
-        _referrer.addPrePlayRule(_double3);
-        _referrer.addPlayRule(_takingRule);
-        _referrer.addPostPlayRule(_victoryCapture);
-        _referrer.addPostPlayRule(_victoryAlignment);
-    }
-
-    void run()
-    {
-        IPlayer * currentPlayer;
-        bool affWon = false;
-
-        while (1)
-        {
-            currentPlayer = this->_gobanUI.currentPlayer(this->_referrer.GetListOfTurn().size());
-            if (this->_referrer.GameFinished() == false)
-                currentPlayer->play(this->_referrer, std::tr1::bind(&GobanQt::PlayAt, &this->_gobanUI, std::tr1::placeholders::_1, std::tr1::placeholders::_2, std::tr1::placeholders::_3));
-
-            if (this->_referrer.GetListOfTurn().size())
-            {
-                auto coordinates = this->_referrer.GetListOfTurn().back().captures;
-                std::for_each(coordinates.begin(), coordinates.end(),
-                [this](std::pair<unsigned int, unsigned int> & p)
-                {
-                    _gobanUI.deleteStoneAt(p.first, p.second);
-                });
-            }
-            if (this->_referrer.GameFinished() && !affWon)
-            {
-                Finished finish;
-                finish.exec();
-                affWon = true;
-            }
-            Sleep(100);
-        }
-    }
-
-private:
-    GobanQt & _gobanUI;
-    Goban _goban;
-    Rules::EachInTurnRule _eitr;
-    Rules::DoubleThree _double3;
-    Rules::NotEmptyRule _notEmpty;
-    Rules::TakingRules _takingRule;
-    Rules::VictoryCapturesRule _victoryCapture;
-    Rules::VictoryAlignment _victoryAlignment;
-    Referrer _referrer;
-
-};*/
-
-
-#include <sstream>
-void generate_pattern()
-{
-	char pattern[3] = { '_', 'o', 'x' };
-	int combin[4] = { 0, 0, 0, 0};
-
-	for (int i = 0; i <81; ++i)
-	{
-		std::stringstream str;
-		str << pattern[combin[0]] << pattern[combin[1]] << pattern[combin[2]] << pattern[combin[3]];
-		qDebug() << str.str().c_str();
-		if (++combin[0] > 2)
-		{
-			combin[0] = 0;
-			if (++combin[1] > 2)
-			{
-				combin[1] = 0;
-				if (++combin[2] > 2)
-				{
-					combin[2] = 0;
-					++combin[3];
-				}
-			}
-
-		}
-	}
-}
-
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
@@ -131,7 +46,6 @@ int main(int argc, char *argv[])
 	Rules::VictoryAlignment * victoryAlignment = new Rules::VictoryAlignment;
     IPlayer * currentPlayer;
     IPlayer* players[2];
-    //referrer.addPrePlayRule(*(new Rules::EachInTurnRule()));
     referrer.addPrePlayRule(*(doubleThree));
     referrer.addPrePlayRule(*(notEmptyRule));
     referrer.addPlayRule(*tkrule);
@@ -181,7 +95,7 @@ int main(int argc, char *argv[])
     while (!win.IsClosed())
     {
 		if (app.hasPendingEvents()) app.processEvents();
-            currentPlayer = players[goban.Turns().size() & 1];
+            currentPlayer = players[goban.nbTurn & 1];
         if (goban.gameFinished() == false)
         {
             Goban::Move move = currentPlayer->play(referrer, goban);
@@ -200,16 +114,13 @@ int main(int argc, char *argv[])
 			}
 
         }
-        while (!goban.toDelete.empty())
+        while (!tkrule->toDelete.empty())
         {
             History::Turn tmpTurn;
-			std::pair<unsigned int, unsigned int>  p = goban.toDelete.top();
-			goban.toDelete.pop();
+			std::pair<unsigned int, unsigned int>  p = tkrule->toDelete.top();
+			tkrule->toDelete.pop();
 			uiGoban.deleteStoneAt(p.first, p.second);
-            if (currentPlayer->getColor() == Goban::BLACK)
-                tmpTurn.pion = Goban::RED;
-            else
-                tmpTurn.pion = Goban::BLACK;
+			tmpTurn.pion = Goban::Other(currentPlayer->getColor());
             tmpTurn.x = p.first;
             tmpTurn.y = p.second;
             tmpTurn.capture = true;
@@ -225,8 +136,8 @@ int main(int argc, char *argv[])
         }
 //#if _DEBUG
 		
-		uiGoban.affPlayable(goban, referrer, currentPlayer->getColor());
-		uiGoban.showInfluence(goban);
+		//uiGoban.affPlayable(goban, referrer, currentPlayer->getColor());
+		//uiGoban.showInfluence(goban);
 		//uiGoban.affSelectedMove(goban);
 		//uiGoban.affEvalCase<0>(goban);
 		//uiGoban.affEvalCase<1>(goban);
@@ -239,8 +150,6 @@ int main(int argc, char *argv[])
         //sleep(1);
 #endif
     }
-    delete doubleThree;
-    delete notEmptyRule;
     app.exit();
     return 0;
 }

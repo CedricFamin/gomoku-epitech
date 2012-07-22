@@ -52,7 +52,7 @@ void AlphaBetaThreading::run()
 	  if (s.gameFinished())
 		  this->_score = (s.getWinner() == this->_pion) ? std::numeric_limits<int>::max() : -std::numeric_limits<int>::max();
 	  else
-		  this->_score = this->alphabeta<1>(s,
+		  this->_score = this->alphabeta<3>(s,
 					-std::numeric_limits<int>::max(), std::numeric_limits<int>::max(),
 					Goban::Other(this->_pion));
   }

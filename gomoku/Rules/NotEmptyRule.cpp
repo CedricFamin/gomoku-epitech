@@ -30,3 +30,8 @@ bool NotEmptyRule::execute(Goban & g, Goban::Turn & turn)
 {
     return ((g[turn.y][turn.x] & Goban::PIONMASK) == 0);
 }
+
+IRule* NotEmptyRule::clone() const
+{
+	return new NotEmptyRule();
+}

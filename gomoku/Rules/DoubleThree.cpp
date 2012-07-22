@@ -113,3 +113,8 @@ bool DoubleThree::execute(Goban & g, Goban::Turn & turn)
 	}
     return true;
 }
+
+IRule* DoubleThree::clone() const
+{
+	return new DoubleThree();
+}

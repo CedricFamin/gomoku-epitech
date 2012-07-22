@@ -107,7 +107,7 @@ bool VictoryAlignment::execute(Goban & g, Goban::Turn & turn)
 	unsigned int lx, ly;
 	Patterns::PatternInfos pInfos;
 
-	g.alignments.remove_if([&g](Goban::Align & align)->bool
+	this->alignments.remove_if([&g](Goban::Align & align)->bool
 	{
 		bool breaked = false;
 		if (winningAlignment(g, align.size, align.dir, align.x, align.y, align.pion, std::forward<bool>(breaked)))
@@ -145,7 +145,7 @@ bool VictoryAlignment::execute(Goban & g, Goban::Turn & turn)
 				align.dir = i;
 				align.size = maxAlign;
 				align.pion = turn.pion;
-				g.alignments.push_back(align);
+				this->alignments.push_back(align);
 			}
         }
         cCase >>= Goban::PATTERNSIZE;
@@ -153,4 +153,9 @@ bool VictoryAlignment::execute(Goban & g, Goban::Turn & turn)
 	return false;
 }
 
-
+IRule* VictoryAlignment::clone() const
+{
+	VictoryAlignment * va = new VictoryAlignment();
+	va->alignments = this->alignments;
+	return va;
+}

@@ -28,5 +28,6 @@ bool EachInTurnRule::isEnable() const
 
 bool EachInTurnRule::execute(Goban & g, Goban::Turn & turn)
 {
-	return g.Turns().size() == 0 || g.Turns().back().pion != turn.pion;
+	return true;
+	//return g.Turns().size() == 0 || g.Turns().back().pion != turn.pion;
 }

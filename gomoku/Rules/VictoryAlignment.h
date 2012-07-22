@@ -18,6 +18,9 @@ namespace Rules
 		virtual void disable();
 		virtual bool isEnable() const;
 		virtual bool execute(Goban &, Goban::Turn &);
+		virtual IRule* clone() const;
+
+		std::list<Goban::Align> alignments;
 
 	private:
 		bool _enable;

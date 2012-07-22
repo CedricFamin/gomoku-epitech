@@ -124,10 +124,8 @@ public:
 	inline int& setDeletedStone(Goban::PION_TYPE pion)				  { return this->_deletedStone[pion>>1]; }
 	inline void setGameFinished(bool value)							  { this->_gameFinished = value; }
 	inline void setWinner(Goban::PION_TYPE pion)					  { this->_winner = pion; }
-	inline std::list<Turn> & Turns()								  { return this->_turnList; }
 
-	std::list<Align> alignments;
-	std::stack<std::pair<unsigned int, unsigned int>> toDelete;
+	int nbTurn;
 
 	Case * operator[](unsigned int);
 
@@ -140,7 +138,6 @@ private:
 	bool _gameFinished;
 	int _deletedStone[2];
 	Goban::PION_TYPE _winner;
-	std::list<Turn> _turnList;
 };
 
 template<int nbBits>

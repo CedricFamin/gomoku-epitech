@@ -17,6 +17,9 @@ namespace Rules
 		virtual void disable();
 		virtual bool isEnable() const;
 		virtual bool execute(Goban &, Goban::Turn &);
+		virtual IRule* clone() const;
+
+		std::stack<std::pair<unsigned int, unsigned int>> toDelete;
 
 	private:
 		bool _enable;

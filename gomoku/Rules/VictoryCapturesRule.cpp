@@ -40,3 +40,8 @@ bool VictoryCapturesRule::execute(Goban & g, Goban::Turn &)
 	}
 	return false;
 }
+
+IRule* VictoryCapturesRule::clone() const
+{
+	return new VictoryCapturesRule();
+}

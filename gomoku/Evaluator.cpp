@@ -33,10 +33,9 @@ struct Pow<nb, 0>
 template<int a, int ex, bool de>
 struct Scoring
 {
-	static const int content = Pow<5, a + ex>::v;
-	static const int align = Pow<5, a>::v;
-	static const int doubleExpand = de * (content + align) / 10;
-	static const int score = content + align + doubleExpand;
+	static const int content = (a + ex - !de) * (a + ex - !de);
+	static const int align = (a - !de) * (a - !de);
+	static const int score = content + align;
 };
 
 int Scores[5][5][2] = {
