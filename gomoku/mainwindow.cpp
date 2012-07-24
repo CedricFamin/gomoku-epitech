@@ -35,6 +35,7 @@ void MainWindow::newGame()
     this->ui->label_9->setText(QString::number(0));
     this->ui->label_19->setText(QString::number(0));
     this->ui->label_20->setText(QString::number(0));
+    this->ui->textEdit->clear();
     this->label->newGame();
     emit this->newGameSignal();
 }
