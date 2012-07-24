@@ -128,6 +128,7 @@ public:
 	int nbTurn;
 
 	Case * operator[](unsigned int);
+	Case const * operator[](unsigned int) const;
 
 protected:
 

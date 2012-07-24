@@ -30,11 +30,25 @@ struct Pow<nb, 0>
 	static const int v = 1;
 };
 
+template<bool minus, int a, int ex, bool de>
+struct MinusScoring
+{
+	static const int content = Pow<5, Min<5, a + ex>::v>::v;
+	static const int align = Pow<5, a>::v;
+};
+
+template<int a, int ex, bool de>
+struct MinusScoring<false, a, ex, de>
+{
+	static const int content = Pow<5, Min<5, a + ex>::v - !de>::v;
+	static const int align = Pow<5, a - !de>::v;
+};
+
 template<int a, int ex, bool de>
 struct Scoring
 {
-	static const int content = (a + ex - !de) * (a + ex - !de);
-	static const int align = (a - !de) * (a - !de);
+	static const int content = MinusScoring<a>=4, a, ex, de>::content;
+	static const int align = MinusScoring<a>=4, a, ex, de>::align;
 	static const int score = content + align;
 };
 
@@ -72,16 +86,8 @@ int Scores[5][5][2] = {
 	}
 };
 
-int ThreatAlign[5][2][2] = {
-	{{0,3}, {3,5}},
-	{{0,15}, {15,25}},
-	{{0,100}, {100,125}},
-	{{0,500}, {500,625}},
-	{{0,2500}, {2500,3125}},
-};
-
 template<int d>
-int AddAlignExpand(int & strictAlign, int &align, int &expand, bool & expandable, Goban & g, unsigned int x, unsigned int y, int const p, Patterns::PatternInfos const * pInfos)
+inline int AddAlignExpand(int & strictAlign, int &align, int &expand, bool & expandable, Goban const & g, unsigned int x, unsigned int y, int const p, Patterns::PatternInfos const * pInfos)
 {
 	ChangeCase<d>(x, y, pInfos->caseIndex);
 	if (g.InBound(x, y) && (g[y][x] & Goban::PIONMASK) == p)
@@ -98,16 +104,9 @@ int AddAlignExpand(int & strictAlign, int &align, int &expand, bool & expandable
 }
 
 template<int d>
-inline int GetThreatScore(Goban::PION_TYPE p, Goban::Case c, Goban & g, unsigned int x, unsigned int y, int & nextEval)
+inline int GetThreatScore(Goban::PION_TYPE p, Goban const & g, unsigned int x, unsigned int y, int & nextEval, const Patterns::PatternInfos * pInfos1, const Patterns::PatternInfos * pInfos2)
 {
-	const Patterns::PatternInfos * pInfos1 = Patterns::patterns + ((c >> Goban::HEADERSIZE >> Goban::PATTERNSIZE * d) & Goban::PATTERNMASK);
-	const Patterns::PatternInfos * pInfos2 = Patterns::patterns + ((c >> Goban::HEADERSIZE >> Goban::PATTERNSIZE * (d+4)) & Goban::PATTERNMASK);
 	bool e1, e2;
-	if (!p)
-	{
-		nextEval = (pInfos1->pattern) ? pInfos1->caseIndex : 5;
-		return 0;
-	}
 	int align = 0;
 	int expand = 0;
 	int strictAlign = 0;
@@ -115,11 +114,9 @@ inline int GetThreatScore(Goban::PION_TYPE p, Goban::Case c, Goban & g, unsigned
 	AddAlignExpand<d+4>(strictAlign, align, expand, e2, g, x, y, p, pInfos2);
 	if (strictAlign + align + expand >= 4)
 	{
-		int maxalign = (align <= 4) ? align : 4;
 		strictAlign = (strictAlign <= 4) ? strictAlign : 4;
 		align = (align <= 4) ? align : 4;
 		return Scores[strictAlign][align][e1 && e2];
-		return ThreatAlign[maxalign][e1][e2];
 	}
 	return 0;
 }
@@ -136,24 +133,34 @@ inline int canCreateCapture(Goban::PION_TYPE p, Goban::Case c, Goban & g, unsign
 }
 
 template<int dir>
-void eval_case(int &score, Goban &g, Goban::Case &toEval, Goban::PION_TYPE & currentPion, Goban::PION_TYPE &p)
+void eval_case(int &score, Goban const &g, Goban::Case &toEval, Goban::PION_TYPE & currentPion, Goban::PION_TYPE &p)
 {
 	int x = 0, y = 0;
 	XYManager<dir> manager;
 	manager.init(x, y);
 	int nextEval = 0;
+	const Patterns::PatternInfos * pInfos1, * pInfos2;
+	
 
 	while (!manager.ended(x, y))
 	{
 		toEval = g[y][x];
 		currentPion = (Goban::PION_TYPE)(toEval & Goban::PIONMASK);
-		score += (currentPion == p) ? GetThreatScore<dir>(currentPion, toEval, g, x, y, nextEval) :
-					-GetThreatScore<dir>(currentPion, toEval, g, x, y, nextEval);
+		pInfos1 = Patterns::patterns + ((toEval >> Goban::HEADERSIZE >> Goban::PATTERNSIZE * dir) & Goban::PATTERNMASK);
+		pInfos2 = Patterns::patterns + ((toEval >> Goban::HEADERSIZE >> Goban::PATTERNSIZE * (dir+4)) & Goban::PATTERNMASK);
 		if (currentPion)
 		{
-			//score += ((currentPion == p) ? 250: -250) * canCreateCapture<dir>(currentPion, toEval, g, x, y);
-			//score += ((currentPion == p) ? 250: -250) * canCreateCapture<dir+4>(currentPion, toEval, g, x, y);
+			score += (currentPion == p) ? GetThreatScore<dir>(currentPion, g, x, y, nextEval, pInfos1, pInfos2) :
+					-GetThreatScore<dir>(currentPion, g, x, y, nextEval, pInfos1, pInfos2);
+			/*score += pow(5.0, Goban::GetInfluence(toEval, p)) * 2 ;
+			score -= pow(5.0, Goban::GetInfluence(toEval, Goban::Other(p)));
+			nextEval = 1;*/
+
 		}
+		else
+			nextEval = (pInfos1->pattern) ? pInfos1->caseIndex : 5;
+			//nextEval = 1;
+
 		manager.incremente(x, y, nextEval);
 	}
 }

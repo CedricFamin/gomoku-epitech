@@ -19,7 +19,10 @@ Goban::Move RealPlayer::play(Referrer & r, Goban & g)
     if (r(g, this->getColor(), this->_ui.move.first, this->_ui.move.second))
     {
 		qDebug() << this->_color << ":" << eval(g, this->_color);
-		return this->_ui.move;
+		Goban::Move m = this->_ui.move;
+		this->_ui.move.first = -1;
+		this->_ui.move.second = -1;
+		return m;
 
     }
 	return Goban::Move(-1, -1);

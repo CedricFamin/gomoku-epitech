@@ -13,7 +13,7 @@ public:
 	Referrer(Referrer const &);
 	~Referrer(void);
 
-	bool operator()(Goban & g, Goban::PION_TYPE, unsigned int, unsigned int, bool = true);
+	bool operator()(Goban & g, Goban::PION_TYPE, unsigned int, unsigned int);
 	void addPrePlayRule(Rules::IRule &);
 	void addPlayRule(Rules::IRule &);
 	void addPostPlayRule(Rules::IRule &);

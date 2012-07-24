@@ -35,7 +35,7 @@ Referrer::~Referrer(void)
 		[this](Rules::IRule* rule) { delete rule; });
 }
 
-bool Referrer::operator()(Goban & g, Goban::PION_TYPE pion, unsigned int x, unsigned int y, bool useHistory)
+bool Referrer::operator()(Goban & g, Goban::PION_TYPE pion, unsigned int x, unsigned int y)
 {
 	bool canPlay = true;
 	bool finished = false;

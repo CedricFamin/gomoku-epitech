@@ -37,6 +37,11 @@ Goban::Case * Goban::operator[](unsigned int i)
 	return this->_map + i * 19;
 }
 
+Goban::Case const * Goban::operator[](unsigned int i) const
+{
+	return this->_map + i * 19;
+}
+
 inline void SetInfluence(Goban & g, unsigned int x, unsigned int y, Goban::Case pattern, int dist, Goban::PION_TYPE pion)
 {
 	Goban::PION_TYPE color = Goban::EMPTY;
@@ -82,7 +87,7 @@ inline void SetInfluence(Goban & g, unsigned int x, unsigned int y, Goban::Case 
 }
 
 template<int direction>
-inline void updatePattern(Goban & g, unsigned int x, unsigned int y, Goban::PION_TYPE pion)
+inline void updatePattern(Goban & g, unsigned int x, unsigned int y, Goban::PION_TYPE)
 {
 	static std::vector<Goban::Case> PatternMap, Pattern0xF, Pattern0x3F;
 	if (PatternMap.size() == 0)
@@ -182,6 +187,7 @@ inline void updatePattern(Goban & g, unsigned int x, unsigned int y, Goban::PION
 				if (!(patternIndex = Pattern0x3F[pattern&0x3F]))
 					patternIndex = PatternMap[pattern&0xFF];
 			g[rly][rlx] |= patternIndex << rshift;
+			//SetInfluence(g,rlx,rly,pattern,i,pion);
 		}
         if (g.InBound(lx, ly))
         {
@@ -191,6 +197,7 @@ inline void updatePattern(Goban & g, unsigned int x, unsigned int y, Goban::PION
 				if (!(patternIndex = Pattern0x3F[pattern&0x3F]))
 					patternIndex = PatternMap[pattern&0xFF];
 			g[ly][lx] |= patternIndex  << shift;
+			//SetInfluence(g,lx,ly,pattern,i,pion);
 		}
 		
         decal -= 2;

@@ -1,20 +1,32 @@
 #include <limits>
-#include <QDebug>
 #include "alphabetathreading.h"
 
 #include "PatternIdentifier.h"
 #include "GobanIterator.h"
 
-#include <iostream>
-#include <sstream>
-#include <queue>
-
 int AlphaBetaThreading::GlobalAlpha = 0;
+std::list<AlphaBetaThreading*> AlphaBetaThreading::_idleThread;
+unsigned int AlphaBetaThreading::_activeThread = 0;
 
 AlphaBetaThreading::AlphaBetaThreading(Goban & g, const Goban::Move & m, Goban::PION_TYPE p, Referrer & r)
   : _move(m), _pion(p), _goban(g), _score(0), _referrer(r), _evaluator(&g)
 {
+	if (_activeThread <= QThread::idealThreadCount())
+	{
+		++_activeThread;
+		this->start();
+	}
+	else _idleThread.push_back(this);
+}
 
+AlphaBetaThreading::~AlphaBetaThreading()
+{
+	if (_idleThread.size())
+	{
+		_idleThread.front()->start();
+		_idleThread.pop_front();
+	}
+	else _activeThread--;
 }
 
 std::list<Goban::Move> AlphaBetaThreading::GetTurns(Goban & g)
@@ -52,7 +64,7 @@ void AlphaBetaThreading::run()
 	  if (s.gameFinished())
 		  this->_score = (s.getWinner() == this->_pion) ? std::numeric_limits<int>::max() : -std::numeric_limits<int>::max();
 	  else
-		  this->_score = this->alphabeta<3>(s,
+		  this->_score = this->alphabeta<1>(s,
 					-std::numeric_limits<int>::max(), std::numeric_limits<int>::max(),
 					Goban::Other(this->_pion));
   }

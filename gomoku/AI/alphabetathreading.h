@@ -12,12 +12,16 @@ class AlphaBetaThreading : public QThread
 public:
 	static int GlobalAlpha;
     AlphaBetaThreading(Goban &, Goban::Move const &, Goban::PION_TYPE, Referrer & r);
+	~AlphaBetaThreading();
     int getScore() const;
     Goban::Move const & getMove() const;
 	static std::list<Goban::Move> GetTurns(Goban & g);
 protected:
     virtual void run();
 private:
+	static std::list<AlphaBetaThreading*> _idleThread;
+	static unsigned int _activeThread;
+
     Goban::Move _move;
     Goban::PION_TYPE _pion;
     Goban _goban;
@@ -45,7 +49,7 @@ private:
 				for (int i = 0; i < 8; ++i)
 				{
 					const Patterns::PatternInfos * p = Patterns::patterns + (toEval & Goban::PATTERNMASK);
-					if (p->caseIndex <= 2 && p->pattern && this->_referrer(s, pion, x, y, false))
+					if (p->caseIndex <= 2 && p->pattern && this->_referrer(s, pion, x, y))
 					{
 						if (isAlpha)
 							alpha = std::max(alpha, alphabeta<depth - 1>(s, alpha, beta, Goban::Other(pion)));
