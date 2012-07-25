@@ -34,11 +34,10 @@ public:
 		for (unsigned int x = 0,y = 0; y < 19;)
 		{
 			toEval = g[y][x];
-			influence = Goban::GetInfluence(toEval, Goban::BLACK) + Goban::GetInfluence(toEval, Goban::RED);
-			if ((toEval & ~Goban::PIONMASK))
+			if ((toEval & ~Goban::PIONMASK) && (toEval & Goban::PIONMASK) == 0)
 			{
-				toEval >>= Goban::HEADERSIZE;
-				
+				influence = Goban::GetInfluence(toEval, Goban::BLACK) + Goban::GetInfluence(toEval, Goban::RED);
+				toEval >>= Goban::HEADERSIZE;	
 				for (int i = 0; i < 8; ++i)
 				{
 					const Patterns::PatternInfos * p = Patterns::patterns + (toEval & Goban::PATTERNMASK);
