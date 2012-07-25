@@ -30,3 +30,8 @@ bool LastTaking::execute(Goban &, Goban::Turn &)
 {
 	return false;
 }
+
+IRule* LastTaking::clone() const
+{
+
+}

@@ -1,3 +1,4 @@
+#include <algorithm>
 #include "qtgoban.h"
 
 #include "Rules/EachInTurnRule.h"
