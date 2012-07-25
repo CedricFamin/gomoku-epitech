@@ -4,6 +4,7 @@
 #include "PatternIdentifier.h"
 #include "GobanIterator.h"
 
+int AlphaBetaThreading::sun = 0;
 int AlphaBetaThreading::GlobalAlpha = 0;
 std::list<AlphaBetaThreading*> AlphaBetaThreading::_idleThread;
 unsigned int AlphaBetaThreading::_activeThread = 0;
@@ -85,5 +86,6 @@ int AlphaBetaThreading::getScore() const
 template<>
 int AlphaBetaThreading::alphabeta<0>(Goban & g, int, int, Goban::PION_TYPE pion)
 {
+	AlphaBetaThreading::sun++;
 	return this->_evaluator(g,pion);
 }
