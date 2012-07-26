@@ -22,13 +22,15 @@ public:
     bool IsClosed() const;
     GobanQt & getGoban();
     unsigned short getMode() const;
-    void setWin(bool&, History&);
-    void displayTextEdit(History::Turn &turn);
+    void setWin(bool&, History *history);
+    void displayTextEdit(History::Turn &turn, Goban& goban);
+    void new_Game();
 
 signals:
 	void newGameSignal();
     void doubleThreeRule();
     void endgameCatchRule();
+    void replayGame();
 
 protected:
     void closeEvent(QCloseEvent* event);
@@ -40,11 +42,12 @@ private:
     bool closed;
     unsigned short mode:2;
     bool affWon;
+    History* history;
 
 private slots:
     void checkTurn();
     void displaySquareInformations();
-    void replayGame();
+    void replay_Game();
 
     void capturedStone();
     void newGame();

@@ -116,6 +116,7 @@ public:
 	void clear();
 
 	inline bool gameFinished(void)								const { return this->_gameFinished; }
+    void clearHistory();
 	inline unsigned int getWidth()								const { return this->_width; }
 	inline unsigned int getHeight()								const { return this->_height; }
 	inline Goban::PION_TYPE getWinner()							const { return this->_winner; }

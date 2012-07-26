@@ -11,8 +11,8 @@ public:
     ~History();
     struct Turn
     {
-        int x;
-        int y;
+        unsigned int x;
+        unsigned int y;
         Goban::PION_TYPE pion;
         bool capture;
         int heuristicScore;

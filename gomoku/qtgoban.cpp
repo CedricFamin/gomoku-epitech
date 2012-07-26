@@ -63,7 +63,7 @@ GobanQt::~GobanQt()
         delete this->square[i].image;
 }
 
-void GobanQt::PlayAt(Goban::PION_TYPE color, unsigned int x, unsigned int y)
+void GobanQt::PlayAt(Goban::PION_TYPE color, unsigned int x, unsigned int y, bool history)
 {
     QString pionImg;
     this->x = x;
@@ -74,7 +74,8 @@ void GobanQt::PlayAt(Goban::PION_TYPE color, unsigned int x, unsigned int y)
     this->square[index].image->setPixmap(QPixmap(pionImg));
     this->square[index].image->move(this->square[index].x, this->square[index].y);
     playerTurn = !playerTurn;
-    emit clicked();
+    if (history)
+        emit clicked();
     //this->afterPlayer();
 }
 
@@ -211,6 +212,8 @@ void GobanQt::newGame()
     this->playerTurn = false;
     this->x = 0;
     this->y = 0;
+    this->capturedStoneBlack = 0;
+    this->capturedStoneWhite = 0;
     for (unsigned short i = 0; i < 361; ++i)
     {
         this->square[i].isEmpty = true;

@@ -35,7 +35,7 @@ public:
     explicit GobanQt(QMainWindow *parent, QPixmap Image);
     bool getPlayerTurn(void) const;
     int getInformation(void) const;
-    void PlayAt(Goban::PION_TYPE color, unsigned int x, unsigned int y);
+    void PlayAt(Goban::PION_TYPE color, unsigned int x, unsigned int y, bool history = true);
     void afterPlayer(void);
     IPlayer* currentPlayer(int turn);
     std::pair<int, int> move;

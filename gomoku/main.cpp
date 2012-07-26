@@ -68,6 +68,23 @@ int main(int argc, char *argv[])
 				victoryAlignment->enableOptionalRule();
 			enable = !enable;
     });
+    /*connect(&win, SIGNAL(replayGame()), std::tr1::bind(&Goban::clear, &goban));
+    connect(&win, SIGNAL(replayGame()), [&history, &uiGoban]
+    {
+        while (!history.turnList.empty())
+        {
+            if (!history.turnList.front().capture)
+                uiGoban.deleteStoneAt(history.turnList.front().x, history.turnList.front().y);
+            else
+                uiGoban.PlayAt(history.turnList.front().pion, history.turnList.front().x, history.turnList.front().y, false);
+            history.turnList.pop();
+            #ifdef _WIN32
+                Sleep(100);
+            #else
+                //sleep(1);
+            #endif
+        }
+    });*/
 
     gametype.exec();
     win.show();
@@ -94,7 +111,7 @@ int main(int argc, char *argv[])
 
     while (!win.IsClosed())
     {
-		if (app.hasPendingEvents()) app.processEvents();
+        if (app.hasPendingEvents()) app.processEvents();
             currentPlayer = players[goban.nbTurn & 1];
         if (goban.gameFinished() == false)
         {
@@ -109,7 +126,7 @@ int main(int argc, char *argv[])
 				tmpTurn.x = uiGoban.getX();
 				tmpTurn.y = uiGoban.getY();
 				tmpTurn.capture = false;
-				win.displayTextEdit(tmpTurn);
+                win.displayTextEdit(tmpTurn, goban);
 				history.turnList.push(tmpTurn);
 			}
 
@@ -124,7 +141,7 @@ int main(int argc, char *argv[])
             tmpTurn.x = p.first;
             tmpTurn.y = p.second;
             tmpTurn.capture = true;
-            win.displayTextEdit(tmpTurn);
+            win.displayTextEdit(tmpTurn, goban);
             history.turnList.push(tmpTurn);
         }
         if (goban.gameFinished() && !affWon)
@@ -132,12 +149,12 @@ int main(int argc, char *argv[])
             Finished finish;
             finish.exec();
             affWon = true;
-            win.setWin(affWon, history);
+            win.setWin(affWon, &history);
         }
 //#if _DEBUG
 		
-		//uiGoban.affPlayable(goban, referrer, currentPlayer->getColor());
-		//uiGoban.showInfluence(goban);
+        //uiGoban.affPlayable(goban, referrer, currentPlayer->getColor());
+        //uiGoban.showInfluence(goban);
 		//uiGoban.affSelectedMove(goban);
 		//uiGoban.affEvalCase<0>(goban);
 		//uiGoban.affEvalCase<1>(goban);

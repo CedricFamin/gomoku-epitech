@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "Goban.h"
+#include "Evaluator.h"
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -28,6 +29,22 @@ MainWindow::~MainWindow()
     delete ui;
     delete label;
 }
+
+void MainWindow::new_Game()
+{
+    this->ui->label_8->setText(QString::number(0));
+    this->ui->label_9->setText(QString::number(0));
+    this->ui->label_19->setText(QString::number(0));
+    this->ui->label_20->setText(QString::number(0));
+    this->ui->textEdit->clear();
+    this->label->newGame();
+#ifdef _WIN32
+    Sleep(100);
+#else
+    sleep(1);
+#endif
+}
+
 
 void MainWindow::newGame()
 {
@@ -67,6 +84,7 @@ void MainWindow::capturedStone()
 {
     this->ui->label_20->setText(QString::number(this->label->getCapturedStoneBlack()));
     this->ui->label_19->setText(QString::number(this->label->getCapturedStoneWhite()));
+    std::cout << this->ui->label_19->text().toStdString() << std::endl;
 }
 
 void MainWindow::displaySquareInformations()
@@ -95,16 +113,18 @@ unsigned short MainWindow::getMode() const
     return this->mode;
 }
 
-void MainWindow::setWin(bool &affWon, History& history)
+void MainWindow::setWin(bool &affWon, History* history)
 {
     this->affWon = affWon;
     this->ui->actionReplay_Game->setEnabled(true);
-    connect(ui->actionReplay_Game, SIGNAL(triggered()), this, SLOT(replayGame()));
+    this->history = history;
+    connect(ui->actionReplay_Game, SIGNAL(triggered()), this, SLOT(replay_Game()));
 }
 
-void MainWindow::displayTextEdit(History::Turn& turn)
+void MainWindow::displayTextEdit(History::Turn& turn, Goban& goban)
 {
     QString final;
+    Evaluator eval(&goban);
     if (turn.pion == Goban::BLACK)
         final += QString("Black is ");
     else if (turn.pion == Goban::RED)
@@ -119,14 +139,20 @@ void MainWindow::displayTextEdit(History::Turn& turn)
     if (!turn.capture)
     {
         final += QString(" with an heuristic score of : ");
-        final += QString::number(turn.capture);
+        final += QString::number(eval(goban, turn.pion));
     }
     this->ui->textEdit->append(final);
 }
 
-void MainWindow::replayGame()
+void MainWindow::replay_Game()
 {
-
+    this->ui->label_8->setText(QString::number(0));
+    this->ui->label_9->setText(QString::number(0));
+    this->ui->label_19->setText(QString::number(0));
+    this->ui->label_20->setText(QString::number(0));
+    this->ui->textEdit->clear();
+    this->label->newGame();
+    emit replayGame();
 }
 
 GobanQt & MainWindow::getGoban()
